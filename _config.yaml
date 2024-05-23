@@ -1,9 +1,7 @@
 title: Alexander McIntosh
 author:
   name: Alexander McIntosh
-  email: mcintalmo@gmail.com
-
-theme: minima
+  email: "mcintalmo@gmail.com"
 
 description: >
   Welcome to the beginning of Alexander McIntosh's personal site. A collection
@@ -12,8 +10,11 @@ description: >
 header_pages:
   - about.md
 
-social_links:
-  - platform: github
-    user_url: "https://github.com/mcintalmo"
-  - platform: linkedin
-    user_url: "https://www.linkedin.com/in/mcintalmo"
+theme: minima
+minima:
+  skin: auto
+  social_links:
+    - platform: github
+      user_url: "https://github.com/mcintalmo"
+    - platform: linkedin
+      user_url: "https://www.linkedin.com/in/mcintalmo"
