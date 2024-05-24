@@ -5,6 +5,12 @@ description: >
   Welcome to the beginning of Alexander McIntosh's personal site. A collection
   of blogs, data science projects, and video game development.
 
+baseurl: ""
+url: ""
+
+plugins:
+  - jekyll-feed
+
 header_pages:
   - about.md
 
