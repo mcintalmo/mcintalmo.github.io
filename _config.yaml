@@ -4,8 +4,7 @@ author:
   email: "mcintalmo@gmail.com"
 
 description: >
-  Welcome to Alexander McIntosh's personal site, a collection of
-  data science projects, video game development, and blogs.
+  Alexander McIntosh's data science portfolio and articles.
 
 baseurl: ""
 url: ""
@@ -15,6 +14,7 @@ plugins:
 
 header_pages:
   - about.md
+  - resume.md
 
 remote_theme: jekyll/minima
 minima:

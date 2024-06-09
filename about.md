@@ -1,24 +1,27 @@
 ---
-layout: page
 title: About
+layout: page
 permalink: /about/
 ---
-## About
+Alexander McIntosh (he/him) is a Data Science and Engineering Associate
+at [Optum](https://www.optum.com),
+a technology and data-enabled care delivery company.
+Specializing in explainable artificial intelligence
+([XAI](https://en.wikipedia.org/wiki/Explainable_artificial_intelligence)),
+he tests and deploys machine learning models
+and artificial intelligence systems
+to leverage cutting edge technologies.
+In his free time, he develops [Constelleum](https://www.constelleum.com),
+a cooperative card-playing video game focused on accessibility.
 
-I am Alexander McIntosh, a data scientist with a focus on fair, explainable
-machine learning models and artificially intelligent systems.
-I have become ensnared by the concept of learning, by both humans and machines,
-and the symbiotic growth that emerges from their intersection.
-I love to compose music, play guitar, and develop video games in my free time.
-
-## Professional
-
-I am currently employed by Optum as a Technology Development Program Associate.
-I have been responsible for engineering a large language model system to
-perform automated statistical analysis.
-I have been extremely fortunate to find myself in a position that pursues the
-cutting edge of the possible.
+Recently, McIntosh was invited
+to pursue a Master of Liberal Arts in Data Science
+from Harvard Extension School.
+He previously earned a MicroMasters in Statistics and Data Science from MITx
+after graduating from Saint John's University in Collegeville, Minnesota
+with a degree in physics.
 
 ## Contact
 
-email: [mcintalmo@gmail.com](mailto:mcintalmo@gmail.com)
+To reach Alexander, please email him at
+[mcintalmo@gmail.com](mailto:mcintalmo@gmail.com).
