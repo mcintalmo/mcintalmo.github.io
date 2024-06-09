@@ -11,7 +11,7 @@ Specializing in explainable artificial intelligence
 he tests and deploys machine learning models
 and artificial intelligence systems
 to leverage cutting edge technologies.
-In his free time, he develops [Constelleum](https://www.constelleum.com),
+In his free time, he develops [Constelleum](https://constelleum.com),
 a cooperative card-playing video game focused on accessibility.
 
 Recently, McIntosh was invited
