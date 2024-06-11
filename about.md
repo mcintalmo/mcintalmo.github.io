@@ -14,12 +14,13 @@ to leverage cutting edge technologies.
 In his free time, he develops [Constelleum](https://constelleum.com),
 a cooperative card-playing video game focused on accessibility.
 
-Recently, McIntosh was invited
-to pursue a Master of Liberal Arts in Data Science
-from Harvard Extension School.
-He previously earned a MicroMasters in Statistics and Data Science from MITx
+In May 2024, McIntosh was accepted
+to the Master of Liberal Arts in Data Science program
+at Harvard Extension School.
+He earned a MicroMasters in Statistics and Data Science from MITx
 after graduating from Saint John's University in Collegeville, Minnesota
-with a degree in physics.
+with a degree in physics
+and minored in mathematics and music.
 
 ## Contact
 
