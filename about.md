@@ -5,7 +5,7 @@ permalink: /about/
 ---
 Alexander McIntosh (he/him) is a Data Science and Engineering Associate
 at [Optum](https://www.optum.com),
-a technology and data-enabled care delivery company.
+a leading information and technology-enabled health services business.
 Specializing in explainable artificial intelligence
 ([XAI](https://en.wikipedia.org/wiki/Explainable_artificial_intelligence)),
 he tests and deploys machine learning models
