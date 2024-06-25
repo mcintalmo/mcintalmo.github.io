@@ -1,4 +1,4 @@
-## About Alex
+# About Alex
 
 Alexander McIntosh (he/him) is a Data Science and Engineering Associate
 at [Optum](https://www.optum.com),
