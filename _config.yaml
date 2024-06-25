@@ -13,7 +13,6 @@ plugins:
   - jekyll-feed
 
 header_pages:
-  - about.md
   - resume.md
 
 remote_theme: jekyll/minima
