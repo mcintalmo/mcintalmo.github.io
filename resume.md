@@ -20,16 +20,16 @@ permalink: /resume/
 ### Optum - Data Science and Engineering Associate <span>Jul. 2023 - Present</span>
 
 - Architect large language model multi-agent systems
-  to perform statistical analysis and generate visualizations
-- Deploy a self-service analytics bot
+  to perform statistical analysis and visualize results
+- Deploy self-service analytics
   with Semantic Kernel, JavaScript Azure Bots, and Python Azure Functions
 - Automate document comparison with text embeddings
   to save hundreds of hours of labor annually
 - Train a state-of-the-art forecast and anomaly detection model
-  on key performance leading indicators
+  on key performance indicators
 - Enable observability into billions of records
   and Kafka streaming data
-- Evaluate artificial intelligence system output 
+- Evaluate artificial intelligence system output
   on performance, accuracy, and bias
 
 ### Constelleum LLC - Software Engineer <span>Mar. 2020 - Present</span>
