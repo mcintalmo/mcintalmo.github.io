@@ -20,7 +20,7 @@ jobs:
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -49,17 +49,28 @@ jobs:
             https://ctan.math.illinois.edu/systems/texlive/tlnet
             https://mirrors.rit.edu/CTAN/systems/texlive/tlnet
             https://mirror2.sandyriver.net/pub/ctan/systems/texlive/tlnet
+            https://ctan.math.washington.edu/tex-archive/systems/texlive/tlnet
+            https://mirrors.ibiblio.org/CTAN/systems/texlive/tlnet
           )
           success=0
           for m in "${mirrors[@]}"; do
             echo "\n--- Trying CTAN mirror: $m ---"
             # The installer accepts --repository which is forwarded to install-tl
-            if wget -qO- "https://yihui.org/tinytex/install-unx.sh" | sh -s - --admin --repository="$m"; then
+            set +e
+            wget -qO- "https://yihui.org/tinytex/install-unx.sh" | sh -s - --admin --repository="$m" 2>&1 | tee tinytex-install.log
+            code=${PIPESTATUS[1]}
+            set -e
+            if [ $code -eq 0 ]; then
               success=1
               echo "TinyTeX installed using $m"
               break
             else
-              echo "Mirror $m failed; will try next mirror after short delay" >&2
+              if grep -qi 'older than the local installation' tinytex-install.log; then
+                echo "Mirror $m is stale (older revision). Trying next mirror." >&2
+              else
+                echo "Mirror $m failed (exit $code). Trying next mirror." >&2
+              fi
+              rm -rf /tmp/texlive tinytex-install.log || true
               sleep 5
             fi
           done
