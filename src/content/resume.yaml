@@ -3,7 +3,7 @@ basics:
   label: Data Scientist & AI Engineer
   image: /assets/profile.png
   email: mcintalmo@gmail.com
-  url: https://alexandermcintosh.com
+  url: https://www.alexandermcintosh.com
   summary: >
     Specializing in interpretable machine learning,
     enterprise-scale agent systems, and production-grade observability.
@@ -192,7 +192,7 @@ projects:
       - Automated build pipeline with GitHub Actions for multi-format export.
 
     keywords: [Context Engineering, GitHub Actions, HTML, CSS, TypeScript]
-    url: https://alexandermcintosh.com/
+    url: https://www.alexandermcintosh.com/
     codeUrl: https://github.com/mcintalmo/alexandermcintosh.com
     type: Web
   - name: SimLM Review - CS7643 Final Project

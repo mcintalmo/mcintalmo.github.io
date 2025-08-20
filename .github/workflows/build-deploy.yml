@@ -139,7 +139,7 @@ jobs:
 
       - name: Build site (includes resume generation)
         env:
-          SITE_URL: https://mcintalmo.github.io
+          SITE_URL: https://www.alexandermcintosh.com
         run: |
           pnpm generate-resume
           pnpm astro build --site "$SITE_URL"

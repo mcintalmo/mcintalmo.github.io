@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 
 // Dynamic robots: choose sitemap host from build-time SITE (astro --site) or prod fallback.
 export const GET: APIRoute = ({ site }) => {
-  const base = (site ?? 'https://mcintalmo.github.io').toString().replace(/\/$/, '');
+  const base = (site ?? 'https://www.alexandermcintosh.com').toString().replace(/\/$/, '');
   const body = [
     'User-agent: *',
     'Allow: /',

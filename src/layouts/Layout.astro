@@ -8,7 +8,7 @@ const basicsName = resume?.basics?.name || '';
 const title = config?.seo?.title || basicsName || 'Portfolio';
 const description = config?.seo?.description || (resume?.basics?.summary ? String(resume.basics.summary).slice(0,160) : '');
 // Derive site URL: prefer build-time SITE (astro --site) or fallback to production domain
-const siteUrl = (import.meta.env.SITE || 'https://mcintalmo.github.io').replace(/\/$/, '');
+const siteUrl = (import.meta.env.SITE || 'https://www.alexandermcintosh.com').replace(/\/$/, '');
 const imageUrl = siteUrl + '/assets/profile.png';
 ---
 <!doctype html>

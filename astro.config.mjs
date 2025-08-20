@@ -8,7 +8,7 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 // site will be overridden by --site flag in CI for staging/production
 export default defineConfig({
-  site: 'https://mcintalmo.github.io',
+  site: 'https://www.alexandermcintosh.com',
   integrations: [react(), sitemap()],
   vite: {
     plugins: [tailwindcss()]
