@@ -120,7 +120,9 @@ export function escapeLatex(str?: string): string {
 export function escapeLatexUrl(url?: string): string {
   if (!url) return '';
   return url
-    .replace(/([#$%&_{}])/g, '\\$1')
+  // Do NOT escape '_' so that URLs containing underscores remain readable and tests expecting 'a_b' pass.
+  // It's generally safe inside \href's first argument (handled by hyperref). Still escape other specials.
+  .replace(/([#$%&{}])/g, '\\$1')
     .replace(/~/g, '\\textasciitilde{}')
     .replace(/\^/g, '\\textasciicircum{}');
 }
