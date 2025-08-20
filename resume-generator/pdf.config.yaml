@@ -1,0 +1,37 @@
+# PDF specific configuration (extends resume + site config)
+mainfont: "Palatino Linotype"
+fonts:
+  main:
+    - "Palatino Linotype"
+    - "TeX Gyre Pagella"
+    - "Latin Modern Roman"
+margin: 0.75in
+sections:
+  work:
+    title: "Professional Experience"
+    enabled: true
+    work-history-years: 3
+  education:
+    title: "Education & Professional Development"
+    enabled: true
+    show-courework: false  # Toggle coursework line (intentional spelling)
+  certificates:
+    parent: education
+    enabled: true
+    max-certifications: 3      # Maximum number of certifications to list
+  skills:
+    title: "Skills & Technologies"
+    enabled: true
+    max-skills: 15             # Maximum number of skills to list
+  projects:
+    title: "Projects"
+    enabled: false
+    max-projects: 5            # Maximum number of projects to list
+output:
+  tex: "resume.tex"
+  html: "resume.html"
+  pdf: "McIntosh_Alexander_Resume.pdf"
+metadata:
+  title: "Resume"
+  author: "{{basics.name}}"
+dateFormat: "MMM YYYY"  # Date display format for ranges (default: MMM YYYY)

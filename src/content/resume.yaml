@@ -1,0 +1,280 @@
+basics:
+  name: Alex McIntosh
+  label: Data Scientist & AI Engineer
+  image: /assets/profile.png
+  email: mcintalmo@gmail.com
+  url: https://alexandermcintosh.com
+  summary: >
+    Specializing in interpretable machine learning,
+    enterprise-scale agent systems, and production-grade observability.
+    Proven success delivering AI platforms for 400K+ enterprise users.
+  location:
+    city: Minneapolis
+    countryCode: US
+    region: MN
+  profiles:
+    - network: GitHub
+      username: mcintalmo
+      url: https://github.com/mcintalmo
+    - network: LinkedIn
+      username: mcintalmo
+      url: https://linkedin.com/in/mcintalmo
+
+work:
+  - name: Optum
+    location: Eden Prairie, MN
+    position: Data Engineer Associate
+    startDate: 2024-08
+    description: >
+      Architecting and deploying enterprise-scale agentic AI systems with end-to-end observability,
+      enhancing productivity for over 400K employees
+    highlights:
+      - Refactored ETL pipelines for scalability and reusability, cutting failure rates from double digits to near-zero
+      - Mentored an intern team that won first place in an international Shark Tank competition with an agentic AI solution
+    responsibilities:
+      - Design and implement a system of agents using A2A, MCP, and ADK for enterprise-wide automation
+      - Train and deploy ML models to evaluate generative AI system performance with automated scoring pipelines
+      - Conduct adversarial testing and benchmark analysis for robustness, safety, fairness, latency, and explainability
+    keywords:
+      - Microsoft Fabric
+      - Azure Machine Learning
+      - Google Agent Development Kit (ADK)
+      - Model Context Protocol (MCP)
+      - Agent to Agent (A2A) Protocol
+
+  - name: Optum
+    location: Eden Prairie, MN
+    position: Data Science and Engineering Associate
+    startDate: 2023-07
+    endDate: 2024-07
+    description: >
+      Developed and operationalized ML models and multi-agent systems to drive analytics
+      and improve enterprise decision-making.
+    highlights:
+      - Built a time-series forecasting model to detect operational anomalies with >90% precision.
+    responsibilities:
+      - Orchestrated multi-agent AI systems to perform statistical analysis dashboard generation
+      - Delivered a conversational AI self-service analytics solution
+      - Trained a state-of-the-art time-series model to forecast operation trend changes and detect anomalies
+      - Enabled observability into millions of updating claims records
+      - Evaluated ML models for accuracy, bias, and operational readiness
+    keywords:
+      - Semantic Kernel
+      - Azure Web Apps
+      - Kafka
+      - Snowflake
+  
+  - name: Constelleum LLC
+    position: Software Engineer
+    startDate: 2020-03
+    endDate: 2023-07
+    description: >
+      Designed and developed a physically accessible multiplayer online video game
+    highlights:
+      - Engineered adaptive control schemes enabling inclusive gameplay
+    responsibilities:
+      - Automated client/server test pipelines
+      - Analyzed event log data to inform balance and engagement metrics
+    keywords:
+      - Godot
+  
+  - name: Stevens County DAC
+    location: Morris, MN
+    position: Employment Specialist
+    startDate: 2022-01
+    endDate: 2022-05
+    description: >
+      Led vocational training and program management for individuals with disabilities
+    responsibilities:
+      - Directed programs across 8 job coaches
+      - Implemented state policy updates and trained administrative staff
+      - Managed execution of tailored employment programs
+  
+  - name: Stevens County DAC
+    location: Morris, MN
+    position: Job Coach
+    startDate: 2021-10
+    endDate: 2022-01
+    description: >
+      Coached over 30 individuals in employment skills and workplace readiness
+    responsibilities:
+      - Developed personalized enrichment activities
+      - Partnered with local employers to improve retention rates
+  
+  - name: Prairie Community Services
+    location: Morris, MN
+    position: Program Coordinator
+    startDate: 2019-02
+    endDate: 2020-02
+    description: >
+      Led a staff of 12 delivering residential services to individuals with disabilities
+    responsibilities:
+      - Directed training and compliance for service staff
+      - Managed service plan implementation across 3 residences
+  
+  - name: Prairie Community Services
+    location: Morris, MN
+    position: Direct Support Professional
+    startDate: 2018-02
+    endDate: 2019-02
+    description: >
+      Provided direct care, daily living assistance, and community integration support.
+
+education:
+  - institution: Georgia Institute of Technology
+    studyType: Master of Science
+    area: Computer Science
+    endDate: 2027-07
+    achievements: 
+      - Machine Learning specialization
+    courses:
+      - Knowledge Based Artificial Intelligence
+      - Deep Learning
+      - Reinforcement Learning
+
+  - institution: MITx
+    studyType: MicroMasters
+    area: Statistics and Data Science
+    endDate: 2023-12
+    url: https://credentials.edx.org/credentials/789f9b74a86c4066ae992c7a0dbde374/
+    courses:
+      - Data Analysis
+      - Machine Learning
+      - Statistics and Probability
+  
+  - institution: Saint John's University
+    studyType: Bachelor of Arts
+    area: Physics
+    endDate: 2021-05
+    achievements: 
+      - Minored in Music and Mathematics
+      - Phi Beta Kappa Honor Society Member
+      - Men's Chorus President
+    courses:
+      - Quantum Mechanics
+      - Thermodynamics
+      - Statistical Mechanics
+      - Special Relativity
+      - Mathematical Modeling
+      - Linear Algebra
+
+certificates:
+  - name: "Microsoft Certified: Fabric Data Engineer Associate"
+    date: 2025-06-01
+    issuer: Microsoft
+    keywords:
+      - Data Engineering
+      - Microsoft Fabric
+  - name: "Microsoft Certified: Azure Fundamentals"
+    date: 2024-08-16
+    url: https://learn.microsoft.com/api/credentials/share/en-us/AlexanderMcIntosh/7594860F19AD6159?sharingId=47860C4D3B6D917C
+    issuer: Microsoft
+  - name: Azure Data Scientist Associate
+    date: 2023-01-01
+    url: https://learn.microsoft.com/api/credentials/share/en-us/AlexanderMcIntosh/363C2EF444B68303?sharingId=47860C4D3B6D917C
+    issuer: Microsoft
+  - name: Data Science Professional Certificate
+    issuer: HarvardX
+    date: 2022-08-01
+    url: https://credentials.edx.org/credentials/e50364179bf9497892cdc70d09c9247d/
+  - name: SQL for Data Science Specialization
+    date: 2023-02-01
+    issuer: University of California, Davis
+  - name: Applied Data Science with Python Specialization
+    issuer: University of Michigan
+    date: 2022-11-01
+
+projects:
+  - name: Personal Portfolio
+    description: >
+      Schema-driven portfolio website and PDF resume generator using unified YAML/JSON schema.
+    highlights:
+      - Automated build pipeline with GitHub Actions for multi-format export.
+
+    keywords: [Context Engineering, GitHub Actions, HTML, CSS, TypeScript]
+    url: https://alexandermcintosh.com/
+    codeUrl: https://github.com/mcintalmo/alexandermcintosh.com
+    type: Web
+  - name: SimLM Review - CS7643 Final Project
+    description: >
+      Simulation-guided large language model for enhanced context engineering
+    highlights: []
+    keywords: [Python, Large Language Models, Context Engineering]
+    type: AI
+  - name: ARC AGI
+    description: >
+      Computer-vision enhanced agent-based solver for the ARC AGI challenge, a benchmark for artificial general intelligence
+    highlights: []
+    keywords: [Python, AI, Computer Vision]
+    type: AI
+
+skills:
+  - name: Python
+    level: Expert
+    keywords: [Languages & Frameworks]
+  - name: PySpark
+    level: Advanced
+    keywords: [Languages & Frameworks]
+  - name: PyTorch
+    level: Advanced
+    keywords: [Machine Learning & AI]
+  - name: TensorFlow
+    level: Intermediate
+    keywords: [Machine Learning & AI]
+  - name: SQL
+    level: Expert
+    keywords: [Languages & Frameworks]
+  - name: R (Programming Language)
+    level: Advanced
+    keywords: [Languages & Frameworks]
+  - name: Statistics and Probability
+    level: Expert
+    keywords: [Machine Learning & AI]
+  - name: Data Science and Predictive Analytics
+    level: Expert
+    keywords: [Machine Learning & AI]
+  - name: Natural Language Processing (NLP)
+    level: Advanced
+    keywords: [Machine Learning & AI]
+  - name: Data Visualization
+    level: Advanced
+    keywords: [Data Engineering & Analytics]
+  - name: Data Engineering
+    level: Expert
+    keywords: [Data Engineering & Analytics]
+  - name: Git
+    level: Advanced
+    keywords: [Cloud & Infrastructure]
+  - name: Simulation
+    level: Advanced
+    keywords: [Machine Learning & AI]
+  - name: Docker
+    level: Expert
+    keywords: [Cloud & Infrastructure]
+  - name: Microsoft Fabric
+    level: Expert
+    keywords: [Data Engineering & Analytics]
+  - name: Microsoft Azure
+    level: Intermediate
+    keywords: [Cloud & Infrastructure]
+  - name: Google Cloud Platform
+    level: Intermediate
+    keywords: [Cloud & Infrastructure]
+  - name: Google Vertex AI
+    level: Intermediate
+    keywords: [Machine Learning & AI]
+  - name: Model Context Protocol (MCP)
+    level: Advanced
+    keywords: [Machine Learning & AI]
+  - name: Agent Development Kit (ADK)
+    level: Advanced
+    keywords: [Machine Learning & AI]
+  - name: Agent to Agent (A2A) Protocol
+    level: Advanced
+    keywords: [Machine Learning & AI]
+  - name: Semantic Kernel
+    level: Advanced
+    keywords: [Machine Learning & AI]
+  - name: OpenTelemetry
+    level: Expert
+    keywords: [Data Engineering & Analytics]

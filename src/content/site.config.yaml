@@ -1,0 +1,66 @@
+sections: 
+  basics:
+    title: Home
+    enabled: true
+    call-to-action:
+      text: Explore my work
+      url: "#work"
+  work:
+    title: Professional Experience
+    description: My journey in transforming data into intelligent solutions across various industries.
+    navigation-label: Work
+    enabled: true
+  history-visible-years: 2
+  education:
+    title: Education & Certifications
+    description: Strong academic foundation and continuous learning in data science and AI
+    navigation-label: Education
+    enabled: true
+  certificates:
+    parent: education
+    title: Professional Certifications
+    navigation-label:
+    description:
+    enabled: true
+    certifications-visible-count: 5
+  projects:
+    title: Featured Projects
+    description: Showcase of impactful data science and ML projects that solve real business problems
+    navigation-label: Projects
+    enabled: true
+    projects-visible-count: 3
+  skills:
+    title: Skills & Technologies
+    description: Comprehensive expertise across the full data science and ML engineering stack
+    navigation-label: Skills
+    enabled: true
+  awards:
+    title: Awards
+    navigation-label: Awards
+    enabled: true
+  blog:
+    title: Thought Leadership
+    description: Insights on artificial intelligence, machine learning, and data science from the front lines of innovation. Sharing knowledge and exploring the future of intelligent systems.
+    navigation-label: Blog
+    enabled: false
+  contact:
+    title: Let's Work Together
+    description: Ready to turn your data into actionable insights? Let's discuss how we can collaborate.
+    navigation-label: Contact
+    enabled: true
+    available-for:
+      - AI/ML engineering
+      - Data-intensive product architecture
+      - Agentic system consulting
+seo:
+  title: Alex McIntosh • Data Science, AI/ML Portfolio
+  description: Data scientist specializing in interpretable ML and observable agents
+analytics:
+  provider:
+  tracking-id:
+content:
+  date-format: MMM yyyy
+  show-relative-duration: true
+build:
+  strict-schema: true
+  placeholder-policy: hide

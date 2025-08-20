@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://alexandermcintosh.com/sitemap-index.xml

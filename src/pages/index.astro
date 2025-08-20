@@ -1,0 +1,11 @@
+---
+import PortfolioSections from '../components/PortfolioSections';
+import Layout from '../layouts/Layout.astro';
+import { loadAll } from '../lib/data';
+import '../styles/globals.css';
+
+const { config, resume } = loadAll();
+---
+<Layout config={config} resume={resume}>
+  <PortfolioSections client:visible resume={resume} config={config} />
+</Layout>

@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "astro-build.astro-vscode",
+    "dbaeumer.vscode-eslint",
+    "tamasfe.even-better-toml",
+    "github.vscode-github-actions",
+    "tomoki1207.pdf",
+    "redhat.vscode-yaml",
+    "christian-kohler.npm-intellisense"
+  ],
+  "unwantedRecommendations": []
+}

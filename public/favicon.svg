@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="16"
+   height="16"
+   viewBox="0 0 16 16"
+   version="1.1"
+   id="svg1"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <linearGradient
+       id="linearGradient20">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop20" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop21" />
+    </linearGradient>
+    <radialGradient
+       xlink:href="#linearGradient20"
+       id="radialGradient21"
+       cx="2.9282031"
+       cy="-10.928204"
+       fx="2.9282031"
+       fy="-10.928204"
+       r="8"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <g
+     id="layer1">
+    <circle
+       style="fill:url(#radialGradient21);fill-opacity:1;stroke-width:4"
+       id="path16-4-6"
+       cx="2.9282031"
+       cy="-10.928204"
+       r="8"
+       transform="rotate(120)" />
+    <path
+       style="baseline-shift:baseline;display:inline;overflow:visible;opacity:1;vector-effect:none;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke-width:1.40184;enable-background:accumulate;stop-color:#000000;stop-opacity:1"
+       d="M 12.467821,9.9349292 8.1457507,3 7.7713609,3.2500008 11.694935,10.428203 Z"
+       id="path17" />
+    <path
+       style="baseline-shift:baseline;display:inline;overflow:visible;opacity:1;vector-effect:none;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke-width:1.40079;enable-background:accumulate;stop-color:#000000;stop-opacity:1"
+       d="M 12.062179,10.594501 V 9.7722235 L 4.0000004,9.3561259 v 1.5293831 z"
+       id="path18" />
+    <path
+       style="baseline-shift:baseline;display:inline;overflow:visible;opacity:1;vector-effect:none;fill:#ffffff;fill-rule:evenodd;stroke-width:1.41421;enable-background:accumulate;stop-color:#000000;stop-opacity:1"
+       d="M 8.1457507,3.2500008 7.7713609,3 3,9.6409411 4.6097896,10.538688 Z"
+       id="path19" />
+    <circle
+       style="fill:#ffffff;fill-opacity:1"
+       id="path16-4"
+       transform="rotate(120)"
+       cy="-8.5532036"
+       cx="6.8145823"
+       r="2.7524045" />
+    <circle
+       style="fill:#ffffff;fill-opacity:1"
+       id="path16"
+       cy="-8.5532036"
+       cx="-1.1854167"
+       r="1.4118743"
+       transform="rotate(120)" />
+    <circle
+       style="fill:#008bcc;fill-opacity:1"
+       id="path16-4-1"
+       cx="2.8145831"
+       cy="-15.553205"
+       transform="rotate(120)"
+       r="1.8622196" />
+  </g>
+</svg>

@@ -1,0 +1,69 @@
+% Improved resume template using block placeholders
+\documentclass[10pt,letterpaper]{article}
+\usepackage[letterpaper,margin=0.6in,top=0.55in,bottom=0.7in]{geometry}
+\usepackage{ifxetex,ifluatex}
+\ifxetex\usepackage{fontspec}\fi
+\ifluatex\usepackage{fontspec}\fi
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+\usepackage[colorlinks=true, urlcolor=black, linkcolor=black]{hyperref}
+\hypersetup{%
+    pdfauthor={{metaAuthor}},%
+    pdftitle={{metaTitle}},%
+    pdfsubject={Resume},%
+    pdfcreator={generate-resume CLI},%
+    pdfproducer={LaTeX},%
+    pdfkeywords={resume, curriculum vitae, {{name}}}%
+}
+\usepackage{titlesec}
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{parskip}
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+\ifdefined\setmainfont
+        % Font cascade attempt (generated nested \IfFontExistsTF)
+        {{fontCascadeCode}}
+\fi
+
+% Geometry (explicit margins if provided)
+% (Geometry already set above)
+
+% Header / Footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+% Footer removed (no page numbers per request)
+\fancyfoot{}
+
+% Section formatting
+	\titleformat{\section}{\bfseries\scshape\large}{}{0pt}{}
+	\titlespacing*{\section}{0pt}{10pt}{4pt}
+
+% Entry macro: Company / Role / Dates with right aligned dates
+\newcommand{\entry}[4]{%
+    \vspace{4pt}\noindent%
+    \if\relax\detokenize{#2}\relax
+        \emph{#1}%
+    \else
+        \textbf{#2} - \emph{#1}%
+    \fi
+    \hfill {#3}\\#4\par
+}
+
+% Compact lists
+\setlist[itemize]{leftmargin=1.2em, itemsep=2pt, topsep=2pt, parsep=0pt, partopsep=0pt}
+
+\begin{document}
+\begin{center}
+        {\LARGE \textbf{ {{name}} }}\\
+    {{label}}\\
+    \vspace{4pt}
+    {\small {{contactLine}}}
+\end{center}
+
+{{dynamicSections}}
+
+\end{document}

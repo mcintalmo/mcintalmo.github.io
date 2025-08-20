@@ -1,0 +1,116 @@
+% Improved resume template using block placeholders
+\documentclass[10pt,letterpaper]{article}
+\usepackage[letterpaper,margin=0.6in,top=0.55in,bottom=0.7in]{geometry}
+\usepackage{ifxetex,ifluatex}
+\ifxetex\usepackage{fontspec}\fi
+\ifluatex\usepackage{fontspec}\fi
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+\usepackage[colorlinks=true, urlcolor=black, linkcolor=black]{hyperref}
+\hypersetup{%
+    pdfauthor=Alex McIntosh,%
+    pdftitle=Alex McIntosh – Resume,%
+    pdfsubject={Resume},%
+    pdfcreator={generate-resume CLI},%
+    pdfproducer={LaTeX},%
+    pdfkeywords={resume, curriculum vitae, Alex McIntosh}%
+}
+\usepackage{titlesec}
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{parskip}
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+\ifdefined\setmainfont
+        % Font cascade attempt (generated nested \IfFontExistsTF)
+        \IfFontExistsTF{Palatino Linotype}{\setmainfont{Palatino Linotype}}{\IfFontExistsTF{TeX Gyre Pagella}{\setmainfont{TeX Gyre Pagella}}{\IfFontExistsTF{Latin Modern Roman}{\setmainfont{Latin Modern Roman}}{\setmainfont{Latin Modern Roman}}}}
+\fi
+
+% Geometry (explicit margins if provided)
+% (Geometry already set above)
+
+% Header / Footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+% Footer removed (no page numbers per request)
+\fancyfoot{}
+
+% Section formatting
+	\titleformat{\section}{\bfseries\scshape\large}{}{0pt}{}
+	\titlespacing*{\section}{0pt}{10pt}{4pt}
+
+% Entry macro: Company / Role / Dates with right aligned dates
+\newcommand{\entry}[4]{%
+    \vspace{4pt}\noindent%
+    \if\relax\detokenize{#2}\relax
+        \emph{#1}%
+    \else
+        \textbf{#2} - \emph{#1}%
+    \fi
+    \hfill {#3}\\#4\par
+}
+
+% Compact lists
+\setlist[itemize]{leftmargin=1.2em, itemsep=2pt, topsep=2pt, parsep=0pt, partopsep=0pt}
+
+\begin{document}
+\begin{center}
+        {\LARGE \textbf{ Alex McIntosh }}\\
+    Data Scientist \& AI Engineer\\
+    \vspace{4pt}
+    {\small \href{mailto:mcintalmo@gmail.com}{mcintalmo@gmail.com} \textbullet{} \href{https://alexandermcintosh.com}{alexandermcintosh.com} \textbullet{} \href{https://linkedin.com/in/mcintalmo}{linkedin.com/in/mcintalmo} \textbullet{} Minneapolis, MN}
+\end{center}
+
+\section*{Professional Experience}
+\entry{Optum}{Data Engineer Associate}{Aug 2024–Present}{
+\begin{itemize}[leftmargin=*]
+\item Refactored ETL pipelines for scalability and reusability, cutting failure rates from double digits to near-zero
+\item Mentored an intern team that won first place in an international Shark Tank competition with an agentic AI solution
+\item Design and implement a system of agents using A2A, MCP, and ADK for enterprise-wide automation
+\item Train and deploy ML models to evaluate generative AI system performance with automated scoring pipelines
+\item Conduct adversarial testing and benchmark analysis for robustness, safety, fairness, latency, and explainability
+\end{itemize}
+}
+
+\entry{Optum}{Data Science and Engineering Associate}{Jul 2023–Jul 2024}{
+\begin{itemize}[leftmargin=*]
+\item Built a time-series forecasting model to detect operational anomalies with >90\% precision.
+\item Orchestrated multi-agent AI systems to perform statistical analysis dashboard generation
+\item Delivered a conversational AI self-service analytics solution
+\item Trained a state-of-the-art time-series model to forecast operation trend changes and detect anomalies
+\item Enabled observability into millions of updating claims records
+\item Evaluated ML models for accuracy, bias, and operational readiness
+\end{itemize}
+}
+
+\entry{Constelleum LLC}{Software Engineer}{Mar 2020–Jul 2023}{
+\begin{itemize}[leftmargin=*]
+\item Engineered adaptive control schemes enabling inclusive gameplay
+\item Automated client/server test pipelines
+\item Analyzed event log data to inform balance and engagement metrics
+\end{itemize}
+}
+
+\section*{Education \& Professional Development}
+\entry{Georgia Institute of Technology}{Master of Science in Computer Science}{Expected Jul 2027}{
+{\small Machine Learning specialization}
+}
+
+\entry{MITx}{MicroMasters in Statistics and Data Science}{Dec 2023}{
+}
+
+\entry{Saint John's University}{Bachelor of Arts in Physics}{May 2021}{
+{\small Minored in Music and Mathematics \textbullet{} Phi Beta Kappa Honor Society Member \textbullet{} Men's Chorus President}
+}
+
+\entry{Microsoft}{Microsoft Certified: Fabric Data Engineer Associate}{Jun 2025}{}
+\entry{Microsoft}{\href{https://learn.microsoft.com/api/credentials/share/en-us/AlexanderMcIntosh/7594860F19AD6159?sharingId=47860C4D3B6D917C}{Microsoft Certified: Azure Fundamentals}}{Aug 2024}{}
+\entry{Microsoft}{\href{https://learn.microsoft.com/api/credentials/share/en-us/AlexanderMcIntosh/363C2EF444B68303?sharingId=47860C4D3B6D917C}{Azure Data Scientist Associate}}{Jan 2023}{}
+
+\section*{Skills \& Technologies}
+{\small Python \textbullet{} PySpark \textbullet{} PyTorch \textbullet{} TensorFlow \textbullet{} SQL \textbullet{} R (Programming Language) \textbullet{} Statistics and Probability \textbullet{} Data Science and Predictive Analytics \textbullet{} Natural Language Processing (NLP) \textbullet{} Data Visualization \textbullet{} Data Engineering \textbullet{} Git \textbullet{} Simulation \textbullet{} Docker \textbullet{} Microsoft Fabric}
+
+\end{document}
