@@ -43,8 +43,34 @@ jobs:
       - name: Install TinyTeX (if cache miss)
         if: steps.tinytex-cache.outputs.cache-hit != 'true'
         run: |
-          wget -qO- "https://yihui.org/tinytex/install-unx.sh" | sh -s - --admin
+          set -e
+          echo "Attempting TinyTeX install with mirror fallback logic"
+          mirrors=(
+            https://ctan.math.illinois.edu/systems/texlive/tlnet
+            https://mirrors.rit.edu/CTAN/systems/texlive/tlnet
+            https://mirror2.sandyriver.net/pub/ctan/systems/texlive/tlnet
+          )
+          success=0
+          for m in "${mirrors[@]}"; do
+            echo "\n--- Trying CTAN mirror: $m ---"
+            # The installer accepts --repository which is forwarded to install-tl
+            if wget -qO- "https://yihui.org/tinytex/install-unx.sh" | sh -s - --admin --repository="$m"; then
+              success=1
+              echo "TinyTeX installed using $m"
+              break
+            else
+              echo "Mirror $m failed; will try next mirror after short delay" >&2
+              sleep 5
+            fi
+          done
+          if [ "$success" -ne 1 ]; then
+            echo "All mirrors failed. Exiting." >&2
+            exit 1
+          fi
           ~/.TinyTeX/bin/*/tlmgr path add
+          # Ensure mirror stays set & self-update succeeds (ignore transient failures)
+          ~/.TinyTeX/bin/*/tlmgr option repository "$m" || true
+          ~/.TinyTeX/bin/*/tlmgr update --self || true
           ~/.TinyTeX/bin/*/tlmgr install collection-latexrecommended collection-fontsrecommended latexmk
 
       - name: Add TinyTeX to PATH
