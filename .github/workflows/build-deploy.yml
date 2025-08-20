@@ -82,7 +82,8 @@ jobs:
           # Run tlmgr ops with mirror fallback (handles stale remote revision errors)
           ops=(
             "update --self"
-            "install collection-latexrecommended collection-fontsrecommended latexmk"
+            # Include xetex collection explicitly so xelatex binary is present
+            "install collection-latexrecommended collection-fontsrecommended collection-xetex latexmk"
           )
           for op in "${ops[@]}"; do
             op_success=0
@@ -110,9 +111,23 @@ jobs:
 
       - name: Add TinyTeX to PATH
         run: |
-          TEXBIN=$(dirname $(find ~/.TinyTeX/bin -name xelatex -type f | head -n1))
-          echo "$TEXBIN" >> $GITHUB_PATH
-          xelatex --version
+          set -e
+          echo "Locating xelatex..."
+          XE=$(find ~/.TinyTeX/bin -name xelatex -type f | head -n1 || true)
+          if [ -z "$XE" ]; then
+            echo "xelatex not found. Listing TinyTeX bin tree for diagnostics:" >&2
+            find ~/.TinyTeX/bin -maxdepth 3 -type f -printf '%P\n' || true
+            echo "Attempting tlmgr install collection-xetex..." >&2
+            ~/.TinyTeX/bin/*/tlmgr install collection-xetex || true
+            XE=$(find ~/.TinyTeX/bin -name xelatex -type f | head -n1 || true)
+          fi
+          if [ -z "$XE" ]; then
+            echo "Still no xelatex; continuing (resume PDF generation may fail)." >&2
+          else
+            TEXBIN=$(dirname "$XE")
+            echo "$TEXBIN" >> $GITHUB_PATH
+            xelatex --version
+          fi
 
       - name: Install pandoc
         run: |
