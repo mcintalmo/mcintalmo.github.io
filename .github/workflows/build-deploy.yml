@@ -5,6 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch: {}
 
 jobs:
   build:
@@ -31,108 +32,108 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Cache TinyTeX
-        id: tinytex-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.TinyTeX
-          key: tinytex-${{ runner.os }}-${{ hashFiles('resume-generator/templates/*.tex') }}
-          restore-keys: |
-            tinytex-${{ runner.os }}-
+      # - name: Cache TinyTeX
+      #   id: tinytex-cache
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: ~/.TinyTeX
+      #     key: tinytex-${{ runner.os }}-${{ hashFiles('resume-generator/templates/*.tex') }}
+      #     restore-keys: |
+      #       tinytex-${{ runner.os }}-
 
-      - name: Install TinyTeX (if cache miss)
-        if: steps.tinytex-cache.outputs.cache-hit != 'true'
-        run: |
-          set -e
-          echo "Attempting TinyTeX install with mirror fallback logic"
-          mirrors=(
-            https://ctan.math.illinois.edu/systems/texlive/tlnet
-            https://mirrors.rit.edu/CTAN/systems/texlive/tlnet
-            https://mirror2.sandyriver.net/pub/ctan/systems/texlive/tlnet
-            https://ctan.math.washington.edu/tex-archive/systems/texlive/tlnet
-            https://mirrors.ibiblio.org/CTAN/systems/texlive/tlnet
-          )
-          success=0
-          for m in "${mirrors[@]}"; do
-            echo "\n--- Trying CTAN mirror: $m ---"
-            # The installer accepts --repository which is forwarded to install-tl
-            set +e
-            wget -qO- "https://yihui.org/tinytex/install-unx.sh" | sh -s - --admin --repository="$m" 2>&1 | tee tinytex-install.log
-            code=${PIPESTATUS[1]}
-            set -e
-            if [ $code -eq 0 ]; then
-              success=1
-              echo "TinyTeX installed using $m"
-              break
-            else
-              if grep -qi 'older than the local installation' tinytex-install.log; then
-                echo "Mirror $m is stale (older revision). Trying next mirror." >&2
-              else
-                echo "Mirror $m failed (exit $code). Trying next mirror." >&2
-              fi
-              rm -rf /tmp/texlive tinytex-install.log || true
-              sleep 5
-            fi
-          done
-          if [ "$success" -ne 1 ]; then
-            echo "All mirrors failed. Exiting." >&2
-            exit 1
-          fi
-          ~/.TinyTeX/bin/*/tlmgr path add || true
-          # Run tlmgr ops with mirror fallback (handles stale remote revision errors)
-          ops=(
-            "update --self"
-            # Include xetex collection explicitly so xelatex binary is present
-            "install collection-latexrecommended collection-fontsrecommended collection-xetex latexmk"
-          )
-          for op in "${ops[@]}"; do
-            op_success=0
-            for mirror in "${mirrors[@]}"; do
-              echo "\n--- tlmgr $op via $mirror ---"
-              set +e
-              ~/.TinyTeX/bin/*/tlmgr $op --repository "$mirror" 2>&1 | tee tlmgr-op.log
-              code=${PIPESTATUS[0]}
-              set -e
-              if [ $code -eq 0 ]; then
-                op_success=1
-                break
-              else
-                if grep -qi 'older than the local installation' tlmgr-op.log; then
-                  echo "Mirror $mirror stale for '$op'; trying next." >&2
-                else
-                  echo "tlmgr $op failed (exit $code) on $mirror; trying next." >&2
-                fi
-              fi
-            done
-            if [ $op_success -ne 1 ]; then
-              echo "All mirrors failed for tlmgr $op; continuing without success." >&2
-            fi
-          done
+      # - name: Install TinyTeX (if cache miss)
+      #   if: steps.tinytex-cache.outputs.cache-hit != 'true'
+      #   run: |
+      #     set -e
+      #     echo "Attempting TinyTeX install with mirror fallback logic"
+      #     mirrors=(
+      #       https://ctan.math.illinois.edu/systems/texlive/tlnet
+      #       https://mirrors.rit.edu/CTAN/systems/texlive/tlnet
+      #       https://mirror2.sandyriver.net/pub/ctan/systems/texlive/tlnet
+      #       https://ctan.math.washington.edu/tex-archive/systems/texlive/tlnet
+      #       https://mirrors.ibiblio.org/CTAN/systems/texlive/tlnet
+      #     )
+      #     success=0
+      #     for m in "${mirrors[@]}"; do
+      #       echo "\n--- Trying CTAN mirror: $m ---"
+      #       # The installer accepts --repository which is forwarded to install-tl
+      #       set +e
+      #       wget -qO- "https://yihui.org/tinytex/install-unx.sh" | sh -s - --admin --repository="$m" 2>&1 | tee tinytex-install.log
+      #       code=${PIPESTATUS[1]}
+      #       set -e
+      #       if [ $code -eq 0 ]; then
+      #         success=1
+      #         echo "TinyTeX installed using $m"
+      #         break
+      #       else
+      #         if grep -qi 'older than the local installation' tinytex-install.log; then
+      #           echo "Mirror $m is stale (older revision). Trying next mirror." >&2
+      #         else
+      #           echo "Mirror $m failed (exit $code). Trying next mirror." >&2
+      #         fi
+      #         rm -rf /tmp/texlive tinytex-install.log || true
+      #         sleep 5
+      #       fi
+      #     done
+      #     if [ "$success" -ne 1 ]; then
+      #       echo "All mirrors failed. Exiting." >&2
+      #       exit 1
+      #     fi
+      #     ~/.TinyTeX/bin/*/tlmgr path add || true
+      #     # Run tlmgr ops with mirror fallback (handles stale remote revision errors)
+      #     ops=(
+      #       "update --self"
+      #       # Include xetex collection explicitly so xelatex binary is present
+      #       "install collection-latexrecommended collection-fontsrecommended collection-xetex latexmk"
+      #     )
+      #     for op in "${ops[@]}"; do
+      #       op_success=0
+      #       for mirror in "${mirrors[@]}"; do
+      #         echo "\n--- tlmgr $op via $mirror ---"
+      #         set +e
+      #         ~/.TinyTeX/bin/*/tlmgr $op --repository "$mirror" 2>&1 | tee tlmgr-op.log
+      #         code=${PIPESTATUS[0]}
+      #         set -e
+      #         if [ $code -eq 0 ]; then
+      #           op_success=1
+      #           break
+      #         else
+      #           if grep -qi 'older than the local installation' tlmgr-op.log; then
+      #             echo "Mirror $mirror stale for '$op'; trying next." >&2
+      #           else
+      #             echo "tlmgr $op failed (exit $code) on $mirror; trying next." >&2
+      #           fi
+      #         fi
+      #       done
+      #       if [ $op_success -ne 1 ]; then
+      #         echo "All mirrors failed for tlmgr $op; continuing without success." >&2
+      #       fi
+      #     done
 
-      - name: Add TinyTeX to PATH
-        run: |
-          set -e
-          echo "Locating xelatex..."
-          XE=$(find ~/.TinyTeX/bin -name xelatex -type f | head -n1 || true)
-          if [ -z "$XE" ]; then
-            echo "xelatex not found. Listing TinyTeX bin tree for diagnostics:" >&2
-            find ~/.TinyTeX/bin -maxdepth 3 -type f -printf '%P\n' || true
-            echo "Attempting tlmgr install collection-xetex..." >&2
-            ~/.TinyTeX/bin/*/tlmgr install collection-xetex || true
-            XE=$(find ~/.TinyTeX/bin -name xelatex -type f | head -n1 || true)
-          fi
-          if [ -z "$XE" ]; then
-            echo "Still no xelatex; continuing (resume PDF generation may fail)." >&2
-          else
-            TEXBIN=$(dirname "$XE")
-            echo "$TEXBIN" >> $GITHUB_PATH
-            xelatex --version
-          fi
+      # - name: Add TinyTeX to PATH
+      #   run: |
+      #     set -e
+      #     echo "Locating xelatex..."
+      #     XE=$(find ~/.TinyTeX/bin -name xelatex -type f | head -n1 || true)
+      #     if [ -z "$XE" ]; then
+      #       echo "xelatex not found. Listing TinyTeX bin tree for diagnostics:" >&2
+      #       find ~/.TinyTeX/bin -maxdepth 3 -type f -printf '%P\n' || true
+      #       echo "Attempting tlmgr install collection-xetex..." >&2
+      #       ~/.TinyTeX/bin/*/tlmgr install collection-xetex || true
+      #       XE=$(find ~/.TinyTeX/bin -name xelatex -type f | head -n1 || true)
+      #     fi
+      #     if [ -z "$XE" ]; then
+      #       echo "Still no xelatex; continuing (resume PDF generation may fail)." >&2
+      #     else
+      #       TEXBIN=$(dirname "$XE")
+      #       echo "$TEXBIN" >> $GITHUB_PATH
+      #       xelatex --version
+      #     fi
 
-      - name: Install pandoc
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends pandoc
+      # - name: Install pandoc
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y --no-install-recommends pandoc
 
       - name: Run tests
         run: pnpm test
