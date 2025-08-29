@@ -34,6 +34,35 @@ sections:
     description: Comprehensive expertise across the full data science and ML engineering stack
     navigation-label: Skills
     enabled: true
+    categories:
+      - key: "languages-frameworks"
+        title: "Languages & Frameworks"
+        icon: "code"
+        keywords: ["Languages & Frameworks"]
+      - key: "machine-learning-ai"
+        title: "Machine Learning & AI"
+        icon: "brain"
+        keywords: ["Machine Learning & AI"]
+      - key: "llm-agents"
+        title: "LLM & Agents"
+        icon: "brain"
+        keywords: ["LLM & Agents"]
+      - key: "data-engineering-analytics"
+        title: "Data Engineering & Analytics"
+        icon: "layers3"
+        keywords: ["Data Engineering & Analytics"]
+      - key: "cloud-infrastructure"
+        title: "Cloud & Infrastructure"
+        icon: "cloud"
+        keywords: ["Cloud & Infrastructure"]
+      - key: "mlops-observability"
+        title: "MLOps & Observability"
+        icon: "wrench"
+        keywords: ["MLOps & Observability"]
+      - key: "analytics-bi"
+        title: "Analytics & BI"
+        icon: "layers3"
+        keywords: ["Analytics & BI"]
   awards:
     title: Awards
     navigation-label: Awards

@@ -1,5 +1,6 @@
 ---
 import PortfolioSections from '../components/PortfolioSections';
+import Home from '../components/Home.astro';
 import Layout from '../layouts/Layout.astro';
 import { loadAll } from '../lib/data';
 import '../styles/globals.css';
@@ -7,5 +8,6 @@ import '../styles/globals.css';
 const { config, resume } = loadAll();
 ---
 <Layout config={config} resume={resume}>
+  <Home basics={resume.basics} />
   <PortfolioSections client:visible resume={resume} config={config} />
 </Layout>

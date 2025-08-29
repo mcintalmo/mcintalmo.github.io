@@ -101,6 +101,13 @@ export type SectionKey =
   | "blog"
   | "contact";
 
+export interface SkillCategory {
+  key: string;
+  title: string;
+  icon: string;
+  keywords: string[];
+}
+
 export interface SectionConfig {
   title?: string;
   description?: string;
@@ -113,6 +120,8 @@ export interface SectionConfig {
   "certifications-visible-count"?: number;
   /** Number of project items to show by default. */
   "projects-visible-count"?: number;
+  /** Skill categories configuration for the skills section. */
+  categories?: SkillCategory[];
 }
 
 export interface SiteSectionsConfig {

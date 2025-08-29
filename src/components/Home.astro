@@ -1,0 +1,237 @@
+---
+import { Image } from 'astro:assets';
+import profileImg from '../assets/profile.png';
+import { Button } from './ui/button';
+import { IconGitHub } from './icons/GitHub';
+import { IconLinkedIn } from './icons/LinkedIn';
+import type { ResumeBasics } from '../lib/types';
+
+export interface Props {
+  basics?: ResumeBasics;
+}
+
+const { basics } = Astro.props;
+
+const name = basics?.name || '';
+const label = basics?.label || '';
+const yamlImage = basics?.image;
+const useYamlDirect = yamlImage && /^(https?:)?\/\//.test(yamlImage);
+const email = basics?.email;
+const profiles = basics?.profiles || [];
+const github = profiles.find((p) => (p.network || '').toLowerCase() === 'github');
+const linkedin = profiles.find((p) => (p.network || '').toLowerCase() === 'linkedin');
+
+// Basic sanitization: allow a small whitelist of tags and strip others
+const sanitizeSummary = (html?: string) => {
+  if (!html) return '';
+  const allowed = ['b', 'strong', 'i', 'em', 'p', 'br', 'ul', 'ol', 'li', 'code', 'span'];
+  return html
+    .replace(/<([^>\s/]+)([^>]*)>/g, (_full, tag) => {
+      const t = String(tag).toLowerCase();
+      return allowed.includes(t) ? `<${t}>` : '';
+    })
+    .replace(/<\/(?!b|strong|i|em|p|br|ul|ol|li|code|span)[^>]+>/g, '');
+};
+
+const safeSummary = sanitizeSummary(basics?.summary);
+---
+
+<section
+  id="home"
+  class="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-background via-background to-muted/30 pt-16"
+>
+  <div class="container mx-auto px-6 text-center relative z-10">
+    <div class="max-w-4xl mx-auto hero-content">
+      <!-- Professional Headshot -->
+      <div class="mb-12">
+        <div class="relative mx-auto w-48 h-48 sm:w-56 sm:h-56">
+          <!-- Pulse rings (expand + fade out) -->
+          <div
+            aria-hidden="true"
+            class="absolute inset-0 rounded-full border-2 border-primary/40 pulse-ring"
+          ></div>
+          <!-- Subtle static inner ring for definition -->
+          <div
+            class="absolute inset-2 rounded-full border border-primary/15 pointer-events-none"
+            aria-hidden="true"
+          ></div>
+
+          <!-- Profile image container -->
+          <div class="absolute inset-4 rounded-full overflow-hidden border-4 border-background shadow-2xl">
+            <div class="w-full h-full image-hover">
+              {useYamlDirect ? (
+                <img
+                  src={yamlImage!}
+                  width={224}
+                  height={224}
+                  loading="eager"
+                  fetchpriority="high"
+                  decoding="async"
+                  alt={name || 'Profile photo'}
+                  class="w-full h-full object-cover"
+                  sizes="(max-width: 640px) 192px, 224px"
+                />
+              ) : (
+                <Image
+                  src={profileImg}
+                  width={224}
+                  height={224}
+                  loading="eager"
+                  fetchpriority="high"
+                  decoding="async"
+                  alt={name || 'Profile photo'}
+                  class="w-full h-full object-cover"
+                  sizes="(max-width: 640px) 192px, 224px"
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div>
+        {name && (
+          <h1 class="text-4xl sm:text-5xl font-medium mb-6">
+            Hi, I'm <span class="text-primary font-bold">{name}</span>
+          </h1>
+        )}
+        {label && <h2 class="mb-8 text-muted-foreground">{label}</h2>}
+        <div>
+          {safeSummary && (
+            <div
+              class="prose prose-invert max-w-2xl mx-auto mb-8 text-muted-foreground"
+              set:html={safeSummary}
+            />
+          )}
+
+          <div class="flex justify-center gap-4 mb-12">
+            {email && (
+              <a href={`mailto:${email}`} aria-label="Email">
+                <Button className="flex items-center gap-2">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="20" height="16" x="2" y="4" rx="2"/>
+                    <path d="m22 7-10 5L2 7"/>
+                  </svg>
+                  Get In Touch
+                </Button>
+              </a>
+            )}
+            {github?.url && (
+              <a href={github.url} target="_blank" rel="noreferrer" aria-label="GitHub profile">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <IconGitHub className="w-4 h-4" />
+                  GitHub
+                </Button>
+              </a>
+            )}
+            {linkedin?.url && (
+              <a
+                href={linkedin.url}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="LinkedIn profile"
+              >
+                <Button variant="outline" className="flex items-center gap-2">
+                  <IconLinkedIn className="w-4 h-4" />
+                  LinkedIn
+                </Button>
+              </a>
+            )}
+          </div>
+
+          <div class="flex justify-center scroll-indicator">
+            <svg class="w-6 h-6 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-content {
+    opacity: 0;
+    transform: translateY(0);
+    animation: fadeInUp 1.2s ease-out forwards;
+  }
+
+  .pulse-ring {
+    animation: pulseRing 4s ease-out infinite;
+  }
+
+  .image-hover {
+    transition: transform 0.3s ease;
+  }
+
+  .image-hover:hover {
+    transform: scale(1.05);
+  }
+
+  .scroll-indicator {
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulseRing {
+    0% {
+      transform: scale(0.85);
+      opacity: 0.45;
+    }
+    100% {
+      transform: scale(1.25);
+      opacity: 0;
+    }
+  }
+
+  @keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0);
+    }
+    40% {
+      transform: translateY(-10px);
+    }
+    60% {
+      transform: translateY(-5px);
+    }
+  }
+
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-content {
+      animation: none;
+      opacity: 1;
+    }
+    
+    .pulse-ring {
+      animation: none;
+      opacity: 0.2;
+    }
+    
+    .scroll-indicator {
+      animation: none;
+    }
+    
+    .image-hover:hover {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // Handle reduced motion preferences for dynamic elements
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  
+  if (!prefersReducedMotion) {
+    // Add any additional client-side animations here if needed
+    console.log('Motion animations enabled');
+  }
+</script>

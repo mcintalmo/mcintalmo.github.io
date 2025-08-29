@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from './ui/button';
+import { Toggle } from './ui/toggle';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { useTheme } from './ThemeProvider';
-import { Menu, X, Sun, Moon, Monitor } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
 import type { ResumeBasics, SiteConfigRoot } from '../lib/types';
 
 function buildNav(config?: SiteConfigRoot) {
@@ -102,24 +103,11 @@ export function Navigation({ config, basics }: { config: SiteConfigRoot; basics?
   };
 
   const getThemeIcon = () => {
-    switch (theme) {
-      case 'dark':
-        return <Moon className="h-4 w-4" />;
-      case 'light':
-        return <Sun className="h-4 w-4" />;
-      default:
-        return <Monitor className="h-4 w-4" />;
-    }
+    return theme === 'dark' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />;
   };
 
-  const cycleTheme = () => {
-    if (theme === 'light') {
-      setTheme('dark');
-    } else if (theme === 'dark') {
-      setTheme('system');
-    } else {
-      setTheme('light');
-    }
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
   return (
@@ -182,23 +170,19 @@ export function Navigation({ config, basics }: { config: SiteConfigRoot; basics?
           <div className="flex items-center gap-3">
             {/* Theme Toggle */}
             <div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={cycleTheme}
-                className="relative overflow-hidden flex items-center gap-2"
-                title={`Theme: ${theme}. Click to cycle (light → dark → system)`}
+              <Toggle
+                pressed={theme === 'dark'}
+                onPressedChange={toggleTheme}
+                className="flex items-center gap-2 h-8 px-3"
+                title={`Theme: ${theme === 'dark' ? 'Dark' : 'Light'}. Click to toggle`}
                 aria-label="Toggle color theme"
               >
-                <div className="flex items-center gap-2">
-                  {getThemeIcon()}
-                  <span className="hidden sm:inline text-xs font-medium text-muted-foreground w-12 text-left select-none">
-                    {theme === 'light' && 'Light'}
-                    {theme === 'dark' && 'Dark'}
-                    {theme === 'system' && 'System'}
-                  </span>
-                </div>
-              </Button>
+                {getThemeIcon()}
+                <span className="hidden sm:inline text-xs font-medium text-muted-foreground w-12 text-left select-none">
+                  {theme === 'light' && 'Light'}
+                  {theme === 'dark' && 'Dark'}
+                </span>
+              </Toggle>
             </div>
 
             {/* Mobile Navigation */}
@@ -213,21 +197,19 @@ export function Navigation({ config, basics }: { config: SiteConfigRoot; basics?
                   <div className="flex items-center justify-between mb-8">
                     <span className="text-lg font-medium">Menu</span>
                     <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={cycleTheme}
-                        className="flex items-center gap-2"
-                        title={`Theme: ${theme}. Click to cycle (light → dark → system)`}
+                      <Toggle
+                        pressed={theme === 'dark'}
+                        onPressedChange={toggleTheme}
+                        className="flex items-center gap-2 h-8 px-3"
+                        title={`Theme: ${theme === 'dark' ? 'Dark' : 'Light'}. Click to toggle`}
                         aria-label="Toggle color theme"
                       >
                         {getThemeIcon()}
                         <span className="text-xs font-medium text-muted-foreground w-12 inline-block text-left select-none">
                           {theme === 'light' && 'Light'}
                           {theme === 'dark' && 'Dark'}
-                          {theme === 'system' && 'System'}
                         </span>
-                      </Button>
+                      </Toggle>
                       <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
                         <X className="h-5 w-5" />
                       </Button>

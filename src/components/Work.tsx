@@ -6,7 +6,7 @@ import { Button } from './ui/button';
 import { Collapsible, CollapsibleContent } from './ui/collapsible';
 import { LoadingSkeleton } from './ui/loading-skeleton';
 import { useTouchGestures } from './hooks/useTouchGestures';
-import { Calendar, MapPin, Download, ChevronDown, Trophy, Target, Tag } from 'lucide-react';
+import { Calendar, MapPin, Download, ChevronDown, Trophy, Tag } from 'lucide-react';
 import { SectionAnchor } from './SectionAnchor';
 
 import type { ResumeWork, SiteConfigRoot } from '../lib/types';
@@ -156,10 +156,7 @@ export function Work({ work, config }: Props) {
 
             {annotatedExperiences.map((exp: any, index: number) => {
               const hasDetails =
-                (Array.isArray(exp.highlights) && exp.highlights.length > 0) ||
-                (Array.isArray((exp as any).responsibilities) &&
-                  (exp as any).responsibilities.length > 0) ||
-                !!exp.summary;
+                (Array.isArray(exp.highlights) && exp.highlights.length > 0) || !!exp.summary;
 
               const d = (exp as any)._dates;
               const period = `${d.start || ''}${
@@ -387,27 +384,6 @@ function MobileExperienceCard({
                         </ul>
                       </div>
                     )}
-                    {(exp as any).responsibilities && (exp as any).responsibilities.length > 0 && (
-                      <div className="space-y-2">
-                        <h4 className="flex items-center gap-2 text-sm font-medium">
-                          <Target className="w-4 h-4 text-primary" />
-                          Responsibilities
-                        </h4>
-                        <ul className="space-y-1 ml-6">
-                          {(exp as any).responsibilities.map((r: string, i: number) => (
-                            <motion.li
-                              key={i}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.3, delay: i * 0.06 }}
-                              className="text-sm text-muted-foreground list-disc"
-                            >
-                              {r}
-                            </motion.li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
                     {exp.summary && (
                       <div className="space-y-2">
                         <h4 className="flex items-center gap-2 text-sm font-medium">Summary</h4>
@@ -558,27 +534,6 @@ function DesktopExperienceCard({
                             className="text-sm text-muted-foreground list-disc"
                           >
                             {h}
-                          </motion.li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {(exp as any).responsibilities && (exp as any).responsibilities.length > 0 && (
-                    <div className="space-y-2">
-                      <h4 className="flex items-center gap-2 text-sm font-medium">
-                        <Target className="w-4 h-4 text-primary" />
-                        Responsibilities
-                      </h4>
-                      <ul className="space-y-1 ml-6">
-                        {(exp as any).responsibilities.map((r: string, i: number) => (
-                          <motion.li
-                            key={i}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.3, delay: i * 0.06 }}
-                            className="text-sm text-muted-foreground list-disc"
-                          >
-                            {r}
                           </motion.li>
                         ))}
                       </ul>

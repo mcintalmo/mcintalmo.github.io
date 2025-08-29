@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, useAnimation } from "framer-motion";
+import { useEffect, useRef, useState } from 'react';
+import { motion, useAnimation, type Variants } from 'framer-motion';
 
 export function useScrollAnimation(threshold = 0.1) {
   const controls = useAnimation();
@@ -11,7 +11,7 @@ export function useScrollAnimation(threshold = 0.1) {
       ([entry]) => {
         if (entry.isIntersecting && !isInView) {
           setIsInView(true);
-          controls.start("visible");
+          controls.start('visible');
         }
       },
       { threshold }
@@ -35,7 +35,7 @@ export function useScrollAnimation(threshold = 0.1) {
 // Animated section wrapper component
 export function AnimatedSection({
   children,
-  className = "",
+  className = '',
   delay = 0,
   ...props
 }: {
@@ -46,7 +46,7 @@ export function AnimatedSection({
 }) {
   const { ref, controls } = useScrollAnimation();
 
-  const variants = {
+  const variants: Variants = {
     hidden: {
       opacity: 0,
       y: 50,
@@ -59,7 +59,7 @@ export function AnimatedSection({
       transition: {
         duration: 0.8,
         delay,
-        ease: "easeInOut",
+        ease: [0.4, 0.0, 0.2, 1],
       },
     },
   };
@@ -81,7 +81,7 @@ export function AnimatedSection({
 // Simple animated section with just slide and fade - less busy
 export function SimpleAnimatedSection({
   children,
-  className = "",
+  className = '',
   delay = 0,
   ...props
 }: {
@@ -92,7 +92,7 @@ export function SimpleAnimatedSection({
 }) {
   const { ref, controls } = useScrollAnimation();
 
-  const variants = {
+  const variants: Variants = {
     hidden: {
       opacity: 0,
       y: 30,
@@ -103,7 +103,7 @@ export function SimpleAnimatedSection({
       transition: {
         duration: 0.6,
         delay,
-        ease: "easeInOut",
+        ease: [0.4, 0.0, 0.2, 1],
       },
     },
   };

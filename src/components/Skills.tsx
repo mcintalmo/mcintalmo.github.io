@@ -1,11 +1,11 @@
-import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Badge } from "./ui/badge";
-import { useScrollAnimation } from "./hooks/useScrollAnimation";
-import type { ResumeSkill, SiteConfigRoot } from "../lib/types";
-import type { LucideIcon } from "lucide-react";
-import { Code, Brain, Cloud, Wrench, Layers3 } from "lucide-react";
-import { SectionAnchor } from "./SectionAnchor";
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Badge } from './ui/badge';
+import { useScrollAnimation } from './hooks/useScrollAnimation';
+import type { ResumeSkill, SiteConfigRoot } from '../lib/types';
+import type { LucideIcon } from 'lucide-react';
+import { Code, Brain, Cloud, Wrench, Layers3 } from 'lucide-react';
+import { SectionAnchor } from './SectionAnchor';
 
 // Mapping of (normalized) level -> filled slot count
 const skillLevels: Record<string, number> = {
@@ -28,16 +28,12 @@ function normalizeLevel(level?: string): number | null {
 function SkillSlots({ level }: { level?: string }) {
   const filled = normalizeLevel(level) ?? 0;
   return (
-    <div
-      className="flex gap-1"
-      aria-label={level ? `Level: ${level}` : undefined}
-    >
+    <div className="flex gap-1" aria-label={level ? `Level: ${level}` : undefined}>
       {Array.from({ length: MAX_SLOTS }).map((_, i) => (
         <div
           key={i}
           className={
-            "h-1.5 w-4 rounded-full transition-colors " +
-            (i < filled ? "bg-primary" : "bg-muted")
+            'h-1.5 w-4 rounded-full transition-colors ' + (i < filled ? 'bg-primary' : 'bg-muted')
           }
         />
       ))}
@@ -56,21 +52,85 @@ function chooseIcon(label: string): LucideIcon {
   const l = label.toLowerCase();
   if (/(language|framework)/.test(l)) return Code;
   if (/(machine learning|ml|ai|deep|nlp|model)/.test(l)) return Brain;
-  if (/(data engineering|data\b|pipeline|etl|observability)/.test(l))
-    return Layers3;
+  if (/(data engineering|data\b|pipeline|etl|observability)/.test(l)) return Layers3;
   if (/(cloud|infrastructure)/.test(l)) return Cloud;
   if (/(tool|productivity|git)/.test(l)) return Wrench;
   return Wrench;
 }
 
-// Build categories dynamically: first keyword of each skill (or "Other" if none)
-function buildCategories(skills: ResumeSkill[]): SkillCategory[] {
+function getIconByName(iconName: string): LucideIcon {
+  const iconMap: Record<string, LucideIcon> = {
+    code: Code,
+    brain: Brain,
+    layers3: Layers3,
+    cloud: Cloud,
+    wrench: Wrench,
+  };
+  return iconMap[iconName.toLowerCase()] || Wrench;
+}
+
+// Build categories from config or fallback to keyword-based grouping
+function buildCategories(skills: ResumeSkill[], config: SiteConfigRoot): SkillCategory[] {
+  const configCategories = config.sections?.skills?.categories;
+
+  if (configCategories && Array.isArray(configCategories)) {
+    // Use configured categories
+    const categoryMap: Record<string, SkillCategory> = {};
+    const order: string[] = [];
+
+    // Initialize categories from config
+    for (const configCat of configCategories) {
+      const category: SkillCategory = {
+        key: configCat.key,
+        title: configCat.title,
+        icon: getIconByName(configCat.icon),
+        skills: [],
+      };
+      categoryMap[configCat.key] = category;
+      order.push(configCat.key);
+    }
+
+    // Assign skills to categories based on keywords
+    for (const skill of skills) {
+      const skillKeywords = skill.keywords || [];
+      let assigned = false;
+
+      // Find matching category by checking if skill keywords match any config category keywords
+      for (const configCat of configCategories) {
+        const categoryKeywords = configCat.keywords || [];
+        if (skillKeywords.some((sk) => categoryKeywords.includes(sk))) {
+          categoryMap[configCat.key].skills.push(skill);
+          assigned = true;
+          break;
+        }
+      }
+
+      // If no match found, assign to first "Other" category or create one
+      if (!assigned) {
+        const otherKey = 'other';
+        if (!categoryMap[otherKey]) {
+          categoryMap[otherKey] = {
+            key: otherKey,
+            title: 'Other',
+            icon: chooseIcon('Other'),
+            skills: [],
+          };
+          order.push(otherKey);
+        }
+        categoryMap[otherKey].skills.push(skill);
+      }
+    }
+
+    return order.map((k) => categoryMap[k]).filter((cat) => cat.skills.length > 0);
+  }
+
+  // Fallback to original keyword-based grouping
   const order: string[] = [];
   const map: Record<string, SkillCategory> = {};
   for (const skill of skills) {
-    const rawLabel = (skill.keywords && skill.keywords[0]) || "Other";
+    const rawLabel = (skill.keywords && skill.keywords[0]) || 'Other';
     const label = rawLabel.trim();
-    const key = label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const key = label.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     if (!map[key]) {
       map[key] = { key, title: label, icon: chooseIcon(label), skills: [] };
       order.push(key);
@@ -81,20 +141,11 @@ function buildCategories(skills: ResumeSkill[]): SkillCategory[] {
 }
 
 // With single-keyword categorization we have no extra keywords; keep function for future extension.
-function deriveTools(
-  _skills: ResumeSkill[],
-  _categorized: SkillCategory[]
-): string[] {
+function deriveTools(_skills: ResumeSkill[], _categorized: SkillCategory[]): string[] {
   return [];
 }
 
-function CategoryCard({
-  category,
-  index,
-}: {
-  category: SkillCategory;
-  index: number;
-}) {
+function CategoryCard({ category, index }: { category: SkillCategory; index: number }) {
   const { ref, controls } = useScrollAnimation();
   return (
     <motion.div
@@ -114,7 +165,7 @@ function CategoryCard({
           },
         },
       }}
-      style={{ perspective: "1000px" }}
+      style={{ perspective: '1000px' }}
     >
       {/* Remove h-full so cards shrink to content; grid will no longer stretch items */}
       <Card>
@@ -127,7 +178,7 @@ function CategoryCard({
         <CardContent className="space-y-4">
           {category.skills.map((skill, skillIndex) => (
             <motion.div
-              key={(skill.name || "skill") + skillIndex}
+              key={(skill.name || 'skill') + skillIndex}
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{
@@ -137,10 +188,7 @@ function CategoryCard({
               viewport={{ once: true }}
             >
               <div className="flex items-center gap-3 py-0.5">
-                <span
-                  className="text-sm font-medium flex-1 truncate"
-                  title={skill.name}
-                >
+                <span className="text-sm font-medium flex-1 truncate" title={skill.name}>
                   {skill.name}
                 </span>
                 <div className="w-28 flex justify-start">
@@ -162,14 +210,8 @@ function CategoryCard({
   );
 }
 
-export function Skills({
-  skills,
-  config,
-}: {
-  skills: ResumeSkill[];
-  config: SiteConfigRoot;
-}) {
-  const categories = buildCategories(skills);
+export function Skills({ skills, config }: { skills: ResumeSkill[]; config: SiteConfigRoot }) {
+  const categories = buildCategories(skills, config);
   const tools = deriveTools(skills, categories);
 
   return (
@@ -184,7 +226,7 @@ export function Skills({
           className="text-center mb-12 group"
         >
           <h2 className="mb-4 inline-flex items-center gap-2">
-            {config.sections?.skills?.title || "Skills & Technologies"}
+            {config.sections?.skills?.title || 'Skills & Technologies'}
             <SectionAnchor sectionId="skills" />
           </h2>
           {config.sections?.skills?.description && (
