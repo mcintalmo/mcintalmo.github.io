@@ -23,7 +23,7 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-
+# Latex intermediate files
 *.out
 *.aux
 *.log

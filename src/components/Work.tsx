@@ -8,6 +8,8 @@ import { LoadingSkeleton } from './ui/loading-skeleton';
 import { useTouchGestures } from './hooks/useTouchGestures';
 import { Calendar, MapPin, Download, ChevronDown, Trophy, Tag } from 'lucide-react';
 import { SectionAnchor } from './SectionAnchor';
+import { Markdown } from './Markdown';
+import { mdToInlineHtml } from '../lib/markdown';
 
 import type { ResumeWork, SiteConfigRoot } from '../lib/types';
 import { formatRange, parseDate } from '../lib/mappers';
@@ -326,7 +328,11 @@ function MobileExperienceCard({
               )}
             </CardHeader>
             <CardContent>
-              {exp.description && <p className="mb-4 text-muted-foreground">{exp.description}</p>}
+              {exp.description && (
+                <div className="mb-4 text-muted-foreground">
+                  <Markdown>{exp.description}</Markdown>
+                </div>
+              )}
               {hasDetails && (
                 <div className="w-full flex items-center justify-between p-0 h-auto">
                   <span className="text-sm text-primary group-hover:text-primary/80 transition-colors">
@@ -378,7 +384,7 @@ function MobileExperienceCard({
                               transition={{ duration: 0.3, delay: i * 0.08 }}
                               className="text-sm text-muted-foreground list-disc"
                             >
-                              {h}
+                              <span dangerouslySetInnerHTML={{ __html: mdToInlineHtml(h) }} />
                             </motion.li>
                           ))}
                         </ul>
@@ -387,9 +393,9 @@ function MobileExperienceCard({
                     {exp.summary && (
                       <div className="space-y-2">
                         <h4 className="flex items-center gap-2 text-sm font-medium">Summary</h4>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          {exp.summary}
-                        </p>
+                        <div className="text-sm text-muted-foreground leading-relaxed">
+                          <Markdown>{exp.summary}</Markdown>
+                        </div>
                       </div>
                     )}
                     {exp.keywords && exp.keywords.length > 0 && (
@@ -533,7 +539,7 @@ function DesktopExperienceCard({
                             transition={{ duration: 0.3, delay: i * 0.08 }}
                             className="text-sm text-muted-foreground list-disc"
                           >
-                            {h}
+                            <span dangerouslySetInnerHTML={{ __html: mdToInlineHtml(h) }} />
                           </motion.li>
                         ))}
                       </ul>

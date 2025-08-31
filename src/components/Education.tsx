@@ -8,6 +8,7 @@ import { GraduationCap, Award, BookOpen, Trophy, Calendar, ExternalLink } from '
 import { SectionAnchor } from './SectionAnchor';
 import type { ResumeCertificate, ResumeEducation, SiteConfigRoot } from '../lib/types';
 import { formatRange, parseDate } from '../lib/mappers';
+import { mdToInlineHtml } from '../lib/markdown';
 
 function EducationItem({
   edu,
@@ -80,7 +81,7 @@ function EducationItem({
                     transition={{ duration: 0.35, delay: 0.15 + i * 0.07 }}
                     className="text-sm text-muted-foreground list-disc"
                   >
-                    {h}
+                    <span dangerouslySetInnerHTML={{ __html: mdToInlineHtml(h) }} />
                   </motion.li>
                 ))}
               </ul>

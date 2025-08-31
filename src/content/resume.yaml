@@ -5,8 +5,8 @@ basics:
   email: mcintalmo@gmail.com
   url: https://www.alexandermcintosh.com
   summary: >
-    Towards delivering <b>interpretable machine learning</b>,
-    <b>explainable AI</b>, and <b>observable LLM networks</b> reliably at scale.
+    Towards delivering **interpretable machine learning**,
+    **explainable AI**, and **observable LLM networks** reliably at scale.
   location:
     city: Minneapolis
     countryCode: US

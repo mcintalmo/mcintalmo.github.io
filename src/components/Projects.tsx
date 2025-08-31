@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { ExternalLink } from 'lucide-react';
@@ -7,6 +7,7 @@ import { IconGitHub } from './icons/GitHub';
 import { SectionAnchor } from './SectionAnchor';
 import type { ResumeProject, SiteConfigRoot } from '../lib/types';
 import { useState } from 'react';
+import Markdown from './Markdown';
 
 export function Projects({
   projects,
@@ -80,7 +81,11 @@ export function Projects({
                       <h3>{project.name}</h3>
                     </CardTitle>
                     {project.description && (
-                      <CardDescription>{project.description}</CardDescription>
+                      <div className="text-muted-foreground">
+                        <Markdown className="prose prose-invert prose-sm">
+                          {project.description}
+                        </Markdown>
+                      </div>
                     )}
                   </CardHeader>
                   <CardContent className="space-y-4">

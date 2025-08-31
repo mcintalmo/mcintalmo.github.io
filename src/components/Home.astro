@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { IconGitHub } from './icons/GitHub';
 import { IconLinkedIn } from './icons/LinkedIn';
 import type { ResumeBasics } from '../lib/types';
+import { Markdown } from './Markdown';
 
 export interface Props {
   basics?: ResumeBasics;
@@ -21,19 +22,7 @@ const profiles = basics?.profiles || [];
 const github = profiles.find((p) => (p.network || '').toLowerCase() === 'github');
 const linkedin = profiles.find((p) => (p.network || '').toLowerCase() === 'linkedin');
 
-// Basic sanitization: allow a small whitelist of tags and strip others
-const sanitizeSummary = (html?: string) => {
-  if (!html) return '';
-  const allowed = ['b', 'strong', 'i', 'em', 'p', 'br', 'ul', 'ol', 'li', 'code', 'span'];
-  return html
-    .replace(/<([^>\s/]+)([^>]*)>/g, (_full, tag) => {
-      const t = String(tag).toLowerCase();
-      return allowed.includes(t) ? `<${t}>` : '';
-    })
-    .replace(/<\/(?!b|strong|i|em|p|br|ul|ol|li|code|span)[^>]+>/g, '');
-};
-
-const safeSummary = sanitizeSummary(basics?.summary);
+const summary = basics?.summary;
 ---
 
 <section
@@ -98,11 +87,10 @@ const safeSummary = sanitizeSummary(basics?.summary);
         )}
         {label && <h2 class="mb-8 text-muted-foreground">{label}</h2>}
         <div>
-          {safeSummary && (
-            <div
-              class="prose prose-invert max-w-2xl mx-auto mb-8 text-muted-foreground"
-              set:html={safeSummary}
-            />
+          {summary && (
+            <div class="max-w-2xl mx-auto mb-8 text-muted-foreground">
+              <Markdown className="prose prose-invert prose-sm" content={summary} />
+            </div>
           )}
 
           <div class="flex justify-center gap-4 mb-12">
