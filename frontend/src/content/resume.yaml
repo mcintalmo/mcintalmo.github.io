@@ -1,0 +1,316 @@
+basics:
+  name: Alex McIntosh
+  label: Data Scientist & AI/ML Engineer
+  image: /assets/profile.png
+  email: mcintalmo@gmail.com
+  url: https://www.alexandermcintosh.com
+  summary: >
+    Data Scientist and AI/ML Engineer specializing in production RAG and LLM
+    architectures. Passionate about evaluation rigor, observable AI, and
+    translating complex stakeholder requirements into secure, reliable
+    enterprise solutions within the healthcare sector.
+  location:
+    city: Minneapolis
+    countryCode: US
+    region: MN
+  profiles:
+    - network: GitHub
+      username: mcintalmo
+      url: https://github.com/mcintalmo
+    - network: LinkedIn
+      username: mcintalmo
+      url: https://linkedin.com/in/mcintalmo
+
+work:
+  - name: Optum
+    location: Eden Prarie, MN
+    position: AI/ML Engineer Associate
+    startDate: 2025-09
+    description: Architecting and building enterprise-scale agentic AI systems with
+      end-to-end observability, enabling AI tools for 400K+ employees.
+    highlights:
+      - Productionalized a multi-agent system and voice AI frontend, optimizing
+        performance, observability, and cost
+      - Engineered automated performance evaluation for LLM agents and RAG
+        pipelines
+      - Delivered an agentic solution to automate employee HR tasks using ADK,
+        A2A, MCP, LiveKit, and Google Gemini
+
+  - name: Optum
+    location: Eden Prairie, MN
+    position: Data Engineer Associate
+    startDate: 2024-08
+    endDate: 2025-08
+    description: >
+      Architecting and deploying enterprise-scale agentic AI systems with
+      end-to-end observability, enhancing productivity for over 400K employees
+    highlights:
+      - Automated LLM and RAG evals with Arize AI to monitor consistency,
+        faithfulness, relevance, and harmfulness
+      - Refactored Fabric Spark ETL into reusable patterns, cutting failure
+        rates from 12-15% to <1%
+      - Instrumented agents with OpenTelemetry, collaborating with Security to
+        ensure compliance and observability
+    keywords:
+      - Microsoft Fabric
+      - Azure AI Foundry
+      - ADK
+      - MCP
+      - A2A
+      - RAG
+
+  - name: Optum
+    location: Eden Prairie, MN
+    position: Data Science and Engineering Associate
+    startDate: 2023-07
+    endDate: 2024-07
+    description: >
+      Developed and operationalized ML models and multi-agent systems to drive
+      analytics and improve enterprise decision-making.
+    highlights:
+      - Trained a state-of-the-art time-series forecasting model to detect
+        operational anomalies with >90% precision.
+      - Orchestrated multi-agent AI systems to perform statistical analysis
+        dashboard generation
+      - Delivered a conversational AI self-service analytics solution
+      - Enabled observability into millions of updating claims records with
+        Kafka and MLFlow
+      - Evaluated ML models for accuracy, bias, and operational readiness
+    keywords:
+      - Azure Web Apps
+      - Azure Bots
+      - Kafka
+      - Snowflake
+
+  - name: Constelleum LLC
+    position: Software Engineer
+    startDate: 2020-03
+    endDate: 2023-07
+    description: >
+      Designed and developed a physically accessible multiplayer online video
+      game
+    highlights:
+      - Engineered adaptive control schemes enabling inclusive gameplay
+      - Automated client/server test pipelines
+      - Analyzed event log data to inform balance and engagement metrics
+    keywords:
+      - Godot
+
+education:
+  - institution: Georgia Institute of Technology
+    studyType: Master of Science
+    area: Computer Science
+    endDate: 2027-07
+    achievements:
+      - Machine Learning specialization
+    courses:
+      - Knowledge Based Artificial Intelligence
+      - Deep Learning
+      - Reinforcement Learning
+
+  - institution: MITx
+    studyType: MicroMasters
+    area: Statistics and Data Science
+    endDate: 2023-12
+    url: https://credentials.edx.org/credentials/789f9b74a86c4066ae992c7a0dbde374/
+    courses:
+      - Data Analysis
+      - Machine Learning
+      - Statistics and Probability
+
+  - institution: Saint John's University
+    studyType: Bachelor of Arts
+    area: Physics
+    endDate: 2021-05
+    achievements:
+      - Minored in Music and Mathematics
+      - Phi Beta Kappa Honor Society Member
+      - Men's Chorus President
+    courses:
+      - Quantum Mechanics
+      - Thermodynamics
+      - Statistical Mechanics
+      - Special Relativity
+      - Mathematical Modeling
+      - Linear Algebra
+
+certificates:
+  - name: "Microsoft Certified: Fabric Data Engineer Associate"
+    date: 2025-06-20
+    url: https://learn.microsoft.com/api/credentials/share/en-us/AlexanderMcIntosh/B329C5FB0DC89A86?sharingId=47860C4D3B6D917C
+    issuer: Microsoft
+    keywords:
+      - Data Engineering
+      - Microsoft Fabric
+      - Data Warehousing
+      - Data Lakes
+      - PySpark
+  - name: "Microsoft Certified: Azure Fundamentals"
+    date: 2024-08-16
+    url: https://learn.microsoft.com/api/credentials/share/en-us/AlexanderMcIntosh/7594860F19AD6159?sharingId=47860C4D3B6D917C
+    issuer: Microsoft
+    keywords:
+      - Cloud Architecture
+      - Microsoft Azure Services
+  - name: "Microsoft Certified: Azure Data Scientist Associate"
+    date: 2023-01-18
+    url: https://learn.microsoft.com/api/credentials/share/en-us/AlexanderMcIntosh/363C2EF444B68303?sharingId=47860C4D3B6D917C
+    issuer: Microsoft
+    keywords:
+      - Azure Machine Learning
+      - MLFlow Experiments
+      - Deploying Models
+      - Monitoring Models
+  - name: Data Science Professional Certificate
+    issuer: HarvardX
+    date: 2022-12-09
+    url: https://credentials.edx.org/credentials/e50364179bf9497892cdc70d09c9247d/
+    keywords:
+      - R
+      - Recommendation systems
+      - Random Forests
+      - Regression analysis
+      - Data visualization
+  - name: Applied Data Science with Python Specialization
+    issuer: University of Michigan
+    date: 2022-11-21
+    url: https://coursera.org/share/279d87f30cdf3353fedd923e8d240f93
+    keywords:
+      - Python
+      - Pandas
+      - Matplotlib
+      - Scikit-learn
+      - Text Mining
+      - Social Network Analysis
+  - name: Mathematics for Machine Learning
+    issuer: Imperial College London
+    date: 2023-01-27
+    url: https://coursera.org/share/48404e16c39a67cfd03351768fc7bb63
+    keywords:
+      - Linear Algebra
+      - Multivariate Calculus
+      - Principal Component Analysis
+  - name: SQL for Data Science
+    issuer: University of California, Davis
+    date: 2023-02-05
+    url: https://coursera.org/share/37792a03711c2c4551eb22eb3ce4b56c
+    keywords:
+      - SQL
+      - SQL Spark
+  - name: "CS50P: Introduction to Programming with Python"
+    issuer: Harvard University
+    date: 2023-04-25
+    url: https://cs50.harvard.edu/certificates/31b50af2-7104-4023-b492-22d05be4f1e9
+    keywords:
+      - Python
+  - name: "CS50AI: Introduction to Artificial Intelligence with Python"
+    issuer: Harvard University
+    date: 2023-08-02
+    url: https://cs50.harvard.edu/certificates/470c7962-8e89-426c-af19-9620db4217c8
+    keywords:
+      - Python
+      - Artificial Intelligence
+      - Machine Learning
+  - name: "CS50SQL: Introduction to Databases with SQL"
+    issuer: Harvard University
+    date: 2023-08-02
+    url: https://certificates.cs50.io/2d3266f9-880d-43db-a024-4f73f6768908
+    keywords:
+      - SQL
+      - Databases
+
+projects:
+  - name: Personal Portfolio
+    description: >
+      Configuration-driven portfolio website and PDF resume generator.
+    highlights:
+      - Automated build pipeline with GitHub Actions for multi-format export.
+
+    keywords: [ Context Engineering, GitHub Actions, HTML, CSS, TypeScript ]
+    url: https://www.alexandermcintosh.com/
+    codeUrl: https://github.com/mcintalmo/alexandermcintosh.com
+    type: Web
+  - name: SimLM Review - CS7643 Final Project
+    description: >
+      Simulation-guided large language model for enhanced context engineering
+    highlights: []
+    keywords: [ Python, Large Language Models, Context Engineering ]
+    codeUrl: https://github.com/alejandro-rojas-24/CS7643-DL-Final
+    type: AI
+  - name: ARC AGI
+    description: >
+      Computer-vision enhanced agent-based solver for the ARC AGI challenge, a
+      benchmark for artificial general intelligence
+    highlights: []
+    keywords: [ Python, AI, Computer Vision ]
+    type: AI
+
+skills:
+  - name: Python
+    level: Expert
+    keywords: [ Languages & Frameworks ]
+  - name: PySpark
+    level: Advanced
+    keywords: [ Languages & Frameworks ]
+  - name: SQL
+    level: Expert
+    keywords: [ Languages & Frameworks ]
+  - name: R
+    level: Advanced
+    keywords: [ Languages & Frameworks ]
+  - name: PyTorch
+    level: Advanced
+    keywords: [ Machine Learning & AI ]
+  - name: TensorFlow
+    level: Intermediate
+    keywords: [ Machine Learning & AI ]
+
+  - name: MLFlow
+    level: Advanced
+    keywords: [ Machine Learning & AI ]
+  - name: Model Context Protocol (MCP)
+    level: Advanced
+    keywords: [ LLM & Agents ]
+  - name: Agent Development Kit (ADK)
+    level: Advanced
+    keywords: [ LLM & Agents ]
+  - name: Agent-to-Agent (A2A) Protocol
+    level: Advanced
+    keywords: [ LLM & Agents ]
+  - name: Retrieval-Augmented Generation (RAG)
+    level: Expert
+    keywords: [ LLM & Agents ]
+
+  - name: Microsoft Fabric
+    level: Expert
+    keywords: [ Data Engineering & Analytics ]
+  - name: Data Bricks
+    level: Advanced
+    keywords: [ Data Engineering & Analytics ]
+  - name: Delta Lake
+    level: Expert
+    keywords: [ Data Engineering & Analytics ]
+  - name: Vector Databases (ChromaDB)
+    level: Advanced
+    keywords: [ Data Engineering & Analytics, LLM & Agents ]
+  - name: Git
+    level: Advanced
+    keywords: [ Cloud & Infrastructure ]
+  - name: Docker
+    level: Expert
+    keywords: [ Cloud & Infrastructure ]
+  - name: Microsoft Azure
+    level: Intermediate
+    keywords: [ Cloud & Infrastructure ]
+  - name: Google Cloud Platform (GCP)
+    level: Intermediate
+    keywords: [ Cloud & Infrastructure ]
+  - name: OpenTelemetry
+    level: Advanced
+    keywords: [ MLOps & Observability ]
+  - name: LiveKit
+    level: Advanced
+    keywords: [ LLM & Agents ]
+  - name: Agent-User Interaction (AG-UI) Protocol
+    level: Advanced
+    keywords: [ LLM & Agents ]

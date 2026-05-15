@@ -37,7 +37,7 @@ jobs:
       #   uses: actions/cache@v4
       #   with:
       #     path: ~/.TinyTeX
-      #     key: tinytex-${{ runner.os }}-${{ hashFiles('resume-generator/templates/*.tex') }}
+      #     key: tinytex-${{ runner.os }}-${{ hashFiles('tools/pdf_generator/templates/*.tex') }}
       #     restore-keys: |
       #       tinytex-${{ runner.os }}-
 

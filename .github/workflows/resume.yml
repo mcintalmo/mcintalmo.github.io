@@ -1,0 +1,71 @@
+name: Build Resume
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "resume/resume.yaml"
+      - "resume/themes/**"
+      - "resume/convert/**"
+      - "backend/resume/**"
+  workflow_dispatch: {}   # allow manual trigger from the Actions tab
+
+concurrency:
+  group: build-resume-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build resume artifacts
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write   # needed to push committed artifacts back
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Fetch depth >1 so we can commit back without detached HEAD issues
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: "10"
+
+      - name: Install Node dependencies (converter)
+        run: pnpm install --frozen-lockfile
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Python dependencies
+        working-directory: backend
+        run: uv sync --frozen --package resume
+
+      - name: Build resume artifacts
+        working-directory: backend
+        run: uv run --package resume --no-sync python -m resume.build
+
+      - name: Commit artifacts
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add \
+            frontend/public/resume.pdf \
+            frontend/public/resume.md \
+            frontend/public/resume.json \
+            frontend/public/resume.yaml \
+            backend/agent/src/agent/portfolio_content.json
+          # Only commit if there are staged changes
+          git diff --staged --quiet || \
+            git commit -m "chore(resume): rebuild artifacts [skip ci]"
+          git push

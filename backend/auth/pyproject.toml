@@ -1,0 +1,14 @@
+[project]
+name = "auth"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi>=0.111.0",
+    "uvicorn>=0.30.0",
+    "livekit-api>=0.6.0",
+    "pydantic-settings>=2.0.0",
+    "common",
+]
+
+[tool.uv.sources]
+common = { workspace = true }

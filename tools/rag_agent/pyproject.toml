@@ -1,0 +1,21 @@
+[project]
+name = "rag-agent"
+version = "0.1.0"
+description = "A FastAPI application serving the Candidate QA Agent via LiveKit."
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pyyaml",
+    "livekit-agents",
+    "livekit",
+    "livekit-api",
+    "livekit-plugins-openai",
+    "livekit-plugins-silero",
+    "livekit-plugins-turn-detector",
+    "python-dotenv",
+    "wyoming"
+]
+
+[tool.uv]
+package = false

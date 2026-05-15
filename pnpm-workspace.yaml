@@ -1,4 +1,5 @@
 packages:
-  - .
+  - frontend
+  - resume/convert
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'

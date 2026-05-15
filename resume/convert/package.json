@@ -1,0 +1,16 @@
+{
+  "name": "@portfolio/resume-convert",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Convert JSON Resume YAML to RenderCV YAML for PDF generation",
+  "main": "convert.mjs",
+  "bin": {
+    "resume-convert": "convert.mjs"
+  },
+  "scripts": {
+    "convert": "node convert.mjs"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  }
+}

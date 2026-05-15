@@ -1,0 +1,48 @@
+services:
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+  agent:
+    build:
+      context: ./backend
+      dockerfile: ./agent/Dockerfile
+    
+  auth:
+    build:
+      context: ./backend
+      dockerfile: ./auth/Dockerfile
+  
+  mcp:
+    build:
+      context: ./backend
+      dockerfile: ./mcp/Dockerfile
+  
+  livekit:
+    image: livekit/livekit-server:latest
+    command: --config /etc/livekit.yaml
+    ports:
+      - "7880:7880"
+      - "7881:7881"
+      - "7882:7882/udp"
+      - "8080:8080"
+    environment:
+      - LIVEKIT_KEYS=devkey:super-secret-key-that-is-at-least-32-bytes-long
+  
+  whisper:
+    image: fedirz/faster-whisper-server:latest-cpu
+    environment:
+      # Automatically downloads the model on first boot
+      - WHISPER__MODEL=Systran/faster-whisper-tiny.en 
+    volumes:
+      - ./models:/root/.cache/huggingface
+    ports:
+      - "8000:8000"
+
+  kokoro:
+    image: ghcr.io/remsky/kokoro-fastapi-cpu:latest
+    ports:
+      - "8880:8880"
+    volumes:
+      - ./kokoro_cache:/app/cache

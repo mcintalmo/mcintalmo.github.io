@@ -1,0 +1,17 @@
+[project]
+name = "agent"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "livekit-agents>=0.8.0",
+    "livekit-plugins-openai",
+    "livekit-plugins-silero",
+    "livekit-plugins-noise-cancellation",
+    "livekit-plugins-turn-detector",
+    "python-dotenv>=1.0.0",
+    "pydantic-settings>=2.0.0",
+    "common",
+]
+
+[tool.uv.sources]
+common = { workspace = true }

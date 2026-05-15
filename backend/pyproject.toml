@@ -1,0 +1,31 @@
+[tool.uv.workspace]
+members = ["common", "agent", "auth", "mcp", "resume"]
+
+[tool.uv]
+dev-dependencies = [
+    "rendercv[full]>=2.6",
+    "pytest>=8.0",
+    "pytest-asyncio",
+    "pytest-httpx",
+    "httpx",
+    "testcontainers",
+    "ruff>=0.4",
+    "mypy>=1.10",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py314"
+src = ["agent/src", "auth/src", "mcp/src", "common/src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["agent/tests", "auth/tests", "mcp/tests", "common/tests"]
+pythonpath = ["agent/src", "auth/src", "mcp/src", "common/src"]

@@ -1,0 +1,69 @@
+design:
+  theme: classic
+
+  page:
+    size: us-letter
+    top_margin: 0.6in
+    bottom_margin: 0.6in
+    left_margin: 0.65in
+    right_margin: 0.65in
+    show_footer: false
+
+  colors:
+    name: "000000"
+    section_titles: "000000"
+    links: "1a1aff"
+    body: "000000"
+    connections: "444444"
+
+  typography:
+    font_family: "Source Sans 3"
+    font_size:
+      body: 10pt
+      name: 20pt
+      section_titles: 10pt
+      headline: 10pt
+      connections: 9pt
+    alignment: justified
+    bold:
+      name: true
+      section_titles: true
+      headline: false
+      connections: false
+    small_caps:
+      name: false
+      section_titles: true
+      headline: false
+      connections: false
+
+  section_titles:
+    type: with_full_line
+    line_thickness: 0.5pt
+    space_above: 0.3cm
+    space_below: 0.1cm
+
+  entries:
+    date_and_location_width: 4.5cm
+    side_space: 0cm
+    space_between_columns: 0.1cm
+    allow_page_break: true
+    highlights:
+      bullet: "●"
+      space_left: 0cm
+      space_above: 0.1cm
+      space_between_items: 0cm
+
+  header:
+    alignment: left
+    space_below_name: 0.15cm
+    space_below_headline: 0.1cm
+    space_below_connections: 0.25cm
+    connections:
+      separator: " | "
+      show_icons: false
+      hyperlink: true
+      display_urls_instead_of_usernames: false
+
+  links:
+    underline: false
+    show_external_link_icon: false

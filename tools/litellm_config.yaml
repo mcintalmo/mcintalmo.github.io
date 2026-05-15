@@ -1,0 +1,19 @@
+model_list:
+  - model_name: phi3:mini
+    litellm_params:
+      model: ollama/phi3:mini
+      api_base: http://host.docker.internal:11434
+      num_predict: 256
+      temperature: 0.3
+      presence_penalty: 0.8
+      frequency_penalty: 0.5
+  - model_name: mistral-nemo
+    litellm_params:
+      model: ollama/mistral-nemo
+      api_base: http://host.docker.internal:11434
+
+general_settings:
+  master_key: sk-1234 # Static master key for Docker backend communication
+
+litellm_settings:
+  drop_params: true

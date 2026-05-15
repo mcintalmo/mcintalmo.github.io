@@ -1,5 +1,10 @@
 {
     "yaml.schemas": {
         "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json": "file:///c%3A/Users/mcint/projects/mcintalmo.github.io/src/data/resume.yaml"
-    }
+    },
+    "python.testing.pytestArgs": [],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.testing.cwd": "${workspaceFolder}/backend",
+    "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python"
 }
