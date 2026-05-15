@@ -391,7 +391,9 @@ vite.config.ts.timestamp-*
 ##########################################################
 resume/output/
 resume/rendercv/
+# Generated resume artifacts (do not commit — built by CI)
 frontend/src/content/resume.json
+frontend/src/content/resume.yaml
 frontend/public/resume.md
 frontend/public/resume.pdf
 frontend/public/resume.json
