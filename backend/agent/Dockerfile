@@ -13,4 +13,7 @@ COPY agent/ ./agent/
 # Install only this service's deps (no dev deps)
 RUN uv sync --package agent --frozen --no-dev
 
+# Pre-download required AI/ML models (e.g. turn-detector ONNX files)
+RUN uv run --package agent python -m livekit.agents download-files
+
 CMD ["uv", "run", "--package", "agent", "python", "-m", "agent.main", "start"]
