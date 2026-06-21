@@ -222,17 +222,34 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
         run: |
-          # Set up SSH key
+          set -x
+          # Give OCI a few seconds to propagate security list rules
+          sleep 5
+          
+          # Set up SSH directory
           mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          
+          # Write SSH private key
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "${{ env.VM_IP }}" >> ~/.ssh/known_hosts
+          
+          # Populate known_hosts with retries
+          for i in {1..5}; do
+            ssh-keyscan -t ed25519,rsa -H "${{ env.VM_IP }}" >> ~/.ssh/known_hosts && break || {
+              echo "ssh-keyscan failed, retrying in 3 seconds..."
+              sleep 3
+            }
+          done
+          
+          # Test SSH connection
+          ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes -o ConnectTimeout=5 ubuntu@${{ env.VM_IP }} "echo 'SSH connection successful!'"
           
           # Sync files
-          rsync -avz --exclude 'node_modules' --exclude '.git' --exclude '.venv' --exclude 'dist' --exclude '.astro' --exclude 'backend/.env' ./ ubuntu@${{ env.VM_IP }}:/home/ubuntu/mcintalmo.github.io/
+          rsync -avz -e "ssh -i ~/.ssh/id_ed25519" --exclude 'node_modules' --exclude '.git' --exclude '.venv' --exclude 'dist' --exclude '.astro' --exclude 'backend/.env' ./ ubuntu@${{ env.VM_IP }}:/home/ubuntu/mcintalmo.github.io/
           
           # Rebuild and restart
-          ssh ubuntu@${{ env.VM_IP }} "cd /home/ubuntu/mcintalmo.github.io/infra && docker compose build agent auth && docker compose up -d"
+          ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "cd /home/ubuntu/mcintalmo.github.io/infra && docker compose build agent auth && docker compose up -d"
 
       - name: Revoke Whitelist
         if: always()
