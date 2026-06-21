@@ -189,10 +189,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup OCI CLI
-        uses: oracle-actions/setup-oci-cli@v2
-        with:
-          silent: true
+      - name: Install and Configure OCI CLI
+        run: |
+          pipx install oci-cli
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          mkdir -p ~/.oci
+          echo "${{ secrets.OCI_PRIVATE_KEY }}" > ~/.oci/key.pem
+          chmod 600 ~/.oci/key.pem
+          printf "[DEFAULT]\nuser=${{ secrets.OCI_USER_OCID }}\nfingerprint=${{ secrets.OCI_FINGERPRINT }}\nkey_file=/home/runner/.oci/key.pem\ntenancy=${{ secrets.OCI_TENANCY_OCID }}\nregion=us-chicago-1\n" > ~/.oci/config
+          chmod 600 ~/.oci/config
 
       - name: Whitelist Runner IP
         id: whitelist
