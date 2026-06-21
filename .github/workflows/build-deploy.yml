@@ -145,19 +145,19 @@ jobs:
         run: uv sync --frozen --package resume
 
       - name: Run tests
-        run: pnpm test
+        run: pnpm --prefix frontend test:run
 
       - name: Build site (includes resume generation)
         env:
           SITE_URL: https://www.alexandermcintosh.com
         run: |
-          pnpm generate-resume
-          pnpm astro build --site "$SITE_URL"
+          pnpm --prefix frontend generate-resume
+          pnpm --prefix frontend astro build --site "$SITE_URL"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: frontend/dist
 
   deploy:
     needs: build
