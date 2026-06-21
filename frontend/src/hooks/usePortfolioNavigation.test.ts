@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { act, renderHook } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { usePortfolioNavigation } from "./usePortfolioNavigation";
 
 // Set up DOM sections before each test
@@ -16,39 +16,46 @@ describe("usePortfolioNavigation", () => {
   it("scrolls to the correct section", () => {
     // Mock window.scrollTo
     const scrollTo = vi.fn();
-    vi.stubGlobal('scrollTo', scrollTo);
+    vi.stubGlobal("scrollTo", scrollTo);
 
     const { result } = renderHook(() => usePortfolioNavigation());
 
     act(() => result.current.scrollTo("work"));
 
-    expect(scrollTo).toHaveBeenCalledWith(expect.objectContaining({
-      behavior: "smooth"
-    }));
+    expect(scrollTo).toHaveBeenCalledWith(
+      expect.objectContaining({
+        behavior: "smooth",
+      }),
+    );
   });
 
   it("adds and removes highlight class", async () => {
     vi.useFakeTimers();
-    const el = document.getElementById("projects")!;
+    const el = document.getElementById("projects");
+    expect(el).not.toBeNull();
+    if (!el) return;
     const { result } = renderHook(() => usePortfolioNavigation());
 
     act(() => result.current.highlight("projects"));
     expect(el.classList.contains("agent-highlight")).toBe(true);
 
-    await act(async () => { vi.advanceTimersByTime(2000); });
+    await act(async () => {
+      vi.advanceTimersByTime(2000);
+    });
     expect(el.classList.contains("agent-highlight")).toBe(false);
 
     vi.useRealTimers();
   });
 
   it("reset clears all highlights", () => {
-    document.getElementById("home")!.classList.add("agent-highlight");
-    document.getElementById("contact")!.classList.add("agent-highlight");
+    document.getElementById("home")?.classList.add("agent-highlight");
+    document.getElementById("contact")?.classList.add("agent-highlight");
 
     const { result } = renderHook(() => usePortfolioNavigation());
     act(() => result.current.reset());
 
-    document.querySelectorAll(".agent-highlight")
-      .forEach(el => expect(el).not.toBeInTheDocument());
+    document.querySelectorAll(".agent-highlight").forEach((el) => {
+      expect(el).not.toBeInTheDocument();
+    });
   });
 });

@@ -1,0 +1,94 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { Navigation } from "../../components/Navigation";
+import { ThemeProvider } from "../../components/ThemeProvider";
+import { VectorBackground } from "../../components/VectorBackground";
+import { VoiceSandbox } from "../../components/VoiceSandbox";
+import { loadAll } from "../../lib/data";
+import "../../styles/globals.css";
+
+const { config, resume } = loadAll();
+---
+
+<Layout config={config} resume={resume}>
+  <ThemeProvider client:only="react" defaultTheme="light" storageKey="portfolio-theme">
+    <Navigation client:only="react" config={config} basics={resume.basics} />
+    <div class="relative z-10 min-h-screen pt-24 bg-background">
+      <VoiceSandbox client:only="react" />
+    </div>
+    <VectorBackground client:only="react" />
+  </ThemeProvider>
+</Layout>
+
+<style is:global>
+  /* Override default LiveKit styles to match our slate-based glassmorphism theme */
+  .lk-chat {
+    border: none !important;
+    background: transparent !important;
+    height: 100% !important;
+    display: flex !important;
+    flex-col: true !important;
+  }
+  .lk-chat-messages {
+    background: transparent !important;
+    padding: 1rem !important;
+    border: none !important;
+  }
+  .lk-message-row {
+    margin-bottom: 1rem !important;
+  }
+  .lk-message-body {
+    border-radius: 12px !important;
+    padding: 8px 14px !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+    max-width: 80% !important;
+  }
+  .lk-message-row[data-author="local"] .lk-message-body {
+    background: var(--primary) !important;
+    color: var(--primary-foreground) !important;
+  }
+  .lk-message-row[data-author="participant"] .lk-message-body {
+    background: var(--card) !important;
+    color: var(--foreground) !important;
+    border: 1px solid var(--border) !important;
+  }
+  .lk-chat-form {
+    padding: 1rem !important;
+    background: rgba(11, 15, 25, 0.4) !important;
+    border-top: 1px solid var(--border) !important;
+  }
+  .lk-chat-form-input {
+    background: var(--background) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    color: var(--foreground) !important;
+    font-size: 13px !important;
+  }
+  .lk-chat-form-button {
+    background: var(--primary) !important;
+    color: var(--primary-foreground) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    padding: 0 16px !important;
+    cursor: pointer !important;
+  }
+  .lk-chat-form-button:hover {
+    opacity: 0.9 !important;
+  }
+  
+  /* Voice control bar adjustments */
+  .lk-voice-assistant-control-bar {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+  .lk-voice-assistant-control-bar button {
+    cursor: pointer !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+  }
+</style>

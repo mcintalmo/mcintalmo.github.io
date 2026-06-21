@@ -1,0 +1,56 @@
+name: Run DeepEval Evaluations
+
+on:
+  workflow_dispatch:
+    inputs:
+      openai_api_key:
+        description: "OpenAI API Key"
+        required: true
+        type: string
+      nvidia_api_key:
+        description: "NVIDIA API Key"
+        required: true
+        type: string
+
+concurrency:
+  group: deepeval-evals-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evaluate:
+    name: Run Tailoring Evals
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: "10"
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Python dependencies
+        working-directory: backend
+        run: uv sync --frozen
+
+      - name: Run DeepEval test suite
+        working-directory: backend
+        env:
+          OPENAI_API_KEY: ${{ github.event.inputs.openai_api_key || secrets.OPENAI_API_KEY }}
+          NVIDIA_API_KEY: ${{ github.event.inputs.nvidia_api_key || secrets.NVIDIA_API_KEY }}
+        run: |
+          uv run deepeval test run tailor/tests/evals/test_tailor.py

@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from "framer-motion";
+import * as React from "react";
 
 export type TelemetryEvent = {
   id: string;
@@ -17,8 +17,8 @@ export const TelemetryPopoffs = ({ events }: { events: TelemetryEvent[] }) => {
             key={event.id}
             initial={{ opacity: 0, y: 0, scale: 0.8 }}
             animate={{ opacity: 1, y: -40, scale: 1 }}
-            exit={{ opacity: 0, y: -80, filter: 'blur(4px)' }}
-            transition={{ duration: 1.5, ease: 'easeOut' }}
+            exit={{ opacity: 0, y: -80, filter: "blur(4px)" }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
             style={{ left: event.x, top: event.y }}
             className="absolute font-mono text-xs text-accent-cyan font-semibold tracking-wider"
           >

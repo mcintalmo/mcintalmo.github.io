@@ -3,8 +3,8 @@ name = "resume"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
-    "rendercv[full]>=2.6",
-    "pyyaml>=6.0",
+    "rendercv[full]>=2.8",
+    "pyyaml>=6.0.3",
     "common",
 ]
 

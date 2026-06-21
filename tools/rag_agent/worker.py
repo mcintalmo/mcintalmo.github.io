@@ -1,5 +1,5 @@
-import logging
-from livekit.agents import cli, WorkerOptions
+from livekit.agents import WorkerOptions, cli
+
 from agent import entrypoint
 
 if __name__ == "__main__":

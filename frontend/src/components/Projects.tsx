@@ -1,13 +1,12 @@
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { Button } from './ui/button';
-import { ExternalLink } from 'lucide-react';
-import { IconGitHub } from './icons/GitHub';
-import { SectionAnchor } from './SectionAnchor';
-import type { ResumeProject, SiteConfigRoot } from '../lib/types';
-import { useState } from 'react';
-import Markdown from './Markdown';
+import { motion } from "framer-motion";
+import { ExternalLink, Github } from "lucide-react";
+import { useState } from "react";
+import type { ResumeProject, SiteConfigRoot } from "../lib/types";
+import Markdown from "./Markdown";
+import { SectionAnchor } from "./SectionAnchor";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 export function Projects({
   projects,
@@ -18,8 +17,10 @@ export function Projects({
 }) {
   const [showAll, setShowAll] = useState(false);
   const limit =
-    (config.sections?.projects as any)?.['projects-visible-count'] ??
-    (config.sections as any)?.['projects-visible-count'] ??
+    config.sections?.projects?.["projects-visible-count"] ??
+    ((config.sections as unknown as Record<string, unknown>)?.[
+      "projects-visible-count"
+    ] as number | undefined) ??
     6;
   const hasHidden = projects.length > limit;
   return (
@@ -33,7 +34,7 @@ export function Projects({
           className="text-center mb-16 group glass-panel rounded-xl py-8 px-6"
         >
           <h2 className="mb-4 inline-flex items-center gap-2">
-            {config.sections?.projects?.title || 'Projects'}
+            {config.sections?.projects?.title || "Projects"}
             <SectionAnchor sectionId="projects" />
           </h2>
           {config.sections?.projects?.description && (
@@ -48,7 +49,7 @@ export function Projects({
             const isHidden = !showAll && index >= limit;
             return (
               <motion.div
-                key={(project.name || '') + index}
+                key={`project-${project.name || ""}`}
                 layout
                 initial={{ opacity: 0, y: 50, rotateY: -15 }}
                 whileInView={{
@@ -70,10 +71,10 @@ export function Projects({
                 animate={
                   isHidden
                     ? { opacity: 0, height: 0, marginBottom: 0, scale: 0.98 }
-                    : { opacity: 1, height: 'auto', marginBottom: 32, scale: 1 }
+                    : { opacity: 1, height: "auto", marginBottom: 32, scale: 1 }
                 }
                 transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
-                style={{ perspective: '1000px', overflow: 'hidden' }}
+                style={{ perspective: "1000px", overflow: "hidden" }}
               >
                 <Card className="overflow-hidden group hover:shadow-lg transition-all duration-300">
                   <CardHeader>
@@ -99,7 +100,12 @@ export function Projects({
                     {(project.url || project.codeUrl) && (
                       <div className="flex gap-2 pt-2">
                         {project.url && (
-                          <Button size="sm" variant="outline" className="flex-1" asChild>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1"
+                            asChild
+                          >
                             <a
                               href={project.url}
                               target="_blank"
@@ -112,14 +118,19 @@ export function Projects({
                           </Button>
                         )}
                         {project.codeUrl && (
-                          <Button size="sm" variant="outline" className="flex-1" asChild>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1"
+                            asChild
+                          >
                             <a
                               href={project.codeUrl}
                               target="_blank"
                               rel="noreferrer"
                               aria-label={`${project.name} source code`}
                             >
-                              <IconGitHub className="w-4 h-4" />
+                              <Github className="w-4 h-4" />
                               <span>Code</span>
                             </a>
                           </Button>

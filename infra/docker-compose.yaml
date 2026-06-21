@@ -1,35 +1,44 @@
 services:
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
   agent:
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: ./agent/Dockerfile
-    
+    network_mode: host
+    restart: always
+    env_file:
+      - ../backend/.env
+    environment:
+      - LIVEKIT_URL=ws://localhost:7880
+      - PYTHONPATH=agent/src
+    depends_on:
+      - livekit
+      - whisper
+      - kokoro
+
   auth:
     build:
-      context: ./backend
+      context: ../backend
       dockerfile: ./auth/Dockerfile
-  
-  mcp:
-    build:
-      context: ./backend
-      dockerfile: ./mcp/Dockerfile
-  
+    network_mode: host
+    restart: always
+    env_file:
+      - ../backend/.env
+    environment:
+      - PYTHONPATH=auth/src
+
   livekit:
     image: livekit/livekit-server:latest
-    command: --config /etc/livekit.yaml
+    command: --config /livekit.yaml
+    volumes:
+      - ./livekit.yaml:/livekit.yaml
     ports:
       - "7880:7880"
       - "7881:7881"
       - "7882:7882/udp"
       - "8080:8080"
-    environment:
-      - LIVEKIT_KEYS=devkey:super-secret-key-that-is-at-least-32-bytes-long
-  
+    restart: always
+
   whisper:
     image: fedirz/faster-whisper-server:latest-cpu
     environment:
@@ -38,7 +47,8 @@ services:
     volumes:
       - ./models:/root/.cache/huggingface
     ports:
-      - "8000:8000"
+      - "10300:8000"
+    restart: always
 
   kokoro:
     image: ghcr.io/remsky/kokoro-fastapi-cpu:latest
@@ -46,3 +56,50 @@ services:
       - "8880:8880"
     volumes:
       - ./kokoro_cache:/app/cache
+    restart: always
+
+  frontend:
+    profiles:
+      - dev
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+
+  mcp:
+    profiles:
+      - dev
+    build:
+      context: ../backend
+      dockerfile: ./mcp/Dockerfile
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    profiles:
+      - telemetry
+    volumes:
+      - ./observability/otel/otel-collector.yaml:/etc/otel/config.yaml
+    command: ["--config=/etc/otel/config.yaml"]
+    ports:
+      - "4317:4317"   # gRPC
+      - "4318:4318"   # HTTP
+
+  jaeger:
+    image: jaegertracing/jaeger:latest
+    profiles:
+      - telemetry
+    ports:
+      - "16686:16686" # UI
+      - "14250:14250" # gRPC from collector
+
+  prometheus:
+    image: prom/prometheus:latest
+    profiles:
+      - telemetry
+    volumes:
+      - ./observability/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+
+volumes:
+  prometheus_data:

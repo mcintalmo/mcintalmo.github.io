@@ -1,3 +1,16 @@
+agent:
+  livekit:
+    url: "https://livekit.server.alexander-mcintosh.com"
+    room-prefix: "portfolio-"
+  recommended-questions:
+    - title: "Recent Projects"
+      prompt: "What has Alex been working on lately?"
+    - title: "AI/ML Experience"
+      prompt: "Tell me about Alex's AI/ML experience."
+    - title: "Education"
+      prompt: "What is Alex's educational background?"
+
+
 sections: 
   basics:
     title: Home

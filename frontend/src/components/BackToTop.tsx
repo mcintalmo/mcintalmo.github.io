@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ArrowUp } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 
 export function BackToTop() {
@@ -10,8 +10,7 @@ export function BackToTop() {
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.pageYOffset;
-      const docHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
       const progress = (scrollTop / docHeight) * 100;
 
       setScrollProgress(progress);
@@ -32,8 +31,7 @@ export function BackToTop() {
   const radius = 26;
   const circumference = 2 * Math.PI * radius;
   const strokeDasharray = circumference;
-  const strokeDashoffset =
-    circumference - (scrollProgress / 100) * circumference;
+  const strokeDashoffset = circumference - (scrollProgress / 100) * circumference;
 
   return (
     <AnimatePresence>
@@ -53,6 +51,7 @@ export function BackToTop() {
               viewBox="0 0 56 56"
               style={{ zIndex: 0 }}
             >
+              <title>Scroll to Top Progress</title>
               <circle
                 cx="28"
                 cy="28"

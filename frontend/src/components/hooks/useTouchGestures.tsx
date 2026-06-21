@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react';
-import type { TouchEvent } from 'react';
+import type { TouchEvent } from "react";
+import { useRef, useState } from "react";
 
 interface TouchGestureConfig {
   onSwipeUp?: () => void;
@@ -51,7 +51,10 @@ export function useTouchGestures({
     const deltaTime = Date.now() - touchStartRef.current.time;
 
     // Only process gestures that are quick enough (< 300ms) and significant enough
-    if (deltaTime < 300 && (Math.abs(deltaX) > threshold || Math.abs(deltaY) > threshold)) {
+    if (
+      deltaTime < 300 &&
+      (Math.abs(deltaX) > threshold || Math.abs(deltaY) > threshold)
+    ) {
       // Determine primary direction
       if (Math.abs(deltaX) > Math.abs(deltaY)) {
         // Horizontal swipe

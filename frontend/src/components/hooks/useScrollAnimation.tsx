@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import { motion, useAnimation, type Variants } from 'framer-motion';
+import { motion, useAnimation, type Variants } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 export function useScrollAnimation(threshold = 0.1) {
   const controls = useAnimation();
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
   const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
@@ -11,10 +11,10 @@ export function useScrollAnimation(threshold = 0.1) {
       ([entry]) => {
         if (entry.isIntersecting && !isInView) {
           setIsInView(true);
-          controls.start('visible');
+          controls.start("visible");
         }
       },
-      { threshold }
+      { threshold },
     );
 
     const currentRef = ref.current;
@@ -35,14 +35,11 @@ export function useScrollAnimation(threshold = 0.1) {
 // Animated section wrapper component
 export function AnimatedSection({
   children,
-  className = '',
+  className = "",
   delay = 0,
   ...props
-}: {
-  children: React.ReactNode;
-  className?: string;
+}: React.ComponentProps<typeof motion.div> & {
   delay?: number;
-  [key: string]: any;
 }) {
   const { ref, controls } = useScrollAnimation();
 
@@ -81,14 +78,11 @@ export function AnimatedSection({
 // Simple animated section with just slide and fade - less busy
 export function SimpleAnimatedSection({
   children,
-  className = '',
+  className = "",
   delay = 0,
   ...props
-}: {
-  children: React.ReactNode;
-  className?: string;
+}: React.ComponentProps<typeof motion.div> & {
   delay?: number;
-  [key: string]: any;
 }) {
   const { ref, controls } = useScrollAnimation();
 

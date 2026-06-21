@@ -1,28 +1,30 @@
-import { motion } from 'framer-motion';
-import { useMemo, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { Button } from './ui/button';
-import { Collapsible, CollapsibleContent } from './ui/collapsible';
-import { LoadingSkeleton } from './ui/loading-skeleton';
-import { useTouchGestures } from './hooks/useTouchGestures';
-import { Calendar, MapPin, Download, ChevronDown, Trophy, Tag } from 'lucide-react';
-import { SectionAnchor } from './SectionAnchor';
-import { Markdown } from './Markdown';
-import { mdToInlineHtml } from '../lib/markdown';
+import { AnimatePresence, motion } from "framer-motion";
+import { Calendar, ChevronDown, Download, MapPin, Tag, Trophy } from "lucide-react";
+import { useMemo, useState } from "react";
+import { formatRange, parseDate } from "../lib/mappers";
+import { mdToInlineHtml } from "../lib/markdown";
+import type { DateRange, ResumeWork, SiteConfigRoot } from "../lib/types";
+import { useTouchGestures } from "./hooks/useTouchGestures";
+import { Markdown } from "./Markdown";
+import { SectionAnchor } from "./SectionAnchor";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Collapsible, CollapsibleContent } from "./ui/collapsible";
 
-import type { ResumeWork, SiteConfigRoot } from '../lib/types';
-import { formatRange, parseDate } from '../lib/mappers';
+interface ExtendedExperience extends ResumeWork {
+  _dates: DateRange;
+  _hidden: boolean;
+}
 
 type Props = { work: ResumeWork[]; config: SiteConfigRoot };
 
 export function Work({ work, config }: Props) {
   const [expandedItems, setExpandedItems] = useState<Record<number, boolean>>({});
-  const [loadingItems, setLoadingItems] = useState<Record<number, boolean>>({});
   const [showFullHistory, setShowFullHistory] = useState(false);
 
   const experiences = useMemo(() => {
-    const dateFormat = config.content?.['date-format'] || 'MMM yyyy';
+    const dateFormat = config.content?.["date-format"] || "MMM yyyy";
     return [...(work || [])]
       .slice()
       .sort((a, b) => {
@@ -34,11 +36,11 @@ export function Work({ work, config }: Props) {
         if (!aOngoing && bOngoing) return 1;
         if (aOngoing && bOngoing) {
           // both ongoing: sort by startDate desc
-          return (b.startDate || '').localeCompare(a.startDate || '');
+          return (b.startDate || "").localeCompare(a.startDate || "");
         }
         // Both have end dates: parse and compare descending
-        const aEndDate = parseDate(aEnd || '');
-        const bEndDate = parseDate(bEnd || '');
+        const aEndDate = parseDate(aEnd || "");
+        const bEndDate = parseDate(bEnd || "");
         if (aEndDate && bEndDate) {
           if (bEndDate.getTime() !== aEndDate.getTime()) {
             return bEndDate.getTime() - aEndDate.getTime();
@@ -49,7 +51,7 @@ export function Work({ work, config }: Props) {
           return 1;
         }
         // fallback: startDate desc
-        return (b.startDate || '').localeCompare(a.startDate || '');
+        return (b.startDate || "").localeCompare(a.startDate || "");
       })
       .map((w) => ({
         ...w,
@@ -59,23 +61,31 @@ export function Work({ work, config }: Props) {
 
   // Annotate experiences with hidden flag instead of slicing list (prevents large re-mount flashes)
   const { annotatedExperiences, hiddenCount } = useMemo(() => {
-    const rawYears: any =
-      (config.sections?.work as any)?.['history-visible-years'] ??
-      (config.sections as any)?.['history-visible-years'];
-    const years = typeof rawYears === 'string' ? parseInt(rawYears, 10) : rawYears;
+    const rawYears =
+      config.sections?.work?.["history-visible-years"] ??
+      (config.sections as Record<string, unknown> | undefined)?.[
+        "history-visible-years"
+      ];
+    const years =
+      typeof rawYears === "string"
+        ? parseInt(rawYears, 10)
+        : typeof rawYears === "number"
+          ? rawYears
+          : undefined;
     if (!years || years <= 0) {
+      const list: ExtendedExperience[] = experiences.map((e) => ({
+        ...e,
+        _hidden: false,
+      }));
       return {
-        annotatedExperiences: experiences.map((e) => ({
-          ...e,
-          _hidden: false,
-        })),
+        annotatedExperiences: list,
         hiddenCount: 0,
       };
     }
     const now = new Date();
     const cutoffYear = now.getFullYear() - years;
     let hiddenCounter = 0;
-    const list = experiences.map((exp) => {
+    const list: ExtendedExperience[] = experiences.map((exp) => {
       const refDateStr = exp.endDate?.trim() || exp.startDate?.trim();
       let year: number | null = null;
       if (refDateStr) {
@@ -84,31 +94,20 @@ export function Work({ work, config }: Props) {
       }
       const tooOld = !(year === null || year >= cutoffYear); // null (unknown) treated as visible
       if (tooOld) hiddenCounter++;
-      return { ...exp, _hidden: tooOld } as any;
+      return { ...exp, _hidden: tooOld };
     });
     return { annotatedExperiences: list, hiddenCount: hiddenCounter };
   }, [experiences, config.sections]);
 
-  const toggleExpanded = (index: number) => {
-    if (!expandedItems[index]) {
-      // Show loading state when expanding
-      setLoadingItems((prev) => ({ ...prev, [index]: true }));
+  const visibleCount = useMemo(() => {
+    return annotatedExperiences.filter((exp) => !exp._hidden).length;
+  }, [annotatedExperiences]);
 
-      // Simulate content loading with a brief delay
-      setTimeout(() => {
-        setLoadingItems((prev) => ({ ...prev, [index]: false }));
-        setExpandedItems((prev) => ({
-          ...prev,
-          [index]: !prev[index],
-        }));
-      }, 300);
-    } else {
-      // Collapse immediately
-      setExpandedItems((prev) => ({
-        ...prev,
-        [index]: !prev[index],
-      }));
-    }
+  const toggleExpanded = (index: number) => {
+    setExpandedItems((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
   };
 
   return (
@@ -122,7 +121,7 @@ export function Work({ work, config }: Props) {
           className="text-center mb-16 group glass-panel rounded-xl py-8 px-6"
         >
           <h2 className="mb-4 inline-flex items-center gap-2">
-            {config.sections?.work?.title || 'Work Experience'}
+            {config.sections?.work?.title || "Work Experience"}
             <SectionAnchor sectionId="experience" />
           </h2>
           {config.sections?.work?.description && (
@@ -156,77 +155,206 @@ export function Work({ work, config }: Props) {
           <div className="relative">
             <div className="absolute left-6 md:left-1/2 md:transform md:-translate-x-1/2 w-0.5 bg-border h-full" />
 
-            {annotatedExperiences.map((exp: any, index: number) => {
-              const hasDetails =
-                (Array.isArray(exp.highlights) && exp.highlights.length > 0) || !!exp.summary;
+            {/* Always visible cards */}
+            {annotatedExperiences
+              .filter((exp) => !exp._hidden)
+              .map((exp: ExtendedExperience, index: number) => {
+                const hasDetails =
+                  (Array.isArray(exp.highlights) && exp.highlights.length > 0) ||
+                  !!exp.summary;
 
-              const d = (exp as any)._dates;
-              const period = `${d.start || ''}${
-                d.end ? ` - ${d.end}` : d.start && d.ongoing ? ' - Present' : ''
-              }`;
-              const key = `${exp.name || exp.position || 'role'}-${
-                exp.startDate || ''
-              }-${exp.endDate || ''}-${index}`;
-              const isHidden = exp._hidden && !showFullHistory;
-              return (
-                <motion.div
-                  key={key}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.25 }}
-                  animate={isHidden ? { opacity: 0, y: 20, height: 0 } : undefined}
-                  transition={{
-                    duration: 0.65,
-                    ease: [0.25, 0.46, 0.45, 0.94],
-                    delay: index * 0.08,
-                  }}
-                  className={
-                    'relative overflow-hidden will-change-transform ' +
-                    (isHidden ? 'mb-0' : 'mb-12 last:mb-0')
-                  }
-                >
-                  {/* Timeline dot - positioned for mobile first, then desktop */}
-                  <div className="absolute left-6 md:left-1/2 md:transform md:-translate-x-1/2 w-4 h-4 bg-primary border-4 border-background rounded-full z-10 shadow-sm transform -translate-x-1/2" />
+                const d = exp._dates;
+                const period = `${d.start || ""}${
+                  d.end ? ` - ${d.end}` : d.start && d.ongoing ? " - Present" : ""
+                }`;
+                const key = `${exp.name || exp.position || "role"}-${
+                  exp.startDate || ""
+                }-${exp.endDate || ""}-${index}`;
 
-                  {/* Mobile Layout: All items on the right side */}
-                  <MobileExperienceCard
-                    exp={exp}
-                    index={index}
-                    hasDetails={hasDetails}
-                    expanded={expandedItems[index]}
-                    loading={loadingItems[index]}
-                    toggleExpanded={toggleExpanded}
-                    period={period}
-                  />
-
-                  {/* Desktop Layout: Alternating sides */}
-                  <div className="hidden md:flex md:items-center">
+                return (
+                  <motion.div
+                    key={key}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.25 }}
+                    transition={{
+                      duration: 0.8,
+                      ease: [0.25, 0.46, 0.45, 0.94],
+                    }}
+                    className={`relative overflow-hidden py-3 will-change-transform mb-8 last:mb-0 group pointer-events-none${
+                      index > 0 ? " md:-mt-28" : ""
+                    }`}
+                  >
+                    {/* Connector Line (Dashed) - Visual reinforcement connecting card to timeline dot */}
                     <div
-                      className={`w-full flex ${
-                        index % 2 === 0 ? 'justify-start pr-8' : 'justify-end pl-8'
+                      className={`absolute top-[2.5625rem] h-0.5 border-t-2 border-dashed border-primary/20 group-hover:border-primary/50 transition-colors duration-300 left-6 w-10 md:w-auto ${
+                        index % 2 === 0
+                          ? "md:left-[46%] md:right-[50%]"
+                          : "md:left-[50%] md:right-[46%]"
                       }`}
-                    >
-                      {/* Slightly wider cards to use added horizontal space */}
-                      <DesktopExperienceCard
-                        exp={exp}
-                        index={index}
-                        hasDetails={hasDetails}
-                        expanded={expandedItems[index]}
-                        loading={loadingItems[index]}
-                        toggleExpanded={toggleExpanded}
-                        period={period}
-                      />
+                    />
+
+                    {/* Timeline dot - positioned for mobile first, then desktop, with custom indigo glow */}
+                    <div className="absolute left-6 md:left-1/2 md:transform md:-translate-x-1/2 w-5 h-5 bg-primary border-4 border-background rounded-full z-10 shadow-[0_0_10px_var(--color-primary)] transform -translate-x-1/2 top-8 group-hover:scale-125 group-hover:shadow-[0_0_18px_var(--color-primary)] transition-all duration-300 pointer-events-auto" />
+
+                    {/* Mobile Layout: All items on the right side */}
+                    <MobileExperienceCard
+                      exp={exp}
+                      index={index}
+                      hasDetails={hasDetails}
+                      expanded={expandedItems[index]}
+                      toggleExpanded={toggleExpanded}
+                      period={period}
+                    />
+
+                    {/* Desktop Layout: Alternating sides */}
+                    <div className="hidden md:flex md:items-center">
+                      <div
+                        className={`w-full flex ${
+                          index % 2 === 0 ? "justify-start pr-8" : "justify-end pl-8"
+                        }`}
+                      >
+                        {/* Slightly wider cards to use added horizontal space */}
+                        <DesktopExperienceCard
+                          exp={exp}
+                          index={index}
+                          hasDetails={hasDetails}
+                          expanded={expandedItems[index]}
+                          toggleExpanded={toggleExpanded}
+                          period={period}
+                        />
+                      </div>
                     </div>
-                  </div>
+                  </motion.div>
+                );
+              })}
+
+            {/* History cards container */}
+            <AnimatePresence initial={false}>
+              {showFullHistory && (
+                <motion.div
+                  initial={{ height: 0 }}
+                  animate={{ height: "auto" }}
+                  exit={{ height: 0, transition: { duration: 0.4, ease: "easeInOut" } }}
+                  transition={{ duration: 1.5, ease: [0.25, 1, 0.5, 1] }}
+                  className="overflow-hidden relative w-full md:-mt-28"
+                >
+                  {annotatedExperiences
+                    .filter((exp) => exp._hidden)
+                    .map((exp: ExtendedExperience, localIndex: number) => {
+                      const index = visibleCount + localIndex;
+                      const hasDetails =
+                        (Array.isArray(exp.highlights) && exp.highlights.length > 0) ||
+                        !!exp.summary;
+
+                      const d = exp._dates;
+                      const period = `${d.start || ""}${
+                        d.end ? ` - ${d.end}` : d.start && d.ongoing ? " - Present" : ""
+                      }`;
+                      const key = `${exp.name || exp.position || "role"}-${
+                        exp.startDate || ""
+                      }-${exp.endDate || ""}-${index}`;
+
+                      return (
+                        <div
+                          key={key}
+                          className={`relative overflow-hidden py-3 will-change-transform mb-8 last:mb-0 group pointer-events-none${
+                            localIndex > 0 ? " md:-mt-28" : ""
+                          }`}
+                        >
+                          {/* Connector Line (Dashed) - Visual reinforcement connecting card to timeline dot */}
+                          <motion.div
+                            initial={{ scaleX: 0, opacity: 0 }}
+                            animate={{ scaleX: 1, opacity: 1 }}
+                            transition={{
+                              duration: 0.4,
+                              ease: [0.25, 1, 0.5, 1],
+                              delay: localIndex * 0.35 + 0.15,
+                            }}
+                            style={{ originX: index % 2 === 0 ? 1 : 0 }}
+                            className={`absolute top-[2.5625rem] h-0.5 border-t-2 border-dashed border-primary/20 group-hover:border-primary/50 transition-colors duration-300 left-6 w-10 md:w-auto ${
+                              index % 2 === 0
+                                ? "md:left-[46%] md:right-[50%]"
+                                : "md:left-[50%] md:right-[46%]"
+                            }`}
+                          />
+
+                          {/* Timeline dot - positioned for mobile first, then desktop, with custom indigo glow */}
+                          <motion.div
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 200,
+                              damping: 15,
+                              delay: localIndex * 0.35,
+                            }}
+                            className="absolute left-6 md:left-1/2 md:transform md:-translate-x-1/2 w-5 h-5 bg-primary border-4 border-background rounded-full z-10 shadow-[0_0_10px_var(--color-primary)] transform -translate-x-1/2 top-8 group-hover:scale-125 group-hover:shadow-[0_0_18px_var(--color-primary)] transition-all duration-300 pointer-events-auto"
+                          />
+
+                          {/* Mobile Layout: All items on the right side */}
+                          <motion.div
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{
+                              duration: 0.6,
+                              ease: "easeOut",
+                              delay: localIndex * 0.35 + 0.2,
+                            }}
+                            className="md:hidden"
+                          >
+                            <MobileExperienceCard
+                              exp={exp}
+                              index={index}
+                              hasDetails={hasDetails}
+                              expanded={expandedItems[index]}
+                              toggleExpanded={toggleExpanded}
+                              period={period}
+                            />
+                          </motion.div>
+
+                          {/* Desktop Layout: Alternating sides */}
+                          <motion.div
+                            initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{
+                              duration: 0.8,
+                              ease: [0.25, 1, 0.5, 1],
+                              delay: localIndex * 0.35 + 0.25,
+                            }}
+                            className="hidden md:flex md:items-center"
+                          >
+                            <div
+                              className={`w-full flex ${
+                                index % 2 === 0
+                                  ? "justify-start pr-8"
+                                  : "justify-end pl-8"
+                              }`}
+                            >
+                              {/* Slightly wider cards to use added horizontal space */}
+                              <DesktopExperienceCard
+                                exp={exp}
+                                index={index}
+                                hasDetails={hasDetails}
+                                expanded={expandedItems[index]}
+                                toggleExpanded={toggleExpanded}
+                                period={period}
+                              />
+                            </div>
+                          </motion.div>
+                        </div>
+                      );
+                    })}
                 </motion.div>
-              );
-            })}
+              )}
+            </AnimatePresence>
             {/* Toggle Button (no gradient) */}
           </div>
           {!showFullHistory && hiddenCount > 0 && (
             <div className="flex justify-center mt-0">
               <Button variant="outline" onClick={() => setShowFullHistory(true)}>
-                Show full history ({hiddenCount} more {hiddenCount === 1 ? 'role' : 'roles'})
+                Show full history ({hiddenCount} more{" "}
+                {hiddenCount === 1 ? "role" : "roles"})
               </Button>
             </div>
           )}
@@ -236,11 +364,11 @@ export function Work({ work, config }: Props) {
                 variant="outline"
                 onClick={() => {
                   // Scroll back to top of section smoothly when collapsing
-                  const el = document.getElementById('experience');
+                  const el = document.getElementById("experience");
                   setShowFullHistory(false);
                   if (el) {
                     setTimeout(() => {
-                      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      el.scrollIntoView({ behavior: "smooth", block: "start" });
                     }, 50);
                   }
                 }}
@@ -257,11 +385,10 @@ export function Work({ work, config }: Props) {
 
 // Child components to keep hooks at top level and satisfy rules-of-hooks
 type ExperienceCardCommon = {
-  exp: any;
+  exp: ExtendedExperience;
   index: number;
   hasDetails: boolean;
   expanded: boolean;
-  loading: boolean;
   toggleExpanded: (i: number) => void;
   period: string;
 };
@@ -271,7 +398,6 @@ function MobileExperienceCard({
   index,
   hasDetails,
   expanded,
-  loading,
   toggleExpanded,
   period,
 }: ExperienceCardCommon) {
@@ -281,28 +407,32 @@ function MobileExperienceCard({
     threshold: 30,
   });
   return (
-    <div className="md:hidden ml-16">
-      <motion.div whileHover={{ scale: 1.02 }} transition={{ duration: 0.2 }} className="group">
+    <div className="md:hidden ml-16 pointer-events-auto">
+      <motion.div
+        whileHover={{ scale: 1.02 }}
+        transition={{ duration: 0.2 }}
+        className="group"
+      >
         <Collapsible
-          open={hasDetails ? expanded : false}
+          open={hasDetails ? !!expanded : false}
           onOpenChange={() => hasDetails && toggleExpanded(index)}
         >
           <Card
             className={
-              'hover:shadow-lg transition-all duration-300 group-hover:border-primary/20 touch-manipulation ' +
-              (hasDetails ? 'cursor-pointer' : 'cursor-default')
+              "hover:shadow-lg transition-all duration-300 group-hover:border-primary/20 touch-manipulation " +
+              (hasDetails ? "cursor-pointer" : "cursor-default")
             }
-            onClick={() => hasDetails && !loading && toggleExpanded(index)}
-            role={hasDetails ? 'button' : undefined}
+            onClick={() => hasDetails && toggleExpanded(index)}
+            role={hasDetails ? "button" : undefined}
             tabIndex={hasDetails ? 0 : -1}
-            aria-expanded={hasDetails ? expanded : undefined}
-            aria-label={`${expanded ? 'Collapse' : 'Expand'} details for ${exp.position || 'role'} at ${
-              exp.name || 'company'
+            aria-expanded={hasDetails ? !!expanded : undefined}
+            aria-label={`${expanded ? "Collapse" : "Expand"} details for ${exp.position || "role"} at ${
+              exp.name || "company"
             }`}
             onKeyDown={(e) => {
-              if (hasDetails && (e.key === 'Enter' || e.key === ' ')) {
+              if (hasDetails && (e.key === "Enter" || e.key === " ")) {
                 e.preventDefault();
-                if (!loading) toggleExpanded(index);
+                toggleExpanded(index);
               }
             }}
             {...touchHandlers}
@@ -311,9 +441,7 @@ function MobileExperienceCard({
               <div className="flex justify-between items-start gap-4">
                 <CardTitle>
                   {exp.position && <h3>{exp.position}</h3>}
-                  {(exp.name || (exp as any).company) && (
-                    <p className="text-primary mt-1">{exp.name || (exp as any).company}</p>
-                  )}
+                  {exp.name && <p className="text-primary mt-1">{exp.name}</p>}
                 </CardTitle>
                 <span className="flex items-center gap-1 text-sm text-muted-foreground mt-1 whitespace-nowrap">
                   <Calendar className="w-4 h-4" />
@@ -336,84 +464,102 @@ function MobileExperienceCard({
               {hasDetails && (
                 <div className="w-full flex items-center justify-between p-0 h-auto">
                   <span className="text-sm text-primary group-hover:text-primary/80 transition-colors">
-                    {loading
-                      ? 'Loading details...'
-                      : expanded
-                        ? 'Show less details'
-                        : 'Show more details'}
+                    {expanded ? "Show less details" : "Show more details"}
                   </span>
                   <motion.div
                     animate={{ rotate: expanded ? 180 : 0 }}
-                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
                     className="text-muted-foreground group-hover:text-primary transition-colors duration-200"
                   >
                     <ChevronDown className="w-4 h-4" />
                   </motion.div>
                 </div>
               )}
-              {hasDetails && loading && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  transition={{ duration: 0.3 }}
-                  className="mt-4"
-                >
-                  <LoadingSkeleton lines={4} showBadges={true} />
-                </motion.div>
-              )}
               {hasDetails && (
-                <CollapsibleContent className="space-y-6 mt-4">
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.05 }}
-                    className="space-y-6"
-                  >
-                    {exp.highlights && exp.highlights.length > 0 && (
-                      <div className="space-y-2">
-                        <h4 className="flex items-center gap-2 text-sm font-medium">
-                          <Trophy className="w-4 h-4 text-primary" />
-                          Achievements
-                        </h4>
-                        <ul className="space-y-1 ml-6">
-                          {exp.highlights.map((h: string, i: number) => (
-                            <motion.li
-                              key={i}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.3, delay: i * 0.08 }}
-                              className="text-sm text-muted-foreground list-disc"
-                            >
-                              <span dangerouslySetInnerHTML={{ __html: mdToInlineHtml(h) }} />
-                            </motion.li>
-                          ))}
-                        </ul>
-                      </div>
+                <CollapsibleContent forceMount>
+                  <AnimatePresence initial={false}>
+                    {expanded && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
+                        className="overflow-hidden space-y-6 mt-4 pt-2"
+                      >
+                        {exp.highlights && exp.highlights.length > 0 && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.1 }}
+                            className="space-y-2"
+                          >
+                            <h4 className="flex items-center gap-2 text-sm font-medium">
+                              <Trophy className="w-4 h-4 text-primary" />
+                              Achievements
+                            </h4>
+                            <ul className="space-y-1 ml-6">
+                              {exp.highlights.map((h: string, i: number) => {
+                                return (
+                                  <motion.li
+                                    key={h}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{
+                                      duration: 0.3,
+                                      delay: 0.2 + i * 0.05,
+                                    }}
+                                    className="text-sm text-muted-foreground list-disc"
+                                  >
+                                    <span
+                                      // biome-ignore lint/security/noDangerouslySetInnerHtml: rendering parsed inline markdown HTML is required for rich text formatting
+                                      dangerouslySetInnerHTML={{
+                                        __html: mdToInlineHtml(h),
+                                      }}
+                                    />
+                                  </motion.li>
+                                );
+                              })}
+                            </ul>
+                          </motion.div>
+                        )}
+                        {exp.summary && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.2 }}
+                            className="space-y-2"
+                          >
+                            <h4 className="flex items-center gap-2 text-sm font-medium">
+                              Summary
+                            </h4>
+                            <div className="text-sm text-muted-foreground leading-relaxed">
+                              <Markdown>{exp.summary}</Markdown>
+                            </div>
+                          </motion.div>
+                        )}
+                        {exp.keywords && exp.keywords.length > 0 && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.3 }}
+                            className="space-y-2"
+                          >
+                            <h4 className="flex items-center gap-2 text-sm font-medium">
+                              <Tag className="w-4 h-4 text-primary" />
+                              Technologies
+                            </h4>
+                            <div className="flex flex-wrap gap-2">
+                              {exp.keywords.map((kw: string) => (
+                                <Badge key={kw} variant="outline" className="text-xs">
+                                  {kw}
+                                </Badge>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </motion.div>
                     )}
-                    {exp.summary && (
-                      <div className="space-y-2">
-                        <h4 className="flex items-center gap-2 text-sm font-medium">Summary</h4>
-                        <div className="text-sm text-muted-foreground leading-relaxed">
-                          <Markdown>{exp.summary}</Markdown>
-                        </div>
-                      </div>
-                    )}
-                    {exp.keywords && exp.keywords.length > 0 && (
-                      <div className="space-y-2">
-                        <h4 className="flex items-center gap-2 text-sm font-medium">
-                          <Tag className="w-4 h-4 text-primary" />
-                          Technologies
-                        </h4>
-                        <div className="flex flex-wrap gap-2">
-                          {exp.keywords.map((kw: string) => (
-                            <Badge key={kw} variant="outline" className="text-xs">
-                              {kw}
-                            </Badge>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </motion.div>
+                  </AnimatePresence>
                 </CollapsibleContent>
               )}
             </CardContent>
@@ -429,7 +575,6 @@ function DesktopExperienceCard({
   index,
   hasDetails,
   expanded,
-  loading,
   toggleExpanded,
   period,
 }: ExperienceCardCommon) {
@@ -440,30 +585,30 @@ function DesktopExperienceCard({
   });
   return (
     <motion.div
-      className="w-[46%] group"
+      className="w-[46%] group pointer-events-auto"
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.2 }}
     >
       <Collapsible
-        open={hasDetails ? expanded : false}
+        open={hasDetails ? !!expanded : false}
         onOpenChange={() => hasDetails && toggleExpanded(index)}
       >
         <Card
           className={
-            'hover:shadow-lg transition-all duration-300 group-hover:border-primary/20 touch-manipulation ' +
-            (hasDetails ? 'cursor-pointer' : 'cursor-default')
+            "hover:shadow-lg transition-all duration-300 group-hover:border-primary/20 touch-manipulation " +
+            (hasDetails ? "cursor-pointer" : "cursor-default")
           }
-          onClick={() => hasDetails && !loading && toggleExpanded(index)}
-          role={hasDetails ? 'button' : undefined}
+          onClick={() => hasDetails && toggleExpanded(index)}
+          role={hasDetails ? "button" : undefined}
           tabIndex={hasDetails ? 0 : -1}
-          aria-expanded={hasDetails ? expanded : undefined}
-          aria-label={`${expanded ? 'Collapse' : 'Expand'} details for ${exp.position || 'role'} at ${
-            exp.name || 'company'
+          aria-expanded={hasDetails ? !!expanded : undefined}
+          aria-label={`${expanded ? "Collapse" : "Expand"} details for ${exp.position || "role"} at ${
+            exp.name || "company"
           }`}
           onKeyDown={(e) => {
-            if (hasDetails && (e.key === 'Enter' || e.key === ' ')) {
+            if (hasDetails && (e.key === "Enter" || e.key === " ")) {
               e.preventDefault();
-              if (!loading) toggleExpanded(index);
+              toggleExpanded(index);
             }
           }}
           {...touchHandlers}
@@ -487,86 +632,105 @@ function DesktopExperienceCard({
             )}
           </CardHeader>
           <CardContent>
-            {exp.description && <p className="mb-4 text-muted-foreground">{exp.description}</p>}
+            {exp.description && (
+              <p className="mb-4 text-muted-foreground">{exp.description}</p>
+            )}
             {hasDetails && (
               <div className="w-full flex items-center justify-between p-0 h-auto">
                 <span className="text-sm text-primary group-hover:text-primary/80 transition-colors">
-                  {loading
-                    ? 'Loading details...'
-                    : expanded
-                      ? 'Show less details'
-                      : 'Show more details'}
+                  {expanded ? "Show less details" : "Show more details"}
                 </span>
                 <motion.div
                   animate={{ rotate: expanded ? 180 : 0 }}
-                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
                   className="text-muted-foreground group-hover:text-primary transition-colors duration-200"
                 >
                   <ChevronDown className="w-4 h-4" />
                 </motion.div>
               </div>
             )}
-            {hasDetails && loading && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                transition={{ duration: 0.3 }}
-                className="mt-4"
-              >
-                <LoadingSkeleton lines={4} showBadges={true} />
-              </motion.div>
-            )}
             {hasDetails && (
-              <CollapsibleContent className="space-y-6 mt-4">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: 0.05 }}
-                  className="space-y-6"
-                >
-                  {exp.highlights && exp.highlights.length > 0 && (
-                    <div className="space-y-2">
-                      <h4 className="flex items-center gap-2 text-sm font-medium">
-                        <Trophy className="w-4 h-4 text-primary" />
-                        Achievements
-                      </h4>
-                      <ul className="space-y-1 ml-6">
-                        {exp.highlights.map((h: string, i: number) => (
-                          <motion.li
-                            key={i}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.3, delay: i * 0.08 }}
-                            className="text-sm text-muted-foreground list-disc"
-                          >
-                            <span dangerouslySetInnerHTML={{ __html: mdToInlineHtml(h) }} />
-                          </motion.li>
-                        ))}
-                      </ul>
-                    </div>
+              <CollapsibleContent forceMount>
+                <AnimatePresence initial={false}>
+                  {expanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
+                      className="overflow-hidden space-y-6 mt-4 pt-2"
+                    >
+                      {exp.highlights && exp.highlights.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 15 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: 0.1 }}
+                          className="space-y-2"
+                        >
+                          <h4 className="flex items-center gap-2 text-sm font-medium">
+                            <Trophy className="w-4 h-4 text-primary" />
+                            Achievements
+                          </h4>
+                          <ul className="space-y-1 ml-6">
+                            {exp.highlights.map((h: string, i: number) => {
+                              return (
+                                <motion.li
+                                  key={h}
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ duration: 0.3, delay: 0.2 + i * 0.05 }}
+                                  className="text-sm text-muted-foreground list-disc"
+                                >
+                                  <span
+                                    // biome-ignore lint/security/noDangerouslySetInnerHtml: rendering parsed inline markdown HTML is required for rich text formatting
+                                    dangerouslySetInnerHTML={{
+                                      __html: mdToInlineHtml(h),
+                                    }}
+                                  />
+                                </motion.li>
+                              );
+                            })}
+                          </ul>
+                        </motion.div>
+                      )}
+                      {exp.summary && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 15 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: 0.2 }}
+                          className="space-y-2"
+                        >
+                          <h4 className="flex items-center gap-2 text-sm font-medium">
+                            Summary
+                          </h4>
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                            {exp.summary}
+                          </p>
+                        </motion.div>
+                      )}
+                      {exp.keywords && exp.keywords.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 15 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4, delay: 0.3 }}
+                          className="space-y-2"
+                        >
+                          <h4 className="flex items-center gap-2 text-sm font-medium">
+                            <Tag className="w-4 h-4 text-primary" />
+                            Technologies
+                          </h4>
+                          <div className="flex flex-wrap gap-2">
+                            {exp.keywords.map((kw: string) => (
+                              <Badge key={kw} variant="outline" className="text-xs">
+                                {kw}
+                              </Badge>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </motion.div>
                   )}
-                  {exp.summary && (
-                    <div className="space-y-2">
-                      <h4 className="flex items-center gap-2 text-sm font-medium">Summary</h4>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{exp.summary}</p>
-                    </div>
-                  )}
-                  {exp.keywords && exp.keywords.length > 0 && (
-                    <div className="space-y-2">
-                      <h4 className="flex items-center gap-2 text-sm font-medium">
-                        <Tag className="w-4 h-4 text-primary" />
-                        Technologies
-                      </h4>
-                      <div className="flex flex-wrap gap-2">
-                        {exp.keywords.map((kw: string) => (
-                          <Badge key={kw} variant="outline" className="text-xs">
-                            {kw}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
+                </AnimatePresence>
               </CollapsibleContent>
             )}
           </CardContent>

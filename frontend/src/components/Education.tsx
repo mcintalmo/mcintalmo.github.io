@@ -1,14 +1,26 @@
-import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { Button } from './ui/button';
-import { useTouchGestures } from './hooks/useTouchGestures';
-import { GraduationCap, Award, BookOpen, Trophy, Calendar, ExternalLink } from 'lucide-react';
-import { SectionAnchor } from './SectionAnchor';
-import type { ResumeCertificate, ResumeEducation, SiteConfigRoot } from '../lib/types';
-import { formatRange, parseDate } from '../lib/mappers';
-import { mdToInlineHtml } from '../lib/markdown';
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Award,
+  BookOpen,
+  Calendar,
+  ExternalLink,
+  GraduationCap,
+  Trophy,
+} from "lucide-react";
+import { useState } from "react";
+import { formatRange, parseDate } from "../lib/mappers";
+import { mdToInlineHtml } from "../lib/markdown";
+import type { ResumeCertificate, ResumeEducation, SiteConfigRoot } from "../lib/types";
+import { useTouchGestures } from "./hooks/useTouchGestures";
+import { SectionAnchor } from "./SectionAnchor";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+
+interface ExtendedEducation extends ResumeEducation {
+  _dates?: { start?: string; end?: string; ongoing?: boolean };
+  _futureEnd?: boolean;
+}
 
 function EducationItem({
   edu,
@@ -16,16 +28,16 @@ function EducationItem({
   loading,
   config: _config,
 }: {
-  edu: any;
+  edu: ExtendedEducation;
   index: number;
   loading: Record<number, boolean>;
   config: SiteConfigRoot;
 }) {
   // Hook must be at top level of component, not inside parent map callback
   const { touchHandlers } = useTouchGestures({ threshold: 30 });
-  const d = (edu as any)._dates;
-  const futureEnd = (edu as any)._futureEnd as boolean | undefined;
-  let period = '';
+  const d = edu._dates;
+  const futureEnd = edu._futureEnd;
+  let period = "";
   if (d?.start) {
     if (d.end) period = `${d.start} - ${futureEnd ? `Expected ${d.end}` : d.end}`;
     else if (d.ongoing) period = `${d.start} - Present`;
@@ -33,7 +45,6 @@ function EducationItem({
   } else if (d?.end) period = futureEnd ? `Expected ${d.end}` : d.end;
   return (
     <motion.div
-      key={index}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: index * 0.15 }}
@@ -60,7 +71,9 @@ function EducationItem({
                   <span>{period}</span>
                 </div>
               </div>
-              {edu.score && <p className="text-xs text-muted-foreground mt-1">GPA: {edu.score}</p>}
+              {edu.score && (
+                <p className="text-xs text-muted-foreground mt-1">GPA: {edu.score}</p>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -74,13 +87,14 @@ function EducationItem({
               <ul className="space-y-1 ml-6">
                 {edu.achievements.map((h: string, i: number) => (
                   <motion.li
-                    key={i}
+                    key={h}
                     initial={{ opacity: 0, x: -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.35, delay: 0.15 + i * 0.07 }}
                     className="text-sm text-muted-foreground list-disc"
                   >
+                    {/* biome-ignore lint/security/noDangerouslySetInnerHtml: rendering parsed inline markdown HTML is required for rich text formatting */}
                     <span dangerouslySetInnerHTML={{ __html: mdToInlineHtml(h) }} />
                   </motion.li>
                 ))}
@@ -122,7 +136,7 @@ export function Education({
   certificates: ResumeCertificate[];
   config: SiteConfigRoot;
 }) {
-  const dateFormat = config.content?.['date-format'] || 'MMM yyyy';
+  const dateFormat = config.content?.["date-format"] || "MMM yyyy";
   const certs = certificates.map((c) => ({
     ...c,
     _date: formatRange(c.date, undefined, dateFormat).start || c.date,
@@ -131,7 +145,7 @@ export function Education({
     const _dates = formatRange(e.startDate, e.endDate, dateFormat);
     const endParsed = parseDate(e.endDate);
     const _futureEnd = !!(endParsed && endParsed > new Date());
-    return { ...e, _dates, _futureEnd } as any;
+    return { ...e, _dates, _futureEnd } as ExtendedEducation;
   });
 
   const [loadingEducation] = useState<Record<number, boolean>>({});
@@ -148,7 +162,7 @@ export function Education({
           className="text-center mb-16 group glass-panel rounded-xl py-8 px-6"
         >
           <h2 className="mb-4 inline-flex items-center gap-2">
-            {config.sections?.education?.title || 'Education'}
+            {config.sections?.education?.title || "Education"}
             <SectionAnchor sectionId="education" />
           </h2>
           {config.sections?.education?.description && (
@@ -161,7 +175,7 @@ export function Education({
         <div className="grid md:grid-cols-2 gap-8 mb-16">
           {eduItems.map((edu, index) => (
             <EducationItem
-              key={index}
+              key={`${edu.institution || ""}-${edu.studyType || ""}-${edu.area || ""}`}
               edu={edu}
               index={index}
               loading={loadingEducation}
@@ -187,108 +201,131 @@ export function Education({
               <CardContent>
                 {(() => {
                   const limit =
-                    (config.sections?.certificates as any)?.['certifications-visible-count'] ??
-                    (config.sections as any)?.['certifications-visible-count'] ??
+                    config.sections?.certificates?.["certifications-visible-count"] ??
+                    ((config.sections as unknown as Record<string, unknown>)?.[
+                      "certifications-visible-count"
+                    ] as number | undefined) ??
                     5;
                   const hasHidden = certs.length > limit;
                   return (
                     <>
-                      <div className="columns-1 sm:columns-2 gap-4 [column-fill:balance]">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {certs.map((cert, index) => {
-                          const isHidden = !showAllCerts && index >= limit;
+                          const isAlwaysVisible = index < limit;
                           return (
-                            <motion.div
-                              key={(cert.name || '') + index}
-                              layout
+                            <AnimatePresence
+                              key={`${cert.name || ""}-${cert.issuer || ""}-${cert.date || ""}`}
                               initial={false}
-                              animate={
-                                isHidden
-                                  ? {
-                                      opacity: 0,
-                                      height: 0,
-                                      marginBottom: 0,
-                                      scale: 0.96,
-                                    }
-                                  : {
-                                      opacity: 1,
-                                      height: 'auto',
-                                      marginBottom: 16,
-                                      scale: 1,
-                                    }
-                              }
-                              transition={{
-                                duration: 0.45,
-                                ease: [0.4, 0, 0.2, 1],
-                              }}
-                              style={{ overflow: 'hidden' }}
-                              className="group break-inside-avoid"
                             >
-                              <div className="p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-all">
-                                <div className="flex items-start justify-between mb-2">
-                                  <div className="flex items-center gap-2 flex-1">
-                                    <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-2" />
-                                    <div className="flex-1">
-                                      <h4 className="font-medium text-sm">{cert.name}</h4>
-                                      <p className="text-xs text-muted-foreground">{cert.issuer}</p>
+                              {(isAlwaysVisible || showAllCerts) && (
+                                <motion.div
+                                  initial={
+                                    isAlwaysVisible
+                                      ? false
+                                      : {
+                                          opacity: 0,
+                                          height: 0,
+                                          scale: 0.95,
+                                        }
+                                  }
+                                  animate={{
+                                    opacity: 1,
+                                    height: "auto",
+                                    scale: 1,
+                                  }}
+                                  exit={{
+                                    opacity: 0,
+                                    height: 0,
+                                    scale: 0.95,
+                                  }}
+                                  transition={{
+                                    duration: 0.45,
+                                    ease: [0.4, 0, 0.2, 1],
+                                  }}
+                                  style={{ overflow: "hidden" }}
+                                  className="group"
+                                >
+                                  <div className="p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-all">
+                                    <div className="flex items-start justify-between mb-2">
+                                      <div className="flex items-center gap-2 flex-1">
+                                        <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-2" />
+                                        <div className="flex-1">
+                                          <h4 className="font-medium text-sm">
+                                            {cert.name}
+                                          </h4>
+                                          <p className="text-xs text-muted-foreground">
+                                            {cert.issuer}
+                                          </p>
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                          <Calendar className="w-3 h-3" />
+                                          {cert._date}
+                                        </span>
+                                      </div>
                                     </div>
+                                    <div className="flex flex-wrap gap-2 mb-2">
+                                      {cert.keywords?.map((keyword, i) => (
+                                        <motion.div
+                                          key={keyword}
+                                          initial={{ opacity: 0, scale: 0.85 }}
+                                          animate={{ opacity: 1, scale: 1 }}
+                                          transition={{
+                                            duration: 0.25,
+                                            delay: i * 0.04 + 0.15,
+                                          }}
+                                        >
+                                          <Badge
+                                            variant="secondary"
+                                            className="text-xs"
+                                          >
+                                            {keyword}
+                                          </Badge>
+                                        </motion.div>
+                                      ))}
+                                    </div>
+                                    {cert.url && (
+                                      <Button
+                                        asChild
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-7 text-xs px-2 py-1 font-normal"
+                                      >
+                                        <a
+                                          href={cert.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          aria-label={`View credential for ${cert.name}`}
+                                        >
+                                          <ExternalLink className="w-3.5 h-3.5" />
+                                          <span>Credential</span>
+                                        </a>
+                                      </Button>
+                                    )}
                                   </div>
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                      <Calendar className="w-3 h-3" />
-                                      {cert._date}
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="flex flex-wrap gap-2 mb-2">
-                                  {cert.keywords?.map((keyword, i) => (
-                                    <motion.div
-                                      key={keyword}
-                                      initial={{ opacity: 0, scale: 0.85 }}
-                                      animate={{ opacity: 1, scale: 1 }}
-                                      transition={{
-                                        duration: 0.25,
-                                        delay: i * 0.04 + 0.15,
-                                      }}
-                                    >
-                                      <Badge variant="secondary" className="text-xs">
-                                        {keyword}
-                                      </Badge>
-                                    </motion.div>
-                                  ))}
-                                </div>
-                                {cert.url && (
-                                  <Button
-                                    asChild
-                                    size="sm"
-                                    variant="outline"
-                                    className="h-7 text-xs px-2 py-1 font-normal"
-                                  >
-                                    <a
-                                      href={cert.url}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      aria-label={`View credential for ${cert.name}`}
-                                    >
-                                      <ExternalLink className="w-3.5 h-3.5" />
-                                      <span>Credential</span>
-                                    </a>
-                                  </Button>
-                                )}
-                              </div>
-                            </motion.div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           );
                         })}
                       </div>
                       {!showAllCerts && hasHidden && (
                         <div className="flex justify-center mt-2">
-                          <Button variant="outline" onClick={() => setShowAllCerts(true)}>
+                          <Button
+                            variant="outline"
+                            onClick={() => setShowAllCerts(true)}
+                          >
                             Show all certifications ({certs.length - limit} more)
                           </Button>
                         </div>
                       )}
                       {showAllCerts && hasHidden && (
                         <div className="flex justify-center mt-6">
-                          <Button variant="outline" onClick={() => setShowAllCerts(false)}>
+                          <Button
+                            variant="outline"
+                            onClick={() => setShowAllCerts(false)}
+                          >
                             Collapse certifications
                           </Button>
                         </div>

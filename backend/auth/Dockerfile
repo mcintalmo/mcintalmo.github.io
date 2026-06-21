@@ -13,4 +13,4 @@ COPY auth/ ./auth/
 # Install only this service's deps (no dev deps)
 RUN uv sync --package auth --frozen --no-dev
 
-CMD ["uv", "run", "--package", "auth", "opentelemetry-instrument", "uvicorn", "auth.main:app", "--host", "0.0.0.0"]
+CMD ["uv", "run", "--package", "auth", "uvicorn", "auth.main:app", "--host", "0.0.0.0"]

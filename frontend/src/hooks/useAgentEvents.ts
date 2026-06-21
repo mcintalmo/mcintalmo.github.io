@@ -1,5 +1,5 @@
-import { useEffect } from "react";
 import { useRoomContext } from "@livekit/components-react";
+import { useEffect } from "react";
 import type { AgentEvent, NavigationTarget } from "../lib/events";
 
 type Handlers = {
@@ -33,6 +33,8 @@ export function useAgentEvents(handlers: Handlers) {
     };
 
     room.on("dataReceived", handleData);
-    return () => { room.off("dataReceived", handleData); };
+    return () => {
+      room.off("dataReceived", handleData);
+    };
   }, [room, handlers]);
 }

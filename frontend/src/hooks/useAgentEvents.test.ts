@@ -1,20 +1,22 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook } from "@testing-library/react";
 import { useRoomContext } from "@livekit/components-react";
+import { renderHook } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useAgentEvents } from "./useAgentEvents";
 
 // Build a minimal mock room with an event emitter
 function makeMockRoom() {
-  const listeners: Record<string, Function[]> = {};
+  const listeners: Record<string, ((...args: unknown[]) => void)[]> = {};
   return {
-    on: vi.fn((event: string, cb: Function) => {
+    on: vi.fn((event: string, cb: (...args: unknown[]) => void) => {
       listeners[event] = [...(listeners[event] ?? []), cb];
     }),
-    off: vi.fn((event: string, cb: Function) => {
-      listeners[event] = listeners[event]?.filter(l => l !== cb);
+    off: vi.fn((event: string, cb: (...args: unknown[]) => void) => {
+      listeners[event] = listeners[event]?.filter((l) => l !== cb);
     }),
     emit: (event: string, payload: unknown) => {
-      listeners[event]?.forEach(l => l(payload));
+      listeners[event]?.forEach((l) => {
+        l(payload);
+      });
     },
   };
 }
@@ -24,7 +26,9 @@ describe("useAgentEvents", () => {
 
   beforeEach(() => {
     mockRoom = makeMockRoom();
-    vi.mocked(useRoomContext).mockReturnValue(mockRoom as any);
+    vi.mocked(useRoomContext).mockReturnValue(
+      mockRoom as unknown as ReturnType<typeof useRoomContext>,
+    );
   });
 
   it("calls onNavigate when a navigate event is received", () => {

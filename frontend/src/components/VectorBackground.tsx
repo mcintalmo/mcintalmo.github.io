@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { useTheme } from './ThemeProvider';
+import * as React from "react";
+import { useTheme } from "./ThemeProvider";
 
 /* ─────────── Types ─────────── */
 interface Particle {
@@ -14,7 +14,7 @@ interface Particle {
 /* ─────────── Constants ─────────── */
 const PARTICLE_COUNT = 300;
 const LINK_DISTANCE = 140;
-const LINK_OPACITY_LIGHT = 0.10;
+const LINK_OPACITY_LIGHT = 0.1;
 const LINK_OPACITY_DARK = 0.18;
 const DOT_OPACITY_LIGHT = 0.35;
 const DOT_OPACITY_DARK = 0.55;
@@ -24,10 +24,10 @@ const REPULSE_MAX_DIST = 180;
 const REPULSE_STRENGTH = 800;
 const PARALLAX_FACTOR = 0.8;
 
-const COLORS_LIGHT = ['#6366F1', '#818CF8', '#38BDF8', '#0EA5E9'];
-const COLORS_DARK = ['#818CF8', '#A5B4FC', '#22D3EE', '#67E8F9'];
-const LINK_COLOR_LIGHT = '#64748B';
-const LINK_COLOR_DARK = '#E2E8F0';
+const COLORS_LIGHT = ["#6366F1", "#818CF8", "#38BDF8", "#0EA5E9"];
+const COLORS_DARK = ["#818CF8", "#A5B4FC", "#22D3EE", "#67E8F9"];
+const LINK_COLOR_LIGHT = "#64748B";
+const LINK_COLOR_DARK = "#E2E8F0";
 
 /* ─────────── Component ─────────── */
 export const VectorBackground = () => {
@@ -41,40 +41,45 @@ export const VectorBackground = () => {
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
 
   React.useEffect(() => {
-    setPrefersReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    setPrefersReducedMotion(
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    );
   }, []);
 
   // Get full document height for canvas sizing
-  const getDocHeight = () => {
-    if (typeof document === 'undefined') return window.innerHeight * 3;
+  const getDocHeight = React.useCallback(() => {
+    if (typeof document === "undefined") return window.innerHeight * 3;
     return Math.max(
       document.body.scrollHeight,
       document.documentElement.scrollHeight,
-      window.innerHeight * 3 // minimum 3x viewport
+      window.innerHeight * 3, // minimum 3x viewport
     );
-  };
+  }, []);
 
   // Initialize particles across full page height
-  const initParticles = React.useCallback((w: number, fullH: number) => {
-    const colors = theme === 'dark' ? COLORS_DARK : COLORS_LIGHT;
-    const particles: Particle[] = [];
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
-      particles.push({
-        x: Math.random() * w,
-        y: Math.random() * fullH,
-        vx: (Math.random() - 0.5) * BROWNIAN_SPEED * 2,
-        vy: (Math.random() - 0.5) * BROWNIAN_SPEED * 2,
-        radius: 1.5 + Math.random() * 2,
-        color: colors[Math.floor(Math.random() * colors.length)],
-      });
-    }
-    return particles;
-  }, [theme]);
+  const initParticles = React.useCallback(
+    (w: number, fullH: number) => {
+      const colors = theme === "dark" ? COLORS_DARK : COLORS_LIGHT;
+      const particles: Particle[] = [];
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push({
+          x: Math.random() * w,
+          y: Math.random() * fullH,
+          vx: (Math.random() - 0.5) * BROWNIAN_SPEED * 2,
+          vy: (Math.random() - 0.5) * BROWNIAN_SPEED * 2,
+          radius: 1.5 + Math.random() * 2,
+          color: colors[Math.floor(Math.random() * colors.length)],
+        });
+      }
+      return particles;
+    },
+    [theme],
+  );
 
   React.useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     // Size canvas to viewport height (stable layout)
@@ -113,12 +118,12 @@ export const VectorBackground = () => {
       scrollYRef.current = window.scrollY;
     };
 
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('mouseleave', handleMouseLeave);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', resize);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", resize);
 
-    const isDark = theme === 'dark';
+    const isDark = theme === "dark";
     const linkColor = isDark ? LINK_COLOR_DARK : LINK_COLOR_LIGHT;
     const linkOp = isDark ? LINK_OPACITY_DARK : LINK_OPACITY_LIGHT;
     const dotOp = isDark ? DOT_OPACITY_DARK : DOT_OPACITY_LIGHT;
@@ -126,7 +131,7 @@ export const VectorBackground = () => {
     // Animation loop
     const animate = () => {
       if (!canvas || !ctx) return;
-      
+
       const w = window.innerWidth;
       const viewportH = window.innerHeight;
       const fullH = canvasHeightRef.current;
@@ -135,12 +140,14 @@ export const VectorBackground = () => {
 
       try {
         // Draw background color since body is now transparent
-        let bgColor = (theme === 'dark' ? '#030712' : '#ffffff');
-        if (typeof document !== 'undefined' && document.body) {
-          const rawBg = getComputedStyle(document.body).getPropertyValue('--background').trim();
+        let bgColor = theme === "dark" ? "#030712" : "#ffffff";
+        if (typeof document !== "undefined" && document.body) {
+          const rawBg = getComputedStyle(document.body)
+            .getPropertyValue("--background")
+            .trim();
           if (rawBg) bgColor = rawBg;
         }
-        
+
         ctx.fillStyle = bgColor;
         ctx.fillRect(0, 0, w, viewportH);
 
@@ -171,10 +178,22 @@ export const VectorBackground = () => {
             p.x += p.vx;
             p.y += p.vy;
 
-            if (p.x < 0) { p.x = 0; p.vx = Math.abs(p.vx); }
-            if (p.x > w) { p.x = w; p.vx = -Math.abs(p.vx); }
-            if (p.y < 0) { p.y = 0; p.vy = Math.abs(p.vy); }
-            if (p.y > fullH) { p.y = fullH; p.vy = -Math.abs(p.vy); }
+            if (p.x < 0) {
+              p.x = 0;
+              p.vx = Math.abs(p.vx);
+            }
+            if (p.x > w) {
+              p.x = w;
+              p.vx = -Math.abs(p.vx);
+            }
+            if (p.y < 0) {
+              p.y = 0;
+              p.vy = Math.abs(p.vy);
+            }
+            if (p.y > fullH) {
+              p.y = fullH;
+              p.vy = -Math.abs(p.vy);
+            }
           }
 
           const drawY = p.y - offset;
@@ -214,7 +233,7 @@ export const VectorBackground = () => {
             }
           }
         }
-      } catch (err) {
+      } catch (_err) {
         // Only log once to avoid flooding
       }
 
@@ -227,17 +246,14 @@ export const VectorBackground = () => {
     return () => {
       clearTimeout(resizeTimer);
       cancelAnimationFrame(rafRef.current);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseleave', handleMouseLeave);
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', resize);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseleave", handleMouseLeave);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", resize);
     };
-  }, [theme, initParticles, prefersReducedMotion]);
+  }, [theme, initParticles, prefersReducedMotion, getDocHeight]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed top-0 left-0 z-0 pointer-events-none"
-    />
+    <canvas ref={canvasRef} className="fixed top-0 left-0 z-0 pointer-events-none" />
   );
 };

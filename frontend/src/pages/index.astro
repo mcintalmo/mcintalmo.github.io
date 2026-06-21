@@ -1,12 +1,13 @@
 ---
-import { InteractivePortfolio } from '../components/InteractivePortfolio';
-import Layout from '../layouts/Layout.astro';
-import { VectorBackground } from '../components/VectorBackground';
-import { Navigation } from '../components/Navigation';
-import { BackToTop } from '../components/BackToTop';
-import { ThemeProvider } from '../components/ThemeProvider';
-import { loadAll } from '../lib/data';
-import '../styles/globals.css';
+import { BackToTop } from "../components/BackToTop";
+import { InteractivePortfolio } from "../components/InteractivePortfolio";
+import { Navigation } from "../components/Navigation";
+import { ThemeProvider } from "../components/ThemeProvider";
+import { VectorBackground } from "../components/VectorBackground";
+import { Toaster } from "../components/ui/sonner";
+import Layout from "../layouts/Layout.astro";
+import { loadAll } from "../lib/data";
+import "../styles/globals.css";
 
 const { config, resume } = loadAll();
 ---
@@ -18,5 +19,6 @@ const { config, resume } = loadAll();
       <BackToTop client:only="react" />
     </div>
     <VectorBackground client:only="react" />
+    <Toaster client:only="react" />
   </ThemeProvider>
 </Layout>

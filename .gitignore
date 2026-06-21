@@ -226,6 +226,8 @@ __marimo__/
 # Google ADK
 .adk
 
+# DeepEval
+.deepeval
 
 ##########################################################
 # Node.gitignore
@@ -380,9 +382,10 @@ vite.config.ts.timestamp-*
 
 
 ##########################################################
-# MacOS.gitignore
+# Local Development
 ##########################################################
 
+.vscode
 .DS_Store
 
 
@@ -399,3 +402,19 @@ frontend/public/resume.pdf
 frontend/public/resume.json
 frontend/public/resume.yaml
 backend/agent/src/agent/portfolio_content.json
+backend/tailor/cache
+infra/models/
+
+
+##########################################################
+# Coding Agents
+##########################################################
+.agents
+.playwright-mcp
+.vscode
+
+# Terraform
+.terraform/
+*.tfstate*
+*.tfvars*
+

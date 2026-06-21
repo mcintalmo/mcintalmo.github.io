@@ -1,5 +1,16 @@
 packages:
   - frontend
   - resume/convert
+allowBuilds:
+  '@sentry/cli': set this to true or false
+  '@tsparticles/engine': set this to true or false
+  esbuild: set this to true or false
+  sharp: set this to true or false
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
+
+# Security hardening configuration
+minimumReleaseAge: 10080
+minimumReleaseAgeStrict: false
+blockExoticSubdeps: true
+

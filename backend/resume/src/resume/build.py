@@ -34,16 +34,18 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 import yaml
 
 # ── Path constants ─────────────────────────────────────────────────────────────
 
-REPO_ROOT = Path(__file__).parents[4]  # build.py → resume/ → src/ → resume(pkg)/ → backend/ → repo root
+# build.py → resume/ → src/ → resume(pkg)/ → backend/ → repo root
+REPO_ROOT = Path(__file__).parents[4]
 RESUME_DIR = REPO_ROOT / "resume"
 
 # Input files
-SOURCE_JSON_RESUME = RESUME_DIR / "resume.yaml"       # JSON Resume schema (YAML)
+SOURCE_JSON_RESUME = RESUME_DIR / "resume.yaml"  # JSON Resume schema (YAML)
 DESIGN_YAML = RESUME_DIR / "themes" / "classic" / "design.yaml"
 CONVERTER_SCRIPT = RESUME_DIR / "convert" / "convert.mjs"
 
@@ -53,7 +55,9 @@ RENDERCV_YAML = RESUME_DIR / "rendercv" / "resume.yaml"  # RenderCV-format YAML
 # Outputs
 OUTPUT_DIR = RESUME_DIR / "output"
 PUBLIC_DIR = REPO_ROOT / "frontend" / "public"
-AGENT_CONTEXT = REPO_ROOT / "backend" / "agent" / "src" / "agent" / "portfolio_content.json"
+AGENT_CONTEXT = (
+    REPO_ROOT / "backend" / "agent" / "src" / "agent" / "portfolio_content.json"
+)
 
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
@@ -87,7 +91,9 @@ def convert_to_rendercv() -> Path:
     )
     if result.returncode != 0:
         print("Converter stderr:", result.stderr, file=sys.stderr)
-        raise RuntimeError(f"JSON Resume → RenderCV conversion failed (exit {result.returncode})")
+        raise RuntimeError(
+            f"JSON Resume → RenderCV conversion failed (exit {result.returncode})"
+        )
 
     log(f"Converted to {RENDERCV_YAML.relative_to(REPO_ROOT)}")
     return RENDERCV_YAML
@@ -106,10 +112,16 @@ def render_pdf_and_markdown(generate_pdf: bool) -> tuple[Path | None, Path | Non
     Returns (pdf_path, md_path).
     """
     # Lazy import so the module can be loaded without rendercv installed
-    from rendercv.renderer.markdown import generate_markdown
-    from rendercv.renderer.pdf_png import generate_pdf as _gen_pdf
-    from rendercv.renderer.typst import generate_typst
-    from rendercv.schema.rendercv_model_builder import build_rendercv_dictionary_and_model
+    from rendercv.renderer.markdown import (  # type: ignore[import-untyped]
+        generate_markdown,
+    )
+    from rendercv.renderer.pdf_png import (  # type: ignore[import-untyped]
+        generate_pdf as _gen_pdf,
+    )
+    from rendercv.renderer.typst import generate_typst  # type: ignore[import-untyped]
+    from rendercv.schema.rendercv_model_builder import (  # type: ignore[import-untyped]
+        build_rendercv_dictionary_and_model,
+    )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -184,13 +196,17 @@ def build_json() -> Path:
 # ── Step 5 / 6: Agent context ──────────────────────────────────────────────────
 
 
-def build_agent_context_file(resume_data: dict, site_config: dict) -> Path:
+def build_agent_context_file(
+    resume_data: dict[str, Any], site_config: dict[str, Any]
+) -> Path:
     """Build structured agent context and write to portfolio_content.json."""
     from .agent_context import build_agent_context
 
     context = build_agent_context(resume_data, site_config)
     AGENT_CONTEXT.parent.mkdir(parents=True, exist_ok=True)
-    AGENT_CONTEXT.write_text(json.dumps(context, indent=2, ensure_ascii=False), encoding="utf-8")
+    AGENT_CONTEXT.write_text(
+        json.dumps(context, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     log(f"Agent context: {AGENT_CONTEXT.relative_to(REPO_ROOT)}")
     return AGENT_CONTEXT
 
@@ -199,7 +215,9 @@ def build_agent_context_file(resume_data: dict, site_config: dict) -> Path:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Build resume artifacts from resume/resume.yaml.")
+    parser = argparse.ArgumentParser(
+        description="Build resume artifacts from resume/resume.yaml."
+    )
     parser.add_argument(
         "--no-pdf",
         action="store_true",
@@ -247,7 +265,11 @@ def main() -> None:
     print("\n[6/6] Building agent context")
     site_config_path = REPO_ROOT / "site-config.yaml"
     resume_data = yaml.safe_load(SOURCE_JSON_RESUME.read_text(encoding="utf-8"))
-    site_config = yaml.safe_load(site_config_path.read_text(encoding="utf-8")) if site_config_path.exists() else {}
+    site_config = (
+        yaml.safe_load(site_config_path.read_text(encoding="utf-8"))
+        if site_config_path.exists()
+        else {}
+    )
     try:
         build_agent_context_file(resume_data, site_config)
     except Exception as exc:

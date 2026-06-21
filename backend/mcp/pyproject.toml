@@ -3,8 +3,8 @@ name = "portfolio-mcp"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
-    "fastmcp>=0.1.0",
-    "pyyaml>=6.0.0",
+    "fastmcp>=3.3.1",
+    "pyyaml>=6.0.3",
     "common",
 ]
 

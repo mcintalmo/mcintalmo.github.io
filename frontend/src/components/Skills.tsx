@@ -1,11 +1,10 @@
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { useScrollAnimation } from './hooks/useScrollAnimation';
-import type { ResumeSkill, SiteConfigRoot } from '../lib/types';
-import type { LucideIcon } from 'lucide-react';
-import { Code, Brain, Cloud, Wrench, Layers3 } from 'lucide-react';
-import { SectionAnchor } from './SectionAnchor';
+import { motion } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
+import { Brain, Cloud, Code, Layers3, Wrench } from "lucide-react";
+import type { ResumeSkill, SiteConfigRoot } from "../lib/types";
+import { useScrollAnimation } from "./hooks/useScrollAnimation";
+import { SectionAnchor } from "./SectionAnchor";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 // Mapping of (normalized) level -> filled slot count
 const skillLevels: Record<string, number> = {
@@ -17,7 +16,7 @@ const skillLevels: Record<string, number> = {
   novice: 1,
 };
 
-const MAX_SLOTS = 5;
+const _MAX_SLOTS = 5;
 
 function normalizeLevel(level?: string): number | null {
   if (!level) return null;
@@ -28,15 +27,23 @@ function normalizeLevel(level?: string): number | null {
 function SkillSlots({ level }: { level?: string }) {
   const filled = normalizeLevel(level) ?? 0;
   return (
-    <div className="flex gap-1" aria-label={level ? `Level: ${level}` : undefined}>
-      {Array.from({ length: MAX_SLOTS }).map((_, i) => (
-        <div
-          key={i}
-          className={
-            'h-1.5 w-4 rounded-full transition-colors ' + (i < filled ? 'bg-primary' : 'bg-muted')
-          }
-        />
-      ))}
+    <div className="flex gap-1">
+      {level && <span className="sr-only">Level: {level}</span>}
+      <div
+        className={`h-1.5 w-4 rounded-full transition-colors ${0 < filled ? "bg-primary" : "bg-muted"}`}
+      />
+      <div
+        className={`h-1.5 w-4 rounded-full transition-colors ${1 < filled ? "bg-primary" : "bg-muted"}`}
+      />
+      <div
+        className={`h-1.5 w-4 rounded-full transition-colors ${2 < filled ? "bg-primary" : "bg-muted"}`}
+      />
+      <div
+        className={`h-1.5 w-4 rounded-full transition-colors ${3 < filled ? "bg-primary" : "bg-muted"}`}
+      />
+      <div
+        className={`h-1.5 w-4 rounded-full transition-colors ${4 < filled ? "bg-primary" : "bg-muted"}`}
+      />
     </div>
   );
 }
@@ -70,7 +77,10 @@ function getIconByName(iconName: string): LucideIcon {
 }
 
 // Build categories from config or fallback to keyword-based grouping
-function buildCategories(skills: ResumeSkill[], config: SiteConfigRoot): SkillCategory[] {
+function buildCategories(
+  skills: ResumeSkill[],
+  config: SiteConfigRoot,
+): SkillCategory[] {
   const configCategories = config.sections?.skills?.categories;
 
   if (configCategories && Array.isArray(configCategories)) {
@@ -107,12 +117,12 @@ function buildCategories(skills: ResumeSkill[], config: SiteConfigRoot): SkillCa
 
       // If no match found, assign to first "Other" category or create one
       if (!assigned) {
-        const otherKey = 'other';
+        const otherKey = "other";
         if (!categoryMap[otherKey]) {
           categoryMap[otherKey] = {
             key: otherKey,
-            title: 'Other',
-            icon: chooseIcon('Other'),
+            title: "Other",
+            icon: chooseIcon("Other"),
             skills: [],
           };
           order.push(otherKey);
@@ -128,9 +138,9 @@ function buildCategories(skills: ResumeSkill[], config: SiteConfigRoot): SkillCa
   const order: string[] = [];
   const map: Record<string, SkillCategory> = {};
   for (const skill of skills) {
-    const rawLabel = (skill.keywords && skill.keywords[0]) || 'Other';
+    const rawLabel = skill.keywords?.[0] || "Other";
     const label = rawLabel.trim();
-    const key = label.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const key = label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     if (!map[key]) {
       map[key] = { key, title: label, icon: chooseIcon(label), skills: [] };
       order.push(key);
@@ -140,16 +150,11 @@ function buildCategories(skills: ResumeSkill[], config: SiteConfigRoot): SkillCa
   return order.map((k) => map[k]);
 }
 
-// With single-keyword categorization we have no extra keywords; keep function for future extension.
-function deriveTools(_skills: ResumeSkill[], _categorized: SkillCategory[]): string[] {
-  return [];
-}
-
 function CategoryCard({ category, index }: { category: SkillCategory; index: number }) {
   const { ref, controls } = useScrollAnimation();
   return (
     <motion.div
-      ref={ref as any}
+      ref={ref}
       initial={{ opacity: 0, y: 30, rotateX: -15 }}
       animate={controls}
       variants={{
@@ -165,7 +170,7 @@ function CategoryCard({ category, index }: { category: SkillCategory; index: num
           },
         },
       }}
-      style={{ perspective: '1000px' }}
+      style={{ perspective: "1000px" }}
     >
       {/* Remove h-full so cards shrink to content; grid will no longer stretch items */}
       <Card>
@@ -178,7 +183,8 @@ function CategoryCard({ category, index }: { category: SkillCategory; index: num
         <CardContent className="space-y-4">
           {category.skills.map((skill, skillIndex) => (
             <motion.div
-              key={(skill.name || 'skill') + skillIndex}
+              // biome-ignore lint/suspicious/noArrayIndexKey: fallback to index is required if skill name is missing
+              key={(skill.name || "skill") + skillIndex}
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{
@@ -188,7 +194,10 @@ function CategoryCard({ category, index }: { category: SkillCategory; index: num
               viewport={{ once: true }}
             >
               <div className="flex items-center gap-3 py-0.5">
-                <span className="text-sm font-medium flex-1 truncate" title={skill.name}>
+                <span
+                  className="text-sm font-medium flex-1 truncate"
+                  title={skill.name}
+                >
                   {skill.name}
                 </span>
                 <div className="w-28 flex justify-start">
@@ -210,9 +219,14 @@ function CategoryCard({ category, index }: { category: SkillCategory; index: num
   );
 }
 
-export function Skills({ skills, config }: { skills: ResumeSkill[]; config: SiteConfigRoot }) {
+export function Skills({
+  skills,
+  config,
+}: {
+  skills: ResumeSkill[];
+  config: SiteConfigRoot;
+}) {
   const categories = buildCategories(skills, config);
-  const tools = deriveTools(skills, categories);
 
   return (
     <section id="skills" className="py-20">
@@ -226,7 +240,7 @@ export function Skills({ skills, config }: { skills: ResumeSkill[]; config: Site
           className="text-center mb-12 group glass-panel rounded-xl py-8 px-6"
         >
           <h2 className="mb-4 inline-flex items-center gap-2">
-            {config.sections?.skills?.title || 'Skills & Technologies'}
+            {config.sections?.skills?.title || "Skills & Technologies"}
             <SectionAnchor sectionId="skills" />
           </h2>
           {config.sections?.skills?.description && (
@@ -244,43 +258,6 @@ export function Skills({ skills, config }: { skills: ResumeSkill[]; config: Site
             </div>
           ))}
         </div>
-
-        {/* Tools & Platforms */}
-        {tools.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <Wrench className="w-6 h-6 text-primary" />
-                  Tools & Platforms
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-3">
-                  {tools.map((tool, index) => (
-                    <motion.div
-                      key={tool}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.3, delay: index * 0.04 }}
-                      viewport={{ once: true }}
-                      whileHover={{ scale: 1.05 }}
-                    >
-                      <Badge variant="secondary" className="cursor-default">
-                        {tool}
-                      </Badge>
-                    </motion.div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
       </div>
     </section>
   );

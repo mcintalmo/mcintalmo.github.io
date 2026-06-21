@@ -1,12 +1,15 @@
+from typing import Any
+
 import pytest
 from livekit.agents import AgentSession
+from livekit.agents.voice.run_result import RunResult
 from livekit.plugins import openai
 
 from agent.main import Assistant, LlmSettings
 
 
 @pytest.mark.asyncio
-async def test_assistant_greeting():
+async def test_assistant_greeting() -> None:
     # Only run this test if an API key is available, else we mock/skip
     # We'll use the default LlmSettings to get the configuration
     settings = LlmSettings()
@@ -27,7 +30,7 @@ async def test_assistant_greeting():
     async with AgentSession(llm=llm) as session:
         await session.start(Assistant())
 
-        result = await session.run(user_input="Hello")
+        result: RunResult[Any] = await session.run(user_input="Hello")
 
         # Test that the agent responds with a message
         result.expect.next_event().is_message(role="assistant")

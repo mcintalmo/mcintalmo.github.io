@@ -1,5 +1,6 @@
-import os
 import logging
+import os
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from livekit import api
@@ -17,6 +18,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/token")
 async def get_token(room_name: str = "my-room", identity: str = "user"):
     api_key = os.getenv("LIVEKIT_API_KEY", "devkey")
@@ -31,11 +33,13 @@ async def get_token(room_name: str = "my-room", identity: str = "user"):
 
     jwt = token.to_jwt()
     ws_url = os.getenv("LIVEKIT_WS_URL", "ws://127.0.0.1:7880")
-    
+
     return {"token": jwt, "ws_url": ws_url}
+
 
 if __name__ == "__main__":
     import uvicorn
+
     host = os.environ.get("UVICORN_HOST", "0.0.0.0")
     port = int(os.environ.get("UVICORN_PORT", "8000"))
     uvicorn.run(app, host=host, port=port)

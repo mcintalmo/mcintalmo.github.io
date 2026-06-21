@@ -13,9 +13,7 @@ logger = logging.getLogger("wyoming-plugin")
 
 
 class WyomingSTTStream(stt.SpeechStream):
-    def __init__(
-        self, *, stt_obj: stt.STT, conn_options: Any, host: str, port: int
-    ):
+    def __init__(self, *, stt_obj: stt.STT, conn_options: Any, host: str, port: int):
         super().__init__(stt=stt_obj, conn_options=conn_options)
         self.host = host
         self.port = port
@@ -64,9 +62,7 @@ class WyomingSTTStream(stt.SpeechStream):
                         stt.SpeechEvent(
                             type=stt.SpeechEventType.FINAL_TRANSCRIPT,
                             alternatives=[
-                                stt.SpeechData(
-                                    language="en", text=transcript.text
-                                )
+                                stt.SpeechData(language="en", text=transcript.text)
                             ],
                         ),
                     )
@@ -109,9 +105,7 @@ class WyomingSTTStream(stt.SpeechStream):
 class WyomingSTT(stt.STT):
     def __init__(self, host: str = "wyoming-whisper", port: int = 10020):
         super().__init__(
-            capabilities=stt.STTCapabilities(
-                streaming=True, interim_results=False
-            ),
+            capabilities=stt.STTCapabilities(streaming=True, interim_results=False),
         )
         self.host = host
         self.port = port
@@ -127,9 +121,7 @@ class WyomingSTT(stt.STT):
     async def _recognize_impl(
         self, frame: rtc.AudioFrame, *, language: str | None = None
     ) -> stt.SpeechEvent:
-        raise NotImplementedError(
-            "Batch recognition is not supported by WyomingSTT"
-        )
+        raise NotImplementedError("Batch recognition is not supported by WyomingSTT")
 
 
 class WyomingTTSChunkedStream(tts.ChunkedStream):
@@ -142,9 +134,7 @@ class WyomingTTSChunkedStream(tts.ChunkedStream):
         host: str,
         port: int,
     ):
-        super().__init__(
-            tts=tts_obj, input_text=text, conn_options=conn_options
-        )
+        super().__init__(tts=tts_obj, input_text=text, conn_options=conn_options)
         self.text = text
         self.host = host
         self.port = port
@@ -178,8 +168,7 @@ class WyomingTTSChunkedStream(tts.ChunkedStream):
                         data=chunk.audio,
                         sample_rate=chunk.rate,
                         num_channels=chunk.channels,
-                        samples_per_channel=len(chunk.audio)
-                        // (2 * chunk.channels),
+                        samples_per_channel=len(chunk.audio) // (2 * chunk.channels),
                     )
                     self._event_queue.put_nowait(
                         tts.SynthesizedAudio(

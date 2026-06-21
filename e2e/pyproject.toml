@@ -1,0 +1,19 @@
+[project]
+name = "e2e"
+version = "0.1.0"
+description = "End-to-end testing framework"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "pytest-html>=4.2.0",
+    "pytest-playwright>=0.7.2",
+    "pytest>=9.0.3",
+]
+
+[tool.pytest.ini_options]
+addopts = "--html=report.html --self-contained-html -v"
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.uv]
+exclude-newer = "7 days"

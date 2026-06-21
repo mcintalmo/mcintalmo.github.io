@@ -1,7 +1,0 @@
-services:
-  frontend:
-    image: nginx:alpine
-    volumes:
-      - ../frontend/dist:/usr/share/nginx/html:ro
-    ports:
-      - "4321:80"

@@ -1,29 +1,34 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import { Mail, MapPin, Phone, Send } from 'lucide-react';
-import { IconLinkedIn } from './icons/LinkedIn';
-import type { ResumeBasics, SiteConfigRoot } from '../lib/types';
+import { motion } from "framer-motion";
+import { Linkedin, Mail, MapPin, Phone, Send } from "lucide-react";
+import { useState } from "react";
+import type { ResumeBasics, SiteConfigRoot } from "../lib/types";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
 
-export function Contact({ basics, config }: { basics?: ResumeBasics; config: SiteConfigRoot }) {
+export function Contact({
+  basics,
+  config,
+}: {
+  basics?: ResumeBasics;
+  config: SiteConfigRoot;
+}) {
   // Extract available-for data strictly from config (no fallback defaults)
+  const contactConfig = config.sections?.contact as Record<string, unknown> | undefined;
   const availableForRaw =
-    (config.sections?.contact as any)?.['available-for'] ??
-    (config.sections?.contact as any)?.availableFor;
+    contactConfig?.["available-for"] ?? contactConfig?.availableFor;
   const availableFor: string[] | undefined = Array.isArray(availableForRaw)
-    ? (availableForRaw as string[]).map((s) => String(s).trim()).filter(Boolean)
+    ? (availableForRaw as unknown[]).map((s) => String(s).trim()).filter(Boolean)
     : undefined;
 
   const targetEmail = basics?.email; // could be extended to pull from config
 
   const [form, setForm] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
   });
 
   function update<K extends keyof typeof form>(key: K, value: string) {
@@ -33,16 +38,16 @@ export function Contact({ basics, config }: { basics?: ResumeBasics; config: Sit
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!targetEmail) return;
-    const subject = encodeURIComponent(form.subject || 'Website Inquiry');
+    const subject = encodeURIComponent(form.subject || "Website Inquiry");
     const bodyLines = [
       form.message,
-      '',
+      "",
       `--`,
       form.name && `From: ${form.name}`,
       form.email && `Email: ${form.email}`,
     ]
       .filter(Boolean)
-      .join('\n');
+      .join("\n");
     const body = encodeURIComponent(bodyLines);
     window.location.href = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
   }
@@ -57,7 +62,7 @@ export function Contact({ basics, config }: { basics?: ResumeBasics; config: Sit
           viewport={{ once: true }}
           className="text-center mb-16 glass-panel rounded-xl py-8 px-6"
         >
-          <h2 className="mb-4">{config.sections?.contact?.title || 'Contact'}</h2>
+          <h2 className="mb-4">{config.sections?.contact?.title || "Contact"}</h2>
           {config.sections?.contact?.description && (
             <p className="text-muted-foreground max-w-2xl mx-auto">
               {config.sections.contact.description}
@@ -136,13 +141,13 @@ export function Contact({ basics, config }: { basics?: ResumeBasics; config: Sit
                         <p>
                           {[basics?.location?.city, basics?.location?.region]
                             .filter(Boolean)
-                            .join(', ')}
+                            .join(", ")}
                         </p>
                       </div>
                     </motion.div>
                   )}
 
-                  {basics?.profiles?.find((p) => /linkedin/i.test(p.network || '')) && (
+                  {basics?.profiles?.find((p) => /linkedin/i.test(p.network || "")) && (
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       whileInView={{ opacity: 1, x: 0 }}
@@ -151,21 +156,23 @@ export function Contact({ basics, config }: { basics?: ResumeBasics; config: Sit
                       className="flex items-center gap-4"
                     >
                       <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <IconLinkedIn className="w-6 h-6 text-primary" />
+                        <Linkedin className="w-6 h-6 text-primary" />
                       </div>
                       <div className="flex flex-col">
                         <p className="text-sm text-muted-foreground">LinkedIn</p>
                         {(() => {
                           const profile = basics.profiles?.find((p) =>
-                            /linkedin/i.test(p.network || '')
+                            /linkedin/i.test(p.network || ""),
                           );
                           if (!profile) return null;
                           const label =
-                            profile.username || profile.url?.replace(/^https?:\/\//, '');
+                            profile.username ||
+                            profile.url?.replace(/^https?:\/\//, "");
                           return (
                             <a
                               href={
-                                profile.url || `https://www.linkedin.com/in/${profile.username}`
+                                profile.url ||
+                                `https://www.linkedin.com/in/${profile.username}`
                               }
                               target="_blank"
                               rel="noopener noreferrer"
@@ -196,8 +203,8 @@ export function Contact({ basics, config }: { basics?: ResumeBasics; config: Sit
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2 text-sm text-muted-foreground">
-                      {availableFor.map((item, idx) => (
-                        <li key={idx}>• {item}</li>
+                      {availableFor.map((item) => (
+                        <li key={item}>• {item}</li>
                       ))}
                     </ul>
                   </CardContent>
@@ -226,9 +233,11 @@ export function Contact({ basics, config }: { basics?: ResumeBasics; config: Sit
                     viewport={{ once: true }}
                   >
                     <Input
+                      id="contact-name"
+                      name="name"
                       placeholder="Your Name"
                       value={form.name}
-                      onChange={(e) => update('name', e.target.value)}
+                      onChange={(e) => update("name", e.target.value)}
                     />
                   </motion.div>
                   <motion.div
@@ -238,10 +247,12 @@ export function Contact({ basics, config }: { basics?: ResumeBasics; config: Sit
                     viewport={{ once: true }}
                   >
                     <Input
+                      id="contact-email"
+                      name="email"
                       placeholder="Your Email"
                       type="email"
                       value={form.email}
-                      onChange={(e) => update('email', e.target.value)}
+                      onChange={(e) => update("email", e.target.value)}
                       required
                     />
                   </motion.div>
@@ -252,9 +263,11 @@ export function Contact({ basics, config }: { basics?: ResumeBasics; config: Sit
                     viewport={{ once: true }}
                   >
                     <Input
+                      id="contact-subject"
+                      name="subject"
                       placeholder="Subject"
                       value={form.subject}
-                      onChange={(e) => update('subject', e.target.value)}
+                      onChange={(e) => update("subject", e.target.value)}
                     />
                   </motion.div>
                   <motion.div
@@ -264,10 +277,12 @@ export function Contact({ basics, config }: { basics?: ResumeBasics; config: Sit
                     viewport={{ once: true }}
                   >
                     <Textarea
+                      id="contact-message"
+                      name="message"
                       placeholder="Your message..."
                       className="min-h-[120px]"
                       value={form.message}
-                      onChange={(e) => update('message', e.target.value)}
+                      onChange={(e) => update("message", e.target.value)}
                       required
                     />
                   </motion.div>
@@ -283,7 +298,7 @@ export function Contact({ basics, config }: { basics?: ResumeBasics; config: Sit
                       disabled={!targetEmail || !form.email || !form.message}
                     >
                       <Send className="w-4 h-4 mr-2" />
-                      {targetEmail ? 'Send Message' : 'Email Unavailable'}
+                      {targetEmail ? "Send Message" : "Email Unavailable"}
                     </Button>
                   </motion.div>
                 </form>

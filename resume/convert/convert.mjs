@@ -23,8 +23,8 @@
  * to rendercv via the design_yaml_file argument.
  */
 
-import { readFileSync, writeFileSync } from "fs";
-import { resolve } from "path";
+import { readFileSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import yaml from "js-yaml";
 
 // ── Entry point ────────────────────────────────────────────────────────────────
@@ -34,7 +34,7 @@ const [, , inputArg, outputArg] = process.argv;
 if (!inputArg) {
   console.error(
     "Usage: node convert.mjs <input-yaml> [output-yaml]\n" +
-      "       node convert.mjs resume/resume.yaml > resume/rendercv/resume.yaml"
+      "       node convert.mjs resume/resume.yaml > resume/rendercv/resume.yaml",
   );
   process.exit(1);
 }
@@ -105,10 +105,7 @@ function convert(r) {
       if (e.startDate) entry.start_date = e.startDate;
       if (e.endDate) entry.end_date = e.endDate;
       // Map courses to highlights; map achievements to highlights too
-      const highlights = [
-        ...(e.achievements ?? []),
-        ...(e.courses ?? []),
-      ];
+      const highlights = [...(e.achievements ?? []), ...(e.courses ?? [])];
       if (highlights.length) entry.highlights = highlights;
       return entry;
     });

@@ -13,4 +13,4 @@ COPY agent/ ./agent/
 # Install only this service's deps (no dev deps)
 RUN uv sync --package agent --frozen --no-dev
 
-CMD ["uv", "run", "--package", "agent", "opentelemetry-instrument", "uvicorn", "agent.main:app", "--host", "0.0.0.0"]
+CMD ["uv", "run", "--package", "agent", "python", "-m", "agent.main", "start"]

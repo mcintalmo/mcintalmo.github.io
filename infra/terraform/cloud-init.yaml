@@ -1,0 +1,70 @@
+#cloud-config
+# Portfolio Server Initialization
+# Logs: /var/log/cloud-init-output.log
+
+packages:
+  - curl
+  - vim
+  - htop
+  - fail2ban
+  - certbot
+  - python3-certbot-nginx
+  - nginx
+  - ufw
+
+package_update: true
+package_upgrade: true
+
+runcmd:
+  # 1. Install Docker
+  - echo "=== Installing Docker ==="
+  - curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
+  - sh /tmp/get-docker.sh
+  - usermod -aG docker ubuntu
+  - systemctl enable --now docker
+
+  # 2. Install Docker Compose plugin
+  - echo "=== Installing Docker Compose ==="
+  - mkdir -p /usr/local/lib/docker/cli-plugins
+  - curl -SL "https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-aarch64" -o /usr/local/lib/docker/cli-plugins/docker-compose
+  - chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+  - ln -sf /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose
+
+  # 3. Configure fail2ban
+  - echo "=== Configuring fail2ban ==="
+  - systemctl enable --now fail2ban
+
+  # 4. Setup unattended upgrades for security updates
+  - echo "=== Configuring automatic security updates ==="
+  - apt-get install -y unattended-upgrades
+  - dpkg-reconfigure -plow unattended-upgrades
+
+  # 5. Create deployment directory
+  - mkdir -p /home/ubuntu/mcintalmo.github.io
+  - chown -R ubuntu:ubuntu /home/ubuntu/mcintalmo.github.io
+
+  # 6. Create status file for monitoring
+  - echo "cloud-init completed at $(date)" > /home/ubuntu/cloud-init-complete
+
+write_files:
+  - path: /etc/fail2ban/jail.local
+    content: |
+      [DEFAULT]
+      bantime = 3600
+      findtime = 600
+      maxretry = 5
+
+      [sshd]
+      enabled = true
+      port = 22
+      logpath = /var/log/auth.log
+
+final_message: |
+  ═══════════════════════════════════════════════════════════════
+  Portfolio Server Initialization Complete!
+  ═══════════════════════════════════════════════════════════════
+  Docker: Installed and running
+  Docker Compose: Installed
+  fail2ban: Enabled
+  Unattended Upgrades: Configured
+  ═══════════════════════════════════════════════════════════════

@@ -2,9 +2,10 @@
 set -euo pipefail
 
 # ── Config ────────────────────────────────────────────────────────────────────
-REPO_URL="https://github.com/mcintalmo/portfolio.git"
-APP_DIR="$HOME/portfolio"
-DOMAIN="www.alexandermcintosh.com"
+REPO_URL="https://github.com/mcintalmo/mcintalmo.github.io.git"
+APP_DIR="$HOME/mcintalmo.github.io"
+API_DOMAIN="api.alexandermcintosh.com"
+LIVEKIT_DOMAIN="livekit.alexandermcintosh.com"
 EMAIL="mcintalmo@gmail.com"
 COMPOSE_VERSION="2.27.0"
 
@@ -49,10 +50,8 @@ sudo ufw allow https
 # LiveKit ports
 sudo ufw allow 7880/tcp
 sudo ufw allow 7881/tcp
+sudo ufw allow 7882/udp
 sudo ufw allow 50000:60000/udp
-# Observability UIs — restrict to your IP in production
-# sudo ufw allow from YOUR_IP to any port 16686  # Jaeger
-# sudo ufw allow from YOUR_IP to any port 9090   # Prometheus
 sudo ufw --force enable
 
 # NOTE: Oracle also has a separate security list in the web console —
@@ -71,30 +70,43 @@ else
 fi
 
 # ── Environment file ──────────────────────────────────────────────────────────
-log "Setting up .env"
-if [ ! -f "$APP_DIR/infra/.env" ]; then
-    cp "$APP_DIR/.env.example" "$APP_DIR/infra/.env"
-    echo "⚠️  Edit $APP_DIR/infra/.env before starting services"
+log "Setting up backend .env"
+if [ ! -f "$APP_DIR/backend/.env" ]; then
+    cp "$APP_DIR/.env.example" "$APP_DIR/backend/.env"
+    echo "⚠️  Please edit $APP_DIR/backend/.env with your secrets (NVIDIA_API_KEY, LIVEKIT_API_KEY, LIVEKIT_API_SECRET) before running services."
 else
-    echo ".env already exists, skipping"
+    echo "backend .env already exists, skipping template copy"
 fi
 
 # ── Nginx ─────────────────────────────────────────────────────────────────────
-log "Installing Nginx config"
-sudo cp "$APP_DIR/infra/nginx/nginx.conf" /etc/nginx/nginx.conf
+log "Installing Nginx configuration"
+sudo cp "$APP_DIR/infra/nginx/portfolio.conf" /etc/nginx/sites-available/portfolio.conf
+sudo ln -sf /etc/nginx/sites-available/portfolio.conf /etc/nginx/sites-enabled/portfolio.conf
+sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t
 sudo systemctl enable --now nginx
+sudo systemctl restart nginx
 
 # ── TLS via Certbot ───────────────────────────────────────────────────────────
-log "Obtaining TLS certificate"
-if [ ! -d "/etc/letsencrypt/live/$DOMAIN" ]; then
+log "Obtaining TLS certificates for API and LiveKit subdomains"
+if [ ! -d "/etc/letsencrypt/live/$API_DOMAIN" ]; then
     sudo certbot --nginx \
-        -d "$DOMAIN" \
+        -d "$API_DOMAIN" \
         --non-interactive \
         --agree-tos \
         -m "$EMAIL"
 else
-    echo "Certificate already exists, skipping"
+    echo "Certificate for $API_DOMAIN already exists, skipping"
+fi
+
+if [ ! -d "/etc/letsencrypt/live/$LIVEKIT_DOMAIN" ]; then
+    sudo certbot --nginx \
+        -d "$LIVEKIT_DOMAIN" \
+        --non-interactive \
+        --agree-tos \
+        -m "$EMAIL"
+else
+    echo "Certificate for $LIVEKIT_DOMAIN already exists, skipping"
 fi
 
 # Auto-renew
@@ -103,9 +115,11 @@ sudo systemctl enable --now certbot.timer
 
 # ── systemd service ───────────────────────────────────────────────────────────
 log "Installing systemd service for docker compose"
+
+# Docker Compose Services (runs all backend services)
 sudo tee /etc/systemd/system/portfolio.service > /dev/null <<EOF
 [Unit]
-Description=Portfolio backend services
+Description=Portfolio Docker Compose Services (auth, agent, livekit, whisper, kokoro)
 Requires=docker.service
 After=docker.service network-online.target
 
@@ -113,14 +127,15 @@ After=docker.service network-online.target
 Type=oneshot
 RemainAfterExit=yes
 WorkingDirectory=$APP_DIR/infra
-ExecStart=docker compose -f docker-compose.yml -f docker-compose.observability.yml up -d
-ExecStop=docker compose -f docker-compose.yml -f docker-compose.observability.yml down
+ExecStart=/usr/bin/docker compose -f docker-compose.yaml up -d
+ExecStop=/usr/bin/docker compose -f docker-compose.yaml down
 User=$USER
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
+log "Reloading systemd daemon and enabling portfolio service"
 sudo systemctl daemon-reload
 sudo systemctl enable portfolio.service
 
@@ -128,6 +143,7 @@ sudo systemctl enable portfolio.service
 log "Setup complete"
 echo ""
 echo "Next steps:"
-echo "  1. Edit $APP_DIR/infra/.env with your secrets"
+echo "  1. Edit $APP_DIR/backend/.env with your secrets"
 echo "  2. Log out and back in (Docker group membership)"
-echo "  3. cd $APP_DIR/infra && make up"
+echo "  3. Start the entire container stack via:"
+echo "     sudo systemctl start portfolio.service"

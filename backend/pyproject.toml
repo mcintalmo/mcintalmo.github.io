@@ -1,22 +1,25 @@
 [tool.uv.workspace]
-members = ["common", "agent", "auth", "mcp", "resume"]
+members = ["common", "agent", "auth", "mcp", "resume", "tailor"]
 
 [tool.uv]
+exclude-newer = "7 days"
 dev-dependencies = [
-    "rendercv[full]>=2.6",
-    "pytest>=8.0",
+    "deepeval>=4.0.2",
+    "httpx",
+    "mypy>=1.10",
     "pytest-asyncio",
     "pytest-httpx",
-    "httpx",
-    "testcontainers",
+    "pytest>=8.0",
+    "rendercv[full]>=2.6",
     "ruff>=0.4",
-    "mypy>=1.10",
+    "testcontainers",
+    "types-pyyaml>=6.0.12",
 ]
 
 [tool.ruff]
 line-length = 88
 target-version = "py314"
-src = ["agent/src", "auth/src", "mcp/src", "common/src"]
+src = ["agent/src", "auth/src", "mcp/src", "common/src", "tailor/src"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
@@ -27,5 +30,11 @@ strict = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-testpaths = ["agent/tests", "auth/tests", "mcp/tests", "common/tests"]
-pythonpath = ["agent/src", "auth/src", "mcp/src", "common/src"]
+testpaths = ["agent/tests", "auth/tests", "mcp/tests", "common/tests", "tailor/tests"]
+pythonpath = [".", "agent/src", "auth/src", "mcp/src", "common/src", "tailor/src", "tailor/tests"]
+markers = [
+    "eval: marks tests as evaluations (select with '-m eval')",
+]
+
+
+

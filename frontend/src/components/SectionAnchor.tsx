@@ -1,6 +1,6 @@
-import { Link2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { cn } from './ui/utils';
+import { Link2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { cn } from "./ui/utils";
 
 interface SectionAnchorProps {
   sectionId: string; // must match the wrapping <section id>
@@ -33,8 +33,8 @@ export function SectionAnchor({
     <a
       href={href}
       className={cn(
-        'inline-flex items-center text-muted-foreground/60 hover:text-primary focus:text-primary transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm opacity-0 group-hover:opacity-100 group-focus-within:opacity-100',
-        className
+        "inline-flex items-center text-muted-foreground/60 hover:text-primary focus:text-primary transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm opacity-0 group-hover:opacity-100 group-focus-within:opacity-100",
+        className,
       )}
       aria-label={`Direct link to ${sectionId} section`}
       onClick={(_) => {
@@ -47,7 +47,7 @@ export function SectionAnchor({
           /* no-op */
         }
       }}
-      title={copied ? 'Copied!' : 'Copy link'}
+      title={copied ? "Copied!" : "Copy link"}
     >
       <Link2 size={size} strokeWidth={1.75} />
     </a>

@@ -1,134 +1,79 @@
-# Alexander McIntosh – Portfolio & Resume Generator
+# Alexander McIntosh – Portfolio Monorepo
 
-Modern, accessible portfolio site built with **Astro + React + TypeScript + Tailwind**, featuring an automated **YAML → LaTeX / PDF / HTML** resume pipeline.
+Welcome! This repository hosts a modern, highly interactive portfolio website built with **Astro, React, and TypeScript**, alongside a set of AI backend services powered by **LangGraph** (resume tailoring) and **LiveKit** (multimodal voice agent).
 
-## Features
+---
 
-- Astro static site with React islands & framer‑motion animations (respecting reduced‑motion)
-- Central content config: `src/content/resume.yaml` + `src/content/site.config.yaml`
-- Resume generator (`tools/pdf_generator/generate-resume.ts`) produces:
-  - LaTeX (`tools/pdf_generator/output/resume.tex`)
-  - HTML preview (`tools/pdf_generator/output/resume.html`)
-  - Public PDF (`public/downloads/<Name>_Resume.pdf`)
-- Structured data (JSON‑LD), dynamic `robots.txt`, sitemap generation
-- Theming (system / light / dark) with persistent preference
-- Accessible components (headings order, aria labels, keyboard support)
-- Linting (ESLint flat config), formatting (Prettier + astro plugin), basic tests (Vitest)
-- CI-ready build (resume generated before Astro build)
+## 📖 Table of Documentation
 
-## Key Structure
+To help human developers and AI coding agents onboard quickly, we have structured deep-dive context inside the `/docs` directory:
 
-```text
-astro.config.mjs
-tools/pdf_generator/
- generate-resume.ts         # CLI to build LaTeX/HTML/PDF
- pdf.config.yaml            # (optional) PDF layout overrides
- templates/resume_template.tex      # LaTeX template
- output/                    # Generated artifacts
-src/
- content/
-  resume.yaml              # Primary resume data (JSON Resume flavor)
-  site.config.yaml         # Site + section settings
- components/                # React UI + sections
- layouts/Layout.astro       # Base document + SEO + JSON-LD
- pages/index.astro          # Home page (mounts React sections)
- pages/robots.txt.ts        # Dynamic robots route
-public/downloads/            # Exposed PDF resume
-```
+| Document | Description |
+| :--- | :--- |
+| 🏗️ [Technical Architecture](file:///Users/mcint/projects/mcintalmo.github.io/docs/architecture.md) | Component responsibilities, monorepo directory layout, data flows, and infrastructure diagram. |
+| 💻 [Local Development Guide](file:///Users/mcint/projects/mcintalmo.github.io/docs/development.md) | Prerequisites, env setup, local Ollama Metal/GPU configuration, and running the dev servers. |
+| 🧪 [Testing & Evaluation Strategy](file:///Users/mcint/projects/mcintalmo.github.io/docs/testing.md) | How to run unit tests, LLM-as-a-judge evals (DeepEval & LiveKit simulations), and Playwright E2E suites. |
+| 🤖 [AI Agent & Styling Guidelines](file:///Users/mcint/projects/mcintalmo.github.io/docs/agent_instructions.md) | Mandatory styling rules, type safety requirements (Ruff, Mypy), and pre-commit checks. |
 
-## Tech Stack
+---
 
-| Layer        | Choice |
-|--------------|--------|
-| Framework    | Astro + React 19 |
-| Styling      | Tailwind CSS |
-| Animations   | framer-motion |
-| Forms (current) | mailto fallback (no backend) |
-| Resume schema | JSON Resume–inspired YAML + AJV validation |
-| PDF Toolchain | Pandoc (HTML/PDF fallback) + XeLaTeX (preferred) |
-| Testing       | Vitest |
+## ⚡ Quick Start
 
-## Getting Started
+For full installation and service configurations, please refer to the [Local Development Guide](file:///Users/mcint/projects/mcintalmo.github.io/docs/development.md). Below is the tl;dr version:
 
-```sh
+### 1. Install Dependencies
+
+```bash
+# Install frontend package manager dependencies
 pnpm install
-pnpm dev            # http://localhost:4321
+
+# Setup backend Python virtual environment and dependencies
+cd backend
+uv sync
 ```
 
-Build (generates resume then site):
+### 2. Configure Environment
 
-```sh
-pnpm build          # outputs dist/ and updates public/downloads/*.pdf
-pnpm preview        # serve production build locally
+Create a `.env` file in the `backend/` directory:
+
+```ini
+NVIDIA_API_KEY=your_nvidia_key
+LIVEKIT_API_KEY=your_livekit_key
+LIVEKIT_API_SECRET=your_livekit_secret
 ```
 
-## Agent Models & Hardware Acceleration (Ollama)
-The system leverages a LiteLLM Proxy routing architecture (port `4000`) within `docker-compose.yml` to supply standardized completions to the backend agents.
-However, because Docker for Mac cannot currently passthrough Apple Silicon GPU acceleration to Linux containers, **containerized Ollama instances are strictly CPU-bound**. 
+### 3. Spin Up Docker Containers
 
-To leverage native hardware acceleration for faster LLM inference:
+Start whisper, kokoro, and local routing proxies:
 
-### Mac M-Series (Local Development)
-1. Install [Ollama for Mac natively](https://ollama.com/download/mac).
-2. Open a terminal and run `ollama run phi3:mini` (an efficient 3.8B model fitting cleanly in 8GB Unified Memory).
-3. The LiteLLM Proxy is already configured to route traffic out of the Docker bridge to `http://host.docker.internal:11434` targeting your Host machine's native Metal GPU.
-
-### Oracle Cloud Infrastructure (Staging / Production OCI)
-Unlike Docker Desktop on Mac, **Native Linux hosts (OCI instances)** *can* utilize hardware acceleration (CUDA/ROCm) fully within containers using the `--gpus all` or `deploy.resources.reservations.devices` Docker Compose properties.
-If deploying to a 12GB+ RAM OCI VM:
-1. Re-enable the `ollama` container in `docker-compose.yml` to bundle the application.
-2. Consider scaling up the configured model parameter in `litellm_config.yaml` to `mistral-nemo` or `llama3.1:8b` for a stronger reasoning frontier!
-
-## Resume Generation
-
-`pnpm build` implicitly runs the generator. To run it alone:
-
-```sh
-pnpm tsx tools/pdf_generator/generate-resume.ts
+```bash
+cd infra
+make up-no-obs
 ```
 
-Outputs appear in `tools/pdf_generator/output/` and the PDF is copied to `public/downloads/` for the site.
+### 4. Run Development Servers
 
-Customize layout & limits via `tools/pdf_generator/pdf.config.yaml` (optional) and per‑section flags in `site.config.yaml`.
+- **Frontend**: Run `pnpm dev` from the root directory (runs Astro on `http://localhost:4321`).
+- **Backend**: Run `uv run fastapi dev src/tailor/server.py` in `backend/tailor` (`http://localhost:8000`).
+- **Voice Agent**: Run `uv run python src/agent/main.py dev` in `backend/agent`.
 
-## Editing Content
+---
 
-1. Update `src/content/resume.yaml` (basics, work, education, projects, skills, certificates, etc.)
-2. Adjust section visibility / titles / ordering in `src/content/site.config.yaml`.
-3. Re-run `pnpm build` to refresh artifacts.
+## 🛠️ Testing & Quality Control
 
-## Deployment
+We maintain a strict testing regime spanning from fast unit tests up to LLM evaluations and end-to-end user path testing:
 
-### GitHub Pages
+```bash
+# Run unit tests (excluding LLM calls)
+cd backend
+uv run pytest -m "not eval"
 
-Use `astro build --site https://user.github.io` (already supported). Provide `SITE_URL` in workflow env to keep canonical URLs correct.
+# Run LLM-as-a-judge Evals
+uv run pytest -m "eval"
 
-## Contact Form
-
-Currently a `mailto:` based submission (no server). For real submissions pick one:
-
-- Formspree / Web3Forms endpoint
-- Cloudflare Pages Function (`functions/api/contact.ts`) + email API
-
-After choosing, replace the form handler in `ContactSection.tsx`.
-
-## Tests & Lint
-
-```sh
-pnpm test           # Vitest (basic generator tests)
-pnpm lint           # ESLint (flat config)
+# Run Playwright E2E UI Tests
+cd ../e2e
+uv run pytest
 ```
 
-## Accessibility / Performance Tips
-
-- Ensure images use appropriate `alt` text (profile already provided)
-- Reduced-motion respected via `useReducedMotion`
-- Future improvement: responsive image variants for profile / hero background
-
-## Roadmap / Nice-to-Haves
-
-- Real contact endpoint + spam protection (honeypot + minimal rate limit)
-- Add analytics script
-- Responsive image optimization (srcset)
-- 404 page (`src/pages/404.astro`)
-- More tests (LaTeX snapshot, section ordering)
+See [Testing & Evaluation Strategy](file:///Users/mcint/projects/mcintalmo.github.io/docs/testing.md) for detailed instructions on debugging test failures and view-tracing.

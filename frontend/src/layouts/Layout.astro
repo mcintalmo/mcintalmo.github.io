@@ -4,12 +4,17 @@ interface Props {
   resume?: any;
 }
 const { config, resume } = Astro.props as Props;
-const basicsName = resume?.basics?.name || '';
-const title = config?.seo?.title || basicsName || 'Portfolio';
-const description = config?.seo?.description || (resume?.basics?.summary ? String(resume.basics.summary).slice(0,160) : '');
+const basicsName = resume?.basics?.name || "";
+const title = config?.seo?.title || basicsName || "Portfolio";
+const description =
+  config?.seo?.description ||
+  (resume?.basics?.summary ? String(resume.basics.summary).slice(0, 160) : "");
 // Derive site URL: prefer build-time SITE (astro --site) or fallback to production domain
-const siteUrl = (import.meta.env.SITE || 'https://www.alexandermcintosh.com').replace(/\/$/, '');
-const imageUrl = siteUrl + '/assets/profile.png';
+const siteUrl = (import.meta.env.SITE || "https://www.alexandermcintosh.com").replace(
+  /\/$/,
+  "",
+);
+const imageUrl = siteUrl + "/assets/profile.png";
 ---
 <!doctype html>
 <html lang="en">
@@ -32,7 +37,7 @@ const imageUrl = siteUrl + '/assets/profile.png';
 		<meta name="twitter:title" content={title} />
 		{description && <meta name="twitter:description" content={description} />}
 		<meta name="twitter:image" content={imageUrl} />
-		<script type="application/ld+json">{JSON.stringify({
+		<script is:inline type="application/ld+json">{JSON.stringify({
 			'@context': 'https://schema.org',
 			'@type': 'Person',
 			name: basicsName,
@@ -41,7 +46,7 @@ const imageUrl = siteUrl + '/assets/profile.png';
 			sameAs: (resume?.basics?.profiles || []).map((p: any) => p.url).filter(Boolean),
 			jobTitle: resume?.basics?.label
 		})}</script>
-		<script type="application/ld+json">{JSON.stringify({
+		<script is:inline type="application/ld+json">{JSON.stringify({
 			'@context': 'https://schema.org',
 			'@type': 'WebSite',
 			url: siteUrl,

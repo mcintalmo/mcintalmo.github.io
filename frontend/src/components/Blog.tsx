@@ -1,9 +1,9 @@
-import { useState, useMemo } from "react";
+import { ArrowUpRight, Calendar, Clock, Filter, Search, X } from "lucide-react";
+import { useMemo, useState } from "react";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { Calendar, Clock, ArrowUpRight, Search, X, Filter } from "lucide-react";
 
 const blogPosts = [
   {
@@ -26,14 +26,7 @@ const blogPosts = [
     readTime: "12 min read",
     date: "Nov 28, 2024",
     featured: true,
-    tags: [
-      "MLOps",
-      "DevOps",
-      "Deployment",
-      "CI/CD",
-      "Monitoring",
-      "Production",
-    ],
+    tags: ["MLOps", "DevOps", "Deployment", "CI/CD", "Monitoring", "Production"],
   },
   {
     id: 3,
@@ -62,13 +55,7 @@ const blogPosts = [
     readTime: "7 min read",
     date: "Oct 22, 2024",
     featured: false,
-    tags: [
-      "Privacy",
-      "LLMs",
-      "Security",
-      "Differential Privacy",
-      "Data Protection",
-    ],
+    tags: ["Privacy", "LLMs", "Security", "Differential Privacy", "Data Protection"],
   },
   {
     id: 5,
@@ -102,9 +89,7 @@ const blogPosts = [
 ];
 
 // Extract all unique tags from blog posts
-const allTags = Array.from(
-  new Set(blogPosts.flatMap((post) => post.tags))
-).sort();
+const allTags = Array.from(new Set(blogPosts.flatMap((post) => post.tags))).sort();
 
 const categories = [
   "All",
@@ -129,9 +114,7 @@ export function Blog() {
         searchQuery === "" ||
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.tags.some((tag) =>
-          tag.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+        post.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
 
       // Category filter
       const matchesCategory =
@@ -151,7 +134,7 @@ export function Blog() {
 
   const handleTagToggle = (tag: string) => {
     setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   };
 
@@ -170,9 +153,9 @@ export function Blog() {
         <div className="text-center mb-16 glass-panel rounded-xl py-8 px-6">
           <h2 className="mb-4">Thought Leadership</h2>
           <p className="max-w-2xl mx-auto text-muted-foreground">
-            Insights on artificial intelligence, machine learning, and data
-            science from the front lines of innovation. Sharing knowledge and
-            exploring the future of intelligent systems.
+            Insights on artificial intelligence, machine learning, and data science from
+            the front lines of innovation. Sharing knowledge and exploring the future of
+            intelligent systems.
           </p>
         </div>
 
@@ -182,6 +165,8 @@ export function Blog() {
           <div className="max-w-md mx-auto relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
+              id="blog-search"
+              name="search"
               type="text"
               placeholder="Search articles..."
               value={searchQuery}
@@ -190,6 +175,7 @@ export function Blog() {
             />
             {searchQuery && (
               <button
+                type="button"
                 onClick={() => setSearchQuery("")}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
@@ -203,9 +189,7 @@ export function Blog() {
             {categories.map((category) => (
               <Badge
                 key={category}
-                variant={
-                  category === selectedCategory ? "default" : "secondary"
-                }
+                variant={category === selectedCategory ? "default" : "secondary"}
                 className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
                 onClick={() => setSelectedCategory(category)}
               >
@@ -218,9 +202,7 @@ export function Blog() {
           <div className="space-y-4">
             <div className="flex items-center justify-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
-                Filter by tags:
-              </span>
+              <span className="text-sm text-muted-foreground">Filter by tags:</span>
             </div>
             <div className="flex flex-wrap justify-center gap-2 max-w-4xl mx-auto">
               {allTags.map((tag) => (
@@ -245,7 +227,7 @@ export function Blog() {
                 {searchQuery && (
                   <Badge variant="secondary" className="gap-1">
                     Search: "{searchQuery}"
-                    <button onClick={() => setSearchQuery("")}>
+                    <button type="button" onClick={() => setSearchQuery("")}>
                       <X className="h-3 w-3" />
                     </button>
                   </Badge>
@@ -253,7 +235,7 @@ export function Blog() {
                 {selectedCategory !== "All" && (
                   <Badge variant="secondary" className="gap-1">
                     Category: {selectedCategory}
-                    <button onClick={() => setSelectedCategory("All")}>
+                    <button type="button" onClick={() => setSelectedCategory("All")}>
                       <X className="h-3 w-3" />
                     </button>
                   </Badge>
@@ -261,7 +243,7 @@ export function Blog() {
                 {selectedTags.map((tag) => (
                   <Badge key={tag} variant="secondary" className="gap-1">
                     {tag}
-                    <button onClick={() => handleTagToggle(tag)}>
+                    <button type="button" onClick={() => handleTagToggle(tag)}>
                       <X className="h-3 w-3" />
                     </button>
                   </Badge>
@@ -316,11 +298,7 @@ export function Blog() {
 
                     <div className="flex flex-wrap gap-2">
                       {post.tags.slice(0, 4).map((tag) => (
-                        <Badge
-                          key={tag}
-                          variant="secondary"
-                          className="text-xs"
-                        >
+                        <Badge key={tag} variant="secondary" className="text-xs">
                           {tag}
                         </Badge>
                       ))}
@@ -410,8 +388,8 @@ export function Blog() {
               <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="mb-2">No articles found</h3>
               <p className="text-muted-foreground mb-6">
-                Try adjusting your search terms or clearing some filters to see
-                more results.
+                Try adjusting your search terms or clearing some filters to see more
+                results.
               </p>
               <Button onClick={clearAllFilters} variant="outline">
                 Clear All Filters

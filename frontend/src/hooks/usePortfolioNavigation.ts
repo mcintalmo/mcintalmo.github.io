@@ -28,8 +28,9 @@ export function usePortfolioNavigation() {
   };
 
   const reset = () => {
-    document.querySelectorAll(".agent-highlight")
-      .forEach(el => el.classList.remove("agent-highlight"));
+    document.querySelectorAll(".agent-highlight").forEach((el) => {
+      el.classList.remove("agent-highlight");
+    });
   };
 
   return { scrollTo, highlight, reset };
