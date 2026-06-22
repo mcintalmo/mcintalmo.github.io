@@ -201,9 +201,9 @@ export function InteractivePortfolio({ resume, config }: Props) {
         `portfolio-${Math.random().toString(36).substring(2, 11)}`;
     }
     const roomName = roomNameRef.current;
-    const hostname = window.location.hostname || "localhost";
+    const apiUrl = import.meta.env.PUBLIC_API_URL || "http://localhost:8000";
     fetch(
-      `http://${hostname}:8000/token?room_name=${roomName}&identity=user-` +
+      `${apiUrl}/token?room_name=${roomName}&identity=user-` +
         Math.floor(Math.random() * 10000),
     )
       .then((res) => res.json())
