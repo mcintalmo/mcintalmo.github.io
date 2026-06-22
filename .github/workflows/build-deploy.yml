@@ -150,6 +150,7 @@ jobs:
       - name: Build site (includes resume generation)
         env:
           SITE_URL: https://www.alexandermcintosh.com
+          PUBLIC_API_URL: https://api.alexandermcintosh.com
         run: |
           pnpm --prefix frontend generate-resume
           pnpm --prefix frontend astro build --site "$SITE_URL"
