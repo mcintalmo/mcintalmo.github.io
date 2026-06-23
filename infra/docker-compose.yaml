@@ -38,6 +38,11 @@ services:
       - "7882:7882/udp"
       - "8080:8080"
     restart: always
+    env_file:
+      - ../backend/.env
+    environment:
+      - LIVEKIT_KEYS="${LIVEKIT_API_KEY}: ${LIVEKIT_API_SECRET}"
+
 
   whisper:
     image: fedirz/faster-whisper-server:latest-cpu

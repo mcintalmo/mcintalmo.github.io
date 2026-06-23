@@ -104,13 +104,13 @@ start-tailor:
 
 # Run the LiveKit voice agent in development mode
 start-agent:
-    LIVEKIT_URL="ws://localhost:7880" LIVEKIT_API_KEY="devkey" LIVEKIT_API_SECRET="secret" PYTHONPATH=src uv run --directory backend/agent python -m agent.main dev
+    LIVEKIT_URL="ws://localhost:7880" LIVEKIT_API_KEY="${LIVEKIT_API_KEY:-devkey}" LIVEKIT_API_SECRET="${LIVEKIT_API_SECRET:-secret}" PYTHONPATH=src uv run --directory backend/agent python -m agent.main dev
 
 console-text:
-    LIVEKIT_URL="ws://localhost:7880" LIVEKIT_API_KEY="devkey" LIVEKIT_API_SECRET="secret" PYTHONPATH=src uv run --directory backend/agent python -m agent.main console --text
+    LIVEKIT_URL="ws://localhost:7880" LIVEKIT_API_KEY="${LIVEKIT_API_KEY:-devkey}" LIVEKIT_API_SECRET="${LIVEKIT_API_SECRET:-secret}" PYTHONPATH=src uv run --directory backend/agent python -m agent.main console --text
 
 console-voice:
-    LIVEKIT_URL="ws://localhost:7880" LIVEKIT_API_KEY="devkey" LIVEKIT_API_SECRET="secret" PYTHONPATH=src uv run --directory backend/agent python -m agent.main console
+    LIVEKIT_URL="ws://localhost:7880" LIVEKIT_API_KEY="${LIVEKIT_API_KEY:-devkey}" LIVEKIT_API_SECRET="${LIVEKIT_API_SECRET:-secret}" PYTHONPATH=src uv run --directory backend/agent python -m agent.main console
 
 # Start all containers including core and telemetry profiles
 start-all-containers:
