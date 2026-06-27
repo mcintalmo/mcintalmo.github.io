@@ -22,6 +22,7 @@ services:
       - livekit
       - whisper
       - kokoro
+      - litellm
 
   auth:
     build:
@@ -80,6 +81,42 @@ services:
       - ./kokoro_cache:/app/cache
     restart: always
 
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: always
+
+  ollama-pull:
+    image: curlimages/curl:latest
+    depends_on:
+      - ollama
+    entrypoint: >
+      /bin/sh -c "
+      until curl -s http://localhost:11434/api/tags > /dev/null; do
+        echo 'Waiting for Ollama to start...';
+        sleep 2;
+      done;
+      echo 'Ollama started! Pulling qwen2.5:3b...';
+      curl -s -X POST http://localhost:11434/api/pull -d '{\"name\": \"qwen2.5:3b\"}';
+      echo 'Model pulled successfully!';
+      "
+    network_mode: host
+
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    network_mode: host
+    volumes:
+      - ./litellm_config.yaml:/app/config.yaml
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    restart: always
+    env_file:
+      - ../backend/.env
+    depends_on:
+      - ollama
+
   frontend:
     profiles:
       - dev
@@ -125,3 +162,4 @@ services:
 
 volumes:
   prometheus_data:
+  ollama_data:

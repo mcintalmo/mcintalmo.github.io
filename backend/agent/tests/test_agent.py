@@ -15,9 +15,25 @@ async def test_assistant_greeting() -> None:
     settings = LlmSettings()
 
     # Check if the API key is actually set, otherwise skip
-    if not settings.api_key:
+    if not settings.api_key or settings.api_key == "litellm-secret":
         pytest.skip(
             "NVIDIA_API_KEY or LLM API key is not set, skipping LLM evaluation test."
+        )
+
+    # Check if base_url is accessible, otherwise skip
+    import socket
+    from urllib.parse import urlparse
+
+    parsed = urlparse(settings.base_url)
+    try:
+        host = parsed.hostname or "localhost"
+        port = parsed.port or (443 if parsed.scheme == "https" else 80)
+        with socket.create_connection((host, port), timeout=2.0):
+            pass
+    except Exception:
+        pytest.skip(
+            f"LLM endpoint {settings.base_url} is not accessible, "
+            "skipping LLM evaluation test."
         )
 
     llm = openai.LLM(

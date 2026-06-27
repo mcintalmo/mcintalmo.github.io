@@ -5,11 +5,11 @@ import os
 # This MUST happen before importing any instrumented modules.
 if os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT"):
     print(
-        "[OTel Diagnostic] Initializing programmatic auto-instrumentation "
-        "for agent..."
+        "[OTel Diagnostic] Initializing programmatic auto-instrumentation for agent..."
     )
     try:
         from opentelemetry.instrumentation.auto_instrumentation import initialize
+
         initialize()
         print(
             "[OTel Diagnostic] Programmatic auto-instrumentation for agent "
@@ -17,8 +17,7 @@ if os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT"):
         )
     except Exception as e:
         print(
-            f"[OTel Diagnostic] Programmatic auto-instrumentation for agent "
-            f"failed: {e}"
+            f"[OTel Diagnostic] Programmatic auto-instrumentation for agent failed: {e}"
         )
 
 
@@ -125,9 +124,9 @@ class SttSettings(BaseSettings):
 
 
 class LlmSettings(BaseSettings):
-    model: str = "meta/llama-3.3-70b-instruct"
-    base_url: str = "https://integrate.api.nvidia.com/v1"
-    api_key: str = Field(default="", validation_alias="NVIDIA_API_KEY")
+    model: str = "portfolio-llm"
+    base_url: str = "http://localhost:4000/v1"
+    api_key: str = Field(default="litellm-secret", validation_alias="LITELLM_API_KEY")
     model_config = SettingsConfigDict(
         env_file=(".env", ".env.local", "../.env", "../.env.local"), extra="ignore"
     )
