@@ -103,7 +103,7 @@ def get_llm() -> ChatOpenAI:
         base_url=settings.base_url,
         api_key=SecretStr(settings.api_key),
         temperature=settings.temperature,
-        max_tokens=settings.max_tokens,  # type: ignore[call-arg]
+        max_tokens=settings.max_tokens,  # type: ignore
     )
 
 

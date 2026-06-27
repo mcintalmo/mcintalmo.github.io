@@ -69,7 +69,7 @@ def test_tailor_pipeline_eval(golden: Golden) -> None:
         trim_resume,
     )
 
-    workflow = StateGraph(TailorState)
+    workflow = StateGraph(TailorState)  # type: ignore
     workflow.add_node("ingest_job_description", ingest_job_description)
     workflow.add_node("extract_schema", extract_schema)
     workflow.add_node("trim_resume", trim_resume)
@@ -104,7 +104,7 @@ def test_tailor_pipeline_eval(golden: Golden) -> None:
 
     # 2. Run Pipeline
     # Using 'final_resume' node as our main result to evaluate.
-    state = asyncio.run(graph.ainvoke(initial_state))  # 3. Grab the generated message
+    state = asyncio.run(graph.ainvoke(initial_state))  # type: ignore  # 3. Grab the generated message
     final_resume = state.get("final_resume", {})
 
     # Pre-eval structure validation

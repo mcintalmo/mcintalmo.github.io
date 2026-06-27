@@ -6,13 +6,13 @@ exclude-newer = "7 days"
 dev-dependencies = [
     "deepeval>=4.0.2",
     "httpx",
-    "mypy>=1.10",
     "pytest-asyncio",
     "pytest-httpx",
     "pytest>=8.0",
     "rendercv[full]>=2.6",
     "ruff>=0.4",
     "testcontainers",
+    "ty>=0.0.51",
     "types-pyyaml>=6.0.12",
 ]
 
@@ -24,9 +24,15 @@ src = ["agent/src", "auth/src", "mcp/src", "common/src", "tailor/src"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
 
-[tool.mypy]
-python_version = "3.14"
-strict = true
+[tool.ty.environment]
+extra-paths = [
+    "agent/src",
+    "auth/src",
+    "mcp/src",
+    "common/src",
+    "tailor/src",
+    "resume/src"
+]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

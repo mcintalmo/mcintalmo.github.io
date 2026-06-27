@@ -15,7 +15,7 @@ from .schema import TailorState
 
 
 def create_graph() -> CompiledStateGraph[Any, Any, Any, Any]:
-    workflow = StateGraph(TailorState)
+    workflow = StateGraph(TailorState)  # type: ignore
 
     workflow.add_node("ingest_job_description", ingest_job_description)
     workflow.add_node("extract_schema", extract_schema)

@@ -42,7 +42,7 @@ lint:
 
 # Run static type checking for the Python backend
 type-check:
-    MYPYPATH=agent/src:auth/src:mcp/src:common/src:tailor/src:resume/src uv run --directory backend mypy . --explicit-package-bases
+    uv run --directory backend ty check
 
 # ==============================================================================
 # 3. Testing Suites
