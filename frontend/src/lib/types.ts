@@ -163,7 +163,6 @@ export interface AgentConfig {
   "recommended-questions"?: SuggestedQuestion[];
 }
 
-
 export interface SiteConfigRoot {
   sections?: SiteSectionsConfig & { order?: string[] };
   seo?: SEOConfig;

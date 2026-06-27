@@ -1,3 +1,24 @@
+# ruff: noqa: E402
+import os
+
+# Initialize OpenTelemetry programmatic auto-instrumentation if endpoint is configured
+# This MUST happen before importing fastapi/starlette modules to ensure
+# correct patching.
+if os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT"):
+    print("[OTel Diagnostic] Initializing programmatic auto-instrumentation...")
+    try:
+        from opentelemetry.instrumentation.auto_instrumentation import initialize
+        initialize()
+        print(
+            "[OTel Diagnostic] Programmatic auto-instrumentation "
+            "initialized successfully."
+        )
+    except Exception as e:
+        print(
+            f"[OTel Diagnostic] Programmatic auto-instrumentation "
+            f"failed: {e}"
+        )
+
 import socket
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
@@ -28,6 +49,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 
 
 class TokenResponse(BaseModel):
@@ -88,6 +111,11 @@ async def get_token(
     request: Request,
     settings: Annotated[AppSettings, Depends(get_settings)],
 ) -> TokenResponse:
+    from opentelemetry import trace
+    current_span = trace.get_current_span()
+    print("[OTel Diagnostic] /token Request Current Span:", current_span)
+    print("[OTel Diagnostic] /token Span Context:", current_span.get_span_context())
+
     grant = api.VideoGrants(room=room_name, room_join=True)
     room_config = api.RoomConfiguration(
         agents=[api.RoomAgentDispatch(agent_name="portfolio-agent")]

@@ -11,6 +11,13 @@ services:
     environment:
       - LIVEKIT_URL=ws://localhost:7880
       - PYTHONPATH=agent/src
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
+      - OTEL_SERVICE_NAME=agent-service
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - OTEL_LOG_LEVEL=debug
+      - PYTHONUNBUFFERED=1
+      - OTEL_BSP_SCHEDULE_DELAY=100
     depends_on:
       - livekit
       - whisper
@@ -26,6 +33,17 @@ services:
       - ../backend/.env
     environment:
       - PYTHONPATH=auth/src
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317
+      - OTEL_SERVICE_NAME=auth-service
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+      - OTEL_LOG_LEVEL=debug
+      - PYTHONUNBUFFERED=1
+      - OTEL_BSP_SCHEDULE_DELAY=100
+
+
+
+
 
   livekit:
     image: livekit/livekit-server:latest

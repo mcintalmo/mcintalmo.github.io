@@ -202,11 +202,12 @@ export function CustomChatWidget({
           const text = new TextDecoder().decode(payload);
           const data = JSON.parse(text);
           if (data && Array.isArray(data.questions)) {
-            const normalized = data.questions.map((q: any) => {
+            const normalized = data.questions.map((q: unknown) => {
               if (typeof q === "string") return { title: q, prompt: q };
+              const obj = q as { title?: string; prompt?: string };
               return {
-                title: q.title || q.prompt || "",
-                prompt: q.prompt || q.title || "",
+                title: obj?.title || obj?.prompt || "",
+                prompt: obj?.prompt || obj?.title || "",
               };
             });
             setFollowups(normalized);

@@ -1,7 +1,30 @@
+# ruff: noqa: E402
+import os
+
+# Initialize OpenTelemetry programmatic auto-instrumentation if endpoint is configured
+# This MUST happen before importing any instrumented modules.
+if os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT"):
+    print(
+        "[OTel Diagnostic] Initializing programmatic auto-instrumentation "
+        "for agent..."
+    )
+    try:
+        from opentelemetry.instrumentation.auto_instrumentation import initialize
+        initialize()
+        print(
+            "[OTel Diagnostic] Programmatic auto-instrumentation for agent "
+            "initialized successfully."
+        )
+    except Exception as e:
+        print(
+            f"[OTel Diagnostic] Programmatic auto-instrumentation for agent "
+            f"failed: {e}"
+        )
+
+
 import asyncio
 import json
 import logging
-import os
 from pathlib import Path
 from typing import Any
 

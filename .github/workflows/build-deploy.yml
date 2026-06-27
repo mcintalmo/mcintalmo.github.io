@@ -250,7 +250,7 @@ jobs:
           rsync -avz -e "ssh -i ~/.ssh/id_ed25519" --exclude 'node_modules' --exclude '.git' --exclude '.venv' --exclude 'dist' --exclude '.astro' --exclude 'backend/.env' ./ ubuntu@${{ env.VM_IP }}:/home/ubuntu/mcintalmo.github.io/
           
           # Rebuild and restart
-          ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "sed -i '/rtc:/a \  node_ip: ${{ env.VM_IP }}' /home/ubuntu/mcintalmo.github.io/infra/livekit.yaml && cd /home/ubuntu/mcintalmo.github.io/infra && docker compose build agent auth && docker compose up -d && docker compose restart livekit"
+          ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "sed -i '/rtc:/a \  node_ip: ${{ env.VM_IP }}' /home/ubuntu/mcintalmo.github.io/infra/livekit.yaml && cd /home/ubuntu/mcintalmo.github.io/infra && docker compose --profile telemetry build agent auth && docker compose --profile telemetry up -d && docker compose restart livekit"
 
       - name: Revoke Whitelist
         if: always()
