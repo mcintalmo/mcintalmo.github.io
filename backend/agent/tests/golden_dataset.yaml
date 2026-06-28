@@ -96,10 +96,10 @@ test_cases:
     expected_tool_calls:
       - name: "navigate_to"
         arguments:
-          target: "skills"
+          target: "work"
     intent: >
-      The response should highlight the skills section, explaining the technical stack behind the voice agent
-      (e.g., Python, SQL, LiveKit, or other open-source models).
+      The response should highlight the work section, explaining the technical stack behind the voice agent
+      (e.g., LiveKit, A2A, MCP, or other tools).
 
   - name: "role_consultant"
     user_input: "I'm a business consultant. Can you help us design and implement a custom AI solution for document automation?"
