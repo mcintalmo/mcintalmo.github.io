@@ -4,24 +4,28 @@ model_list:
       model: gpt-oss-120b
       custom_llm_provider: cerebras
       api_key: os.environ/CEREBRAS_API_KEY
+      timeout: 15
 
   - model_name: portfolio-llm-cerebras
     litellm_params:
       model: gpt-oss-120b
       custom_llm_provider: cerebras
       api_key: os.environ/CEREBRAS_API_KEY
+      timeout: 15
 
   - model_name: portfolio-llm-openrouter-gemini
     litellm_params:
       model: google/gemini-2.5-flash
       custom_llm_provider: openrouter
       api_key: os.environ/OPENROUTER_API_KEY
+      timeout: 15
 
   - model_name: portfolio-llm-local
     litellm_params:
       model: openai/qwen2.5:3b
       api_base: http://localhost:11434/v1
       api_key: ollama
+      timeout: 25
 
   - model_name: portfolio-llm-nvidia
     litellm_params:
@@ -29,26 +33,29 @@ model_list:
       api_base: https://integrate.api.nvidia.com/v1
       api_key: os.environ/NVIDIA_API_KEY
       rpm: 1000
+      timeout: 15
 
   - model_name: portfolio-llm-openrouter-llama
     litellm_params:
       model: meta-llama/llama-3.3-70b-instruct:free
       custom_llm_provider: openrouter
       api_key: os.environ/OPENROUTER_API_KEY
+      timeout: 15
 
   - model_name: portfolio-llm-github-direct
     litellm_params:
       model: Llama-3.3-70B-Instruct
       custom_llm_provider: github
       api_key: os.environ/GITHUB_API_KEY
+      timeout: 15
 
 router_settings:
   num_retries: 0
   fallbacks:
     - portfolio-llm: [
-        "portfolio-llm-openrouter-gemini",
-        "portfolio-llm-local",
         "portfolio-llm-nvidia",
+        "portfolio-llm-local",
+        "portfolio-llm-openrouter-gemini",
         "portfolio-llm-openrouter-llama",
         "portfolio-llm-github-direct"
       ]

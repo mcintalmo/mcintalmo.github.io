@@ -1,0 +1,142 @@
+test_cases:
+  - name: "navigate_to_skills"
+    user_input: "What are Alex's technical skills?"
+    expected_tool_calls:
+      - name: "navigate_to"
+        arguments:
+          target: "skills"
+    intent: >
+      The output should highlight some of Alex's technical skills (such as Python, SQL, machine learning,
+      or cloud platforms) in a professional and friendly voice.
+
+  - name: "navigate_to_projects"
+    user_input: "Can you show me what projects Alex has worked on?"
+    expected_tool_calls:
+      - name: "navigate_to"
+        arguments:
+          target: "projects"
+    intent: >
+      The output should mention or highlight a couple of Alex's key projects.
+
+  - name: "navigate_to_work_experience"
+    user_input: "Where has Alex worked and what is his professional background?"
+    expected_tool_calls:
+      - name: "navigate_to"
+        arguments:
+          target: "work"
+    intent: >
+      The response should outline his professional experience and past roles.
+
+  - name: "navigate_to_education"
+    user_input: "Where did Alex go to school and what is his education?"
+    expected_tool_calls:
+      - name: "navigate_to"
+        arguments:
+          target: "education"
+    intent: >
+      The response should note his academic background, studies, or degrees.
+
+  - name: "navigate_to_contact"
+    user_input: "How can I get in touch with Alex or contact him?"
+    expected_tool_calls:
+      - name: "navigate_to"
+        arguments:
+          target: "contact"
+    intent: >
+      The response should provide information on how to contact Alex, such as his email
+      (mcintalmo at gmail), website, GitHub, or LinkedIn.
+
+  - name: "general_greeting_no_tool"
+    user_input: "Hello! Who are you and how can you help me today?"
+    expected_tool_calls: []
+    intent: >
+      The agent should greet the user warmly, offer to help answer questions about his background
+      or resume, or assist with portfolio needs.
+
+  - name: "what_can_you_do"
+    user_input: "What can you do for me, or what are your capabilities?"
+    expected_tool_calls: []
+    intent: >
+      The agent should explain its capabilities (answering questions about Alex's skills, experience,
+      projects, education, certificates, or contact info, and navigating the portfolio sections)
+      warmly without calling any tools.
+
+  - name: "role_recruiter"
+    user_input: "Hi, I'm a technical recruiter looking for an ML engineer. Do you have experience with Kubernetes or Docker, and are you open to new opportunities?"
+    expected_tool_calls:
+      - name: "navigate_to"
+        arguments:
+          target: "work"
+    intent: >
+      The response should outline Alex's experience with container technologies (like Docker), clarify his availability
+      or mention his contact information to discuss opportunities.
+
+  - name: "role_recruiter_2"
+    user_input: "I am a recruiter at a startup. Can you tell me about Alex's most recent position and what he did there?"
+    expected_tool_calls:
+      - name: "navigate_to"
+        arguments:
+          target: "work"
+    intent: >
+      The response should highlight his AI/ML Engineer role at Optum, mentioning key details like building agentic voice
+      systems or telemetry instrumentation, and direct them to the work section.
+
+  - name: "role_recruiter_3"
+    user_input: "Hi, I have an open ML platform role. Does Alex have any certifications or degrees that show his expertise?"
+    expected_tool_calls:
+      - name: "navigate_to"
+        arguments:
+          target: "education"
+    intent: >
+      The response should note his academic background or certifications (such as Microsoft Fabric or Azure Data Scientist
+      certificates) and navigate to the education or certificates section.
+
+  - name: "role_data_scientist"
+    user_input: "I'm a data scientist and I am intrigued by this live voice agent. Can you explain the technical stack behind it?"
+    expected_tool_calls:
+      - name: "navigate_to"
+        arguments:
+          target: "skills"
+    intent: >
+      The response should highlight the skills section, explaining the technical stack behind the voice agent
+      (e.g., Python, SQL, LiveKit, or other open-source models).
+
+  - name: "role_consultant"
+    user_input: "I'm a business consultant. Can you help us design and implement a custom AI solution for document automation?"
+    expected_tool_calls:
+      - name: "navigate_to"
+        arguments:
+          target: "work"
+    intent: >
+      The response should mention his AI/ML engineering experience at Optum or relevant projects, and offer or suggest
+      applying these skills to document automation.
+
+  - name: "role_young_professional"
+    user_input: "I'm a recent college grad trying to get into ML. What skills or tools do you recommend I learn first?"
+    expected_tool_calls:
+      - name: "navigate_to"
+        arguments:
+          target: "skills"
+    intent: >
+      The response should provide encouraging guidance, highlight critical tools (like Python, PyTorch, SQL,
+      or cloud platforms), and point to his skills section for reference.
+
+  - name: "role_hiring_manager"
+    user_input: "As a director of engineering, I'm looking for someone who can architect complex systems. Can you walk me through a major system you designed?"
+    expected_tool_calls:
+      - name: "navigate_to"
+        arguments:
+          target: "work"
+    intent: >
+      The response should showcase Alex's system design and architecture skills by walking through a complex system he designed
+      (such as the agentic voice AI systems at Optum) and navigating them to the work section.
+
+  - name: "role_developer"
+    user_input: "Hey! I'm a developer checkin' out your site. Is the code for this portfolio open source, and where can I view it?"
+    expected_tool_calls:
+      - name: "navigate_to"
+        arguments:
+          target: "projects"
+    intent: >
+      The response should confirm that his work and open source projects are public, and direct them to his GitHub link
+      or project section.

@@ -160,6 +160,18 @@ services:
     ports:
       - "9090:9090"
 
+  phoenix:
+    image: arizephoenix/phoenix:latest
+    profiles:
+      - telemetry
+    ports:
+      - "6006:6006" # UI and OTLP HTTP
+      - "4319:4317" # OTLP gRPC
+    volumes:
+      - phoenix_data:/root/.phoenix
+    restart: always
+
 volumes:
   prometheus_data:
   ollama_data:
+  phoenix_data:

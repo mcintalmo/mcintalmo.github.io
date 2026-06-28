@@ -24,7 +24,7 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [otlp/jaeger]
+      exporters: [otlp/jaeger, otlp/phoenix]
     metrics:
       receivers: [otlp]
       exporters: [prometheus]
