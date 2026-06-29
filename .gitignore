@@ -405,6 +405,9 @@ frontend/public/resume.yaml
 backend/agent/src/agent/portfolio_content.json
 backend/tailor/cache
 infra/models/
+frontend/.astro/
+dist/
+frontend/dist/
 
 
 ##########################################################

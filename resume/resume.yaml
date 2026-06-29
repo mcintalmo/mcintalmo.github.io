@@ -25,7 +25,7 @@ work:
     position: Consultant, Artificial Intelligence Practice
     startDate: 2026-06
     url: https://www.pioneermanagementconsulting.com/ai-consulting-services
-    summary: >
+    description: >
       Designing custom AI architectures and developing conversational analytics
       to drive sustainable enterprise AI adoption.
     highlights:
@@ -45,6 +45,7 @@ work:
     position: AI/ML Engineer Associate
     startDate: 2025-08
     endDate: 2026-06
+    url: https://www.optum.com
     description:
       Architected and built enterprise-scale agentic voice AI systems with
       end-to-end observability, delivering AI tools to 400K+ employees.
@@ -60,6 +61,7 @@ work:
     position: Data Engineer Associate
     startDate: 2024-08
     endDate: 2025-08
+    url: https://www.optum.com
     description: >
       Architected and deployed enterprise-scale agentic AI systems with
       end-to-end observability, enhancing productivity for over 400K employees
@@ -85,6 +87,7 @@ work:
     position: Data Science and Engineering Associate
     startDate: 2023-07
     endDate: 2024-07
+    url: https://www.optum.com
     description: >
       Developed and operationalized ML models and multi-agent systems to drive
       analytics and improve enterprise decision-making.
@@ -108,6 +111,7 @@ work:
     position: Software Engineer
     startDate: 2020-03
     endDate: 2023-07
+    url: https://constelleum.com
     description: >
       Designed and developed a physically accessible multiplayer online video
       game
@@ -123,6 +127,7 @@ work:
     position: Employment Specialist
     startDate: 2022-01
     endDate: 2022-05
+    url: https://scdacmn.com
     description: >
       Led vocational training and program management for individuals with
       disabilities - Directed programs across 8 job coaches to execute tailored
@@ -133,6 +138,7 @@ work:
     position: Job Coach
     startDate: 2021-10
     endDate: 2022-01
+    url: https://scdacmn.com
     description: >
       Coached over 30 individuals in employment skills and workplace readiness
     highlights:
@@ -144,6 +150,7 @@ work:
     position: Program Coordinator
     startDate: 2019-02
     endDate: 2020-02
+    url: https://pcs.sfhs.org
     description: >
       Led a staff of 12 delivering residential services to individuals with
       disabilities
@@ -156,6 +163,7 @@ work:
     position: Direct Support Professional
     startDate: 2018-02
     endDate: 2019-02
+    url: https://pcs.sfhs.org
     description: >
       Provided direct care, daily living assistance, and community integration
       support.

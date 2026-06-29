@@ -393,6 +393,18 @@ type ExperienceCardCommon = {
   period: string;
 };
 
+function getCompanyLogo(companyUrl?: string): string | null {
+  if (companyUrl) {
+    try {
+      const url = new URL(companyUrl);
+      return `https://www.google.com/s2/favicons?domain=${url.hostname}&sz=128`;
+    } catch {
+      // ignore
+    }
+  }
+  return null;
+}
+
 function MobileExperienceCard({
   exp,
   index,
@@ -406,6 +418,7 @@ function MobileExperienceCard({
     onSwipeDown: () => expanded && hasDetails && toggleExpanded(index),
     threshold: 30,
   });
+  const logoUrl = getCompanyLogo(exp.url);
   return (
     <div className="md:hidden ml-16 pointer-events-auto">
       <motion.div
@@ -439,10 +452,21 @@ function MobileExperienceCard({
           >
             <CardHeader>
               <div className="flex justify-between items-start gap-4">
-                <CardTitle>
-                  {exp.position && <h3>{exp.position}</h3>}
-                  {exp.name && <p className="text-primary mt-1">{exp.name}</p>}
-                </CardTitle>
+                <div className="flex gap-3 items-start">
+                  {logoUrl && (
+                    <div className="w-10 h-10 rounded-md bg-white border border-border/80 flex items-center justify-center overflow-hidden flex-shrink-0 p-1 shadow-sm mt-0.5">
+                      <img
+                        src={logoUrl}
+                        alt={`${exp.name || "Company"} logo`}
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    </div>
+                  )}
+                  <CardTitle>
+                    {exp.position && <h3>{exp.position}</h3>}
+                    {exp.name && <p className="text-primary mt-1">{exp.name}</p>}
+                  </CardTitle>
+                </div>
                 <span className="flex items-center gap-1 text-sm text-muted-foreground mt-1 whitespace-nowrap">
                   <Calendar className="w-4 h-4" />
                   {period}
@@ -583,6 +607,7 @@ function DesktopExperienceCard({
     onSwipeDown: () => expanded && hasDetails && toggleExpanded(index),
     threshold: 30,
   });
+  const logoUrl = getCompanyLogo(exp.url);
   return (
     <motion.div
       className="w-[46%] group pointer-events-auto"
@@ -615,10 +640,21 @@ function DesktopExperienceCard({
         >
           <CardHeader>
             <div className="flex justify-between items-start gap-6">
-              <CardTitle>
-                {exp.position && <h3>{exp.position}</h3>}
-                {exp.name && <p className="text-primary mt-1">{exp.name}</p>}
-              </CardTitle>
+              <div className="flex gap-4 items-start">
+                {logoUrl && (
+                  <div className="w-12 h-12 rounded-lg bg-white border border-border/80 flex items-center justify-center overflow-hidden flex-shrink-0 p-1.5 shadow-sm">
+                    <img
+                      src={logoUrl}
+                      alt={`${exp.name || "Company"} logo`}
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </div>
+                )}
+                <CardTitle>
+                  {exp.position && <h3>{exp.position}</h3>}
+                  {exp.name && <p className="text-primary mt-1">{exp.name}</p>}
+                </CardTitle>
+              </div>
               <span className="flex items-center gap-1 text-sm text-muted-foreground mt-1 whitespace-nowrap">
                 <Calendar className="w-4 h-4" />
                 {period}
