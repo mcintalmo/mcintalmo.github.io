@@ -31,7 +31,7 @@
       "position": "Consultant, Artificial Intelligence Practice",
       "startDate": "2026-06",
       "url": "https://www.pioneermanagementconsulting.com/ai-consulting-services",
-      "summary": "Designing custom AI architectures and developing conversational analytics to drive sustainable enterprise AI adoption.\n",
+      "description": "Designing custom AI architectures and developing conversational analytics to drive sustainable enterprise AI adoption.\n",
       "highlights": [
         "Design AI architectures delivering scalable predictive analytics and anomaly detection for enterprise clients.",
         "Develop AI-powered conversational analytics and generative domain bots.",
@@ -50,6 +50,7 @@
       "position": "AI/ML Engineer Associate",
       "startDate": "2025-08",
       "endDate": "2026-06",
+      "url": "https://www.optum.com",
       "description": "Architected and built enterprise-scale agentic voice AI systems with end-to-end observability, delivering AI tools to 400K+ employees.",
       "highlights": [
         "Shipped an agentic voice AI frontend using LiveKit to expose a conversational frontend to a multi-agent system",
@@ -63,6 +64,7 @@
       "position": "Data Engineer Associate",
       "startDate": "2024-08",
       "endDate": "2025-08",
+      "url": "https://www.optum.com",
       "description": "Architected and deployed enterprise-scale agentic AI systems with end-to-end observability, enhancing productivity for over 400K employees\n",
       "highlights": [
         "Automated LLM evaluation with scoring pipelines to monitor consistency, accuracy, safety, latency, and fairness",
@@ -85,6 +87,7 @@
       "position": "Data Science and Engineering Associate",
       "startDate": "2023-07",
       "endDate": "2024-07",
+      "url": "https://www.optum.com",
       "description": "Developed and operationalized ML models and multi-agent systems to drive analytics and improve enterprise decision-making.\n",
       "highlights": [
         "Trained a state-of-the-art time-series forecasting model (Prophet + Random Forest) to detect operational anomalies with >90% precision.",
@@ -106,6 +109,7 @@
       "position": "Software Engineer",
       "startDate": "2020-03",
       "endDate": "2023-07",
+      "url": "https://constelleum.com",
       "description": "Designed and developed a physically accessible multiplayer online video game\n",
       "highlights": [
         "Engineered adaptive control schemes enabling inclusive gameplay",
@@ -122,6 +126,7 @@
       "position": "Employment Specialist",
       "startDate": "2022-01",
       "endDate": "2022-05",
+      "url": "https://scdacmn.com",
       "description": "Led vocational training and program management for individuals with disabilities - Directed programs across 8 job coaches to execute tailored employment programs\n"
     },
     {
@@ -130,6 +135,7 @@
       "position": "Job Coach",
       "startDate": "2021-10",
       "endDate": "2022-01",
+      "url": "https://scdacmn.com",
       "description": "Coached over 30 individuals in employment skills and workplace readiness\n",
       "highlights": [
         "Developed personalized enrichment activities",
@@ -142,6 +148,7 @@
       "position": "Program Coordinator",
       "startDate": "2019-02",
       "endDate": "2020-02",
+      "url": "https://pcs.sfhs.org",
       "description": "Led a staff of 12 delivering residential services to individuals with disabilities\n",
       "highlights": [
         "Directed training and compliance for service staff",
@@ -154,6 +161,7 @@
       "position": "Direct Support Professional",
       "startDate": "2018-02",
       "endDate": "2019-02",
+      "url": "https://pcs.sfhs.org",
       "description": "Provided direct care, daily living assistance, and community integration support.\n"
     }
   ],
