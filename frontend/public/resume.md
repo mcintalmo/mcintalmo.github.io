@@ -257,7 +257,7 @@ May 2021
 
 Microsoft
 
-Thu Jun
+Fri Jun
 
 
 
@@ -265,7 +265,7 @@ Thu Jun
 
 Microsoft
 
-Thu Aug
+Fri Aug
 
 
 
@@ -273,7 +273,7 @@ Thu Aug
 
 Microsoft
 
-Tue Jan
+Wed Jan
 
 
 
@@ -281,7 +281,7 @@ Tue Jan
 
 HarvardX
 
-Thu Dec
+Fri Dec
 
 
 
@@ -289,7 +289,7 @@ Thu Dec
 
 University of Michigan
 
-Sun Nov
+Mon Nov
 
 
 
@@ -297,7 +297,7 @@ Sun Nov
 
 Imperial College London
 
-Thu Jan
+Fri Jan
 
 
 
@@ -305,7 +305,7 @@ Thu Jan
 
 University of California, Davis
 
-Sat Feb
+Sun Feb
 
 
 
@@ -313,7 +313,7 @@ Sat Feb
 
 Harvard University
 
-Mon Apr
+Tue Apr
 
 
 
@@ -321,7 +321,7 @@ Mon Apr
 
 Harvard University
 
-Tue Aug
+Wed Aug
 
 
 
@@ -329,7 +329,7 @@ Tue Aug
 
 Harvard University
 
-Tue Aug
+Wed Aug
 
 
 
