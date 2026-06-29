@@ -5,8 +5,8 @@ basics:
   email: mcintalmo@gmail.com
   url: https://www.alexandermcintosh.com
   summary: >
-    Towards delivering **interpretable machine learning**, **explainable AI**,
-    and **observable LLM networks** reliably at scale.
+    Operationalizing **interpretable machine learning**, **explainable AI**, and
+    **observable LLM networks** reliably at scale.
   location:
     city: Minneapolis
     countryCode: US
@@ -20,12 +20,34 @@ basics:
       url: https://linkedin.com/in/mcintalmo
 
 work:
+  - name: Pioneer Management Consulting
+    location: Minneapolis, MN
+    position: Consultant, Artificial Intelligence Practice
+    startDate: 2026-06
+    url: https://www.pioneermanagementconsulting.com/ai-consulting-services
+    summary: >
+      Designing custom AI architectures and developing conversational analytics
+      to drive sustainable enterprise AI adoption.
+    highlights:
+      - Design AI architectures delivering scalable predictive analytics and
+        anomaly detection for enterprise clients.
+      - Develop AI-powered conversational analytics and generative domain bots.
+      - Implement model explainability into technical designs to ensure client
+        trust and mitigate risk.
+    keywords:
+      - Conversational Analytics
+      - Predictive Analytics
+      - Anomaly Detection
+      - Explainable AI
+
   - name: Optum
     location: Eden Prarie, MN
     position: AI/ML Engineer Associate
     startDate: 2025-08
-    description: Architecting and building enterprise-scale agentic voice AI systems
-      with end-to-end observability, enabling AI tools for 400K+ employees.
+    endDate: 2026-06
+    description:
+      Architected and built enterprise-scale agentic voice AI systems with
+      end-to-end observability, delivering AI tools to 400K+ employees.
     highlights:
       - Shipped an agentic voice AI frontend using LiveKit to expose a
         conversational frontend to a multi-agent system
@@ -39,14 +61,14 @@ work:
     startDate: 2024-08
     endDate: 2025-08
     description: >
-      Architecting and deploying enterprise-scale agentic AI systems with
+      Architected and deployed enterprise-scale agentic AI systems with
       end-to-end observability, enhancing productivity for over 400K employees
     highlights:
       - Automated LLM evaluation with scoring pipelines to monitor consistency,
         accuracy, safety, latency, and fairness
       - Refactored Fabric Spark ETL into reusable patterns, cutting failure
         rates from 12-15% to <1%
-      - Mentored an intern team that won first place in an international Shark
+      - Mentored an intern team that won first place in the Optum-wide Shark
         Tank competition with an agentic AI solution
       - Instrumented agents with OpenTelemetry; added tracing and metrics for
         prompt response, agent calling, and tool use
@@ -268,7 +290,7 @@ projects:
     highlights:
       - Automated build pipeline with GitHub Actions for multi-format export.
 
-    keywords: [ Context Engineering, GitHub Actions, HTML, CSS, TypeScript ]
+    keywords: [Context Engineering, GitHub Actions, HTML, CSS, TypeScript]
     url: https://www.alexandermcintosh.com/
     codeUrl: https://github.com/mcintalmo/alexandermcintosh.com
     type: Web
@@ -276,7 +298,7 @@ projects:
     description: >
       Simulation-guided large language model for enhanced context engineering
     highlights: []
-    keywords: [ Python, Large Language Models, Context Engineering ]
+    keywords: [Python, Large Language Models, Context Engineering]
     codeUrl: https://github.com/alejandro-rojas-24/CS7643-DL-Final
     type: AI
   - name: ARC AGI
@@ -284,94 +306,94 @@ projects:
       Computer-vision enhanced agent-based solver for the ARC AGI challenge, a
       benchmark for artificial general intelligence
     highlights: []
-    keywords: [ Python, AI, Computer Vision ]
+    keywords: [Python, AI, Computer Vision]
     type: AI
 
 skills:
   - name: Python
     level: Expert
-    keywords: [ Languages & Frameworks ]
+    keywords: [Languages & Frameworks]
   - name: PySpark
     level: Advanced
-    keywords: [ Languages & Frameworks ]
+    keywords: [Languages & Frameworks]
   - name: SQL
     level: Expert
-    keywords: [ Languages & Frameworks ]
+    keywords: [Languages & Frameworks]
   - name: R
     level: Advanced
-    keywords: [ Languages & Frameworks ]
+    keywords: [Languages & Frameworks]
   - name: PyTorch
     level: Advanced
-    keywords: [ Machine Learning & AI ]
+    keywords: [Machine Learning & AI]
   - name: TensorFlow
     level: Intermediate
-    keywords: [ Machine Learning & AI ]
+    keywords: [Machine Learning & AI]
   - name: Statistics and Probability
     level: Expert
-    keywords: [ Machine Learning & AI ]
+    keywords: [Machine Learning & AI]
   - name: Data Science and Predictive Analytics
     level: Expert
-    keywords: [ Machine Learning & AI ]
+    keywords: [Machine Learning & AI]
   - name: Natural Language Processing (NLP)
     level: Advanced
-    keywords: [ Machine Learning & AI ]
+    keywords: [Machine Learning & AI]
   - name: Simulation
     level: Advanced
-    keywords: [ Machine Learning & AI ]
+    keywords: [Machine Learning & AI]
   - name: Google Vertex AI
     level: Intermediate
-    keywords: [ Machine Learning & AI ]
+    keywords: [Machine Learning & AI]
   - name: MLFlow
     level: Advanced
-    keywords: [ Machine Learning & AI ]
+    keywords: [Machine Learning & AI]
   - name: Model Context Protocol (MCP)
     level: Advanced
-    keywords: [ LLM & Agents ]
+    keywords: [LLM & Agents]
   - name: Agent Development Kit (ADK)
     level: Advanced
-    keywords: [ LLM & Agents ]
+    keywords: [LLM & Agents]
   - name: Agent-to-Agent (A2A) Protocol
     level: Advanced
-    keywords: [ LLM & Agents ]
+    keywords: [LLM & Agents]
   - name: Semantic Kernel
     level: Intermediate
-    keywords: [ LLM & Agents ]
+    keywords: [LLM & Agents]
   - name: Retrieval-Augmented Generation (RAG)
     level: Expert
-    keywords: [ LLM & Agents ]
+    keywords: [LLM & Agents]
   - name: Data Visualization
     level: Advanced
-    keywords: [ Data Engineering & Analytics ]
+    keywords: [Data Engineering & Analytics]
   - name: Data Engineering
     level: Expert
-    keywords: [ Data Engineering & Analytics ]
+    keywords: [Data Engineering & Analytics]
   - name: Microsoft Fabric
     level: Expert
-    keywords: [ Data Engineering & Analytics ]
+    keywords: [Data Engineering & Analytics]
   - name: Data Bricks
     level: Advanced
-    keywords: [ Data Engineering & Analytics ]
+    keywords: [Data Engineering & Analytics]
   - name: Delta Lake
     level: Expert
-    keywords: [ Data Engineering & Analytics ]
+    keywords: [Data Engineering & Analytics]
   - name: AirFlow
     level: Advanced
-    keywords: [ Data Engineering & Analytics ]
+    keywords: [Data Engineering & Analytics]
   - name: ChromaDB
     level: Advanced
-    keywords: [ Data Engineering & Analytics ]
+    keywords: [Data Engineering & Analytics]
   - name: Git
     level: Advanced
-    keywords: [ Cloud & Infrastructure ]
+    keywords: [Cloud & Infrastructure]
   - name: Docker
     level: Expert
-    keywords: [ Cloud & Infrastructure ]
+    keywords: [Cloud & Infrastructure]
   - name: Microsoft Azure
     level: Intermediate
-    keywords: [ Cloud & Infrastructure ]
+    keywords: [Cloud & Infrastructure]
   - name: Google Cloud Platform
     level: Intermediate
-    keywords: [ Cloud & Infrastructure ]
+    keywords: [Cloud & Infrastructure]
   - name: OpenTelemetry
     level: Advanced
-    keywords: [ MLOps & Observability ]
+    keywords: [MLOps & Observability]
