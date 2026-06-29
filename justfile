@@ -82,6 +82,23 @@ bootstrap:
     uv run --directory e2e playwright install --with-deps
     @echo "==> Environment ready!"
 
+# Upgrade all frontend & backend dependencies, ensuring none are newer than 7 days old
+upgrade:
+    @rm -f frontend/.npmrc resume/convert/.npmrc
+    @echo "==> Upgrading frontend packages (limiting to >= 7 days old)..."
+    @echo "minimum-release-age=10080" > frontend/.npmrc
+    @echo "minimum-release-age=10080" > resume/convert/.npmrc
+    cd frontend && npx pnpm update --ignore-scripts && npx pnpm install --ignore-scripts
+    cd resume/convert && npx pnpm update --ignore-scripts && npx pnpm install --ignore-scripts
+    @rm -f frontend/.npmrc resume/convert/.npmrc
+    @echo "==> Upgrading backend Python packages (limiting to >= 7 days old)..."
+    uv lock --directory backend --upgrade --exclude-newer "7 days"
+    uv sync --directory backend
+    @echo "==> Upgrading e2e Python packages (limiting to >= 7 days old)..."
+    uv lock --directory e2e --upgrade --exclude-newer "7 days"
+    uv sync --directory e2e
+    @echo "==> Upgrades complete!"
+
 # ==============================================================================
 # 5. Local Server Execution & Docker Orchestration
 # ==============================================================================
