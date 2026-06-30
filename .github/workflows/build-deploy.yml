@@ -14,6 +14,7 @@ jobs:
       contents: read
       pages: write
       id-token: write
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -160,6 +161,37 @@ jobs:
         with:
           path: frontend/dist
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Agent Image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend
+          file: backend/agent/Dockerfile
+          platforms: linux/arm64
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ghcr.io/mcintalmo/mcintalmo.github.io/agent:latest
+
+      - name: Build and Push Auth Image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend
+          file: backend/auth/Dockerfile
+          platforms: linux/arm64
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: ghcr.io/mcintalmo/mcintalmo.github.io/auth:latest
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -249,8 +281,8 @@ jobs:
           # Sync files
           rsync -avz -e "ssh -i ~/.ssh/id_ed25519" --exclude 'node_modules' --exclude '.git' --exclude '.venv' --exclude 'dist' --exclude '.astro' --exclude 'backend/.env' ./ ubuntu@${{ env.VM_IP }}:/home/ubuntu/mcintalmo.github.io/
 
-          # Rebuild and restart
-          ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "sed -i '/rtc:/a \  node_ip: ${{ env.VM_IP }}' /home/ubuntu/mcintalmo.github.io/infra/livekit.yaml && cd /home/ubuntu/mcintalmo.github.io/infra && docker compose --profile telemetry build agent auth && docker compose --profile telemetry up -d && docker compose restart livekit"
+          # Pull pre-compiled GHCR images and restart services
+          ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u ${{ github.actor }} --password-stdin && sed -i '/rtc:/a \  node_ip: ${{ env.VM_IP }}' /home/ubuntu/mcintalmo.github.io/infra/livekit.yaml && cd /home/ubuntu/mcintalmo.github.io/infra && docker compose --profile telemetry pull agent auth && docker compose --profile telemetry up -d && docker compose restart livekit"
 
       - name: Revoke Whitelist
         if: always()

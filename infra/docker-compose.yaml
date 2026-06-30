@@ -1,6 +1,7 @@
 services:
 
   agent:
+    image: ghcr.io/mcintalmo/mcintalmo.github.io/agent:latest
     build:
       context: ../backend
       dockerfile: ./agent/Dockerfile
@@ -25,6 +26,7 @@ services:
       - litellm
 
   auth:
+    image: ghcr.io/mcintalmo/mcintalmo.github.io/auth:latest
     build:
       context: ../backend
       dockerfile: ./auth/Dockerfile
