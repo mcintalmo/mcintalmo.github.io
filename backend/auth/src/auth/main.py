@@ -139,3 +139,8 @@ async def get_token(
     local_ip = get_local_ip()
 
     return TokenResponse(token=token, ws_url=client_ws_url, local_ip=local_ip)
+
+
+@app.get("/health", status_code=200)
+async def health_check() -> dict[str, str]:
+    return {"status": "healthy"}
