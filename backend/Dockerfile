@@ -25,7 +25,7 @@ RUN uv sync --frozen --no-install-project --no-dev
 # Copy the rest of the application code
 COPY app/ ./app/
 
-# By default, we will rely on docker-compose to override the command 
+# By default, we will rely on docker-compose to override the command
 # based on whether it is the voice_agent or the mcp_server.
 # A basic default command
 CMD ["uv", "run", "python", "app/agent.py", "dev"]

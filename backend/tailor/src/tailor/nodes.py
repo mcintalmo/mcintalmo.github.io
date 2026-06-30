@@ -114,7 +114,7 @@ def _parse_json_response(content: str) -> Any:
             start = content.index("```json") + 7
             end = content.index("```", start)
             return json.loads(content[start:end].strip())
-        except ValueError, json.JSONDecodeError:
+        except (ValueError, json.JSONDecodeError):
             pass
 
     if "```" in content:
@@ -122,7 +122,7 @@ def _parse_json_response(content: str) -> Any:
             start = content.index("```") + 3
             end = content.index("```", start)
             return json.loads(content[start:end].strip())
-        except ValueError, json.JSONDecodeError:
+        except (ValueError, json.JSONDecodeError):
             pass
 
     try:
@@ -137,7 +137,7 @@ def _parse_json_response(content: str) -> Any:
         else:
             raise ValueError("No JSON found")
         return json.loads(content[start:end].strip())
-    except ValueError, json.JSONDecodeError:
+    except (ValueError, json.JSONDecodeError):
         pass
 
     return json.loads(content)
@@ -390,7 +390,7 @@ async def evaluate_resume(state: TailorState) -> dict[str, Any]:
     try:
         score_dict = _parse_json_response(content)
         score = int(score_dict.get("score", 0))
-    except json.JSONDecodeError, ValueError, KeyError:
+    except (json.JSONDecodeError, ValueError, KeyError):
         score = 80  # fallback
 
     return {"evaluation_score": score}

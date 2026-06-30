@@ -247,4 +247,3 @@ app = FastAPI(lifespan=lifespan)
   at runtime, sourced from the `.env` file on the host via Docker Compose.
 - The entry point should always be:
   `uv run --package <service> <entrypoint command>`
-  

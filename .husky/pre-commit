@@ -1,0 +1,3 @@
+
+# Run pre-commit on staged files
+uv run --directory backend pre-commit run --files $(git diff --cached --name-only)

@@ -179,7 +179,7 @@ def build_json() -> Path:
     resume_data = yaml.safe_load(SOURCE_JSON_RESUME.read_text(encoding="utf-8"))
 
     def _json_default(obj: object) -> str:
-        if isinstance(obj, (datetime.date, datetime.datetime)):
+        if isinstance(obj, datetime.date | datetime.datetime):
             return str(obj)
         raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
 

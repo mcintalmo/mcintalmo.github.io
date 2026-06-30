@@ -31,29 +31,29 @@ output "ssh_connection_string" {
 output "next_steps" {
   description = "Next steps after deployment"
   value       = <<-EOT
-  
+
   ═══════════════════════════════════════════════════════════════
   🎉 Portfolio Infrastructure deployed successfully!
   ═══════════════════════════════════════════════════════════════
-  
+
   Server IP: ${oci_core_instance.portfolio_server.public_ip}
-  
+
   Next steps:
-  
+
   1. SSH into the server:
      ssh ubuntu@${oci_core_instance.portfolio_server.public_ip}
-  
+
   2. Wait for cloud-init to complete (may take 2-5 minutes):
      tail -f /var/log/cloud-init-output.log
-  
+
   3. Update your DNS:
      Add A records in your DNS provider:
        api.alexandermcintosh.com      → ${oci_core_instance.portfolio_server.public_ip}
        livekit.alexandermcintosh.com  → ${oci_core_instance.portfolio_server.public_ip}
-  
+
   4. Run setup script:
      Navigate to project root and run setup script to deploy the stack.
-  
+
   ═══════════════════════════════════════════════════════════════
   EOT
 }

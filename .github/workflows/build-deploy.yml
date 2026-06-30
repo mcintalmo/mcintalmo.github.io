@@ -205,17 +205,17 @@ jobs:
         run: |
           RUNNER_IP=$(curl -s https://ifconfig.me || curl -s https://api.ipify.org)
           echo "RUNNER_IP=$RUNNER_IP" >> $GITHUB_ENV
-          
+
           # Fetch current ingress rules
           CURRENT_RULES=$(oci network security-list get --security-list-id "${{ env.SEC_LIST_ID }}" --query "data.\"ingress-security-rules\"")
           echo "ORIGINAL_RULES<<EOF" >> $GITHUB_ENV
           echo "$CURRENT_RULES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-          
+
           # Add new rule
           NEW_RULE=$(jq -n --arg ip "$RUNNER_IP" '{protocol: "6", source: ($ip + "/32"), sourceType: "CIDR_BLOCK", tcpOptions: {min: 22, max: 22}, stateless: false, description: "GitHub Actions temporary SSH access"}')
           NEW_RULES=$(echo "$CURRENT_RULES" | jq --argjson rule "$NEW_RULE" '. + [$rule]')
-          
+
           # Apply new rules
           oci network security-list update --security-list-id "${{ env.SEC_LIST_ID }}" --ingress-security-rules "$NEW_RULES" --force
 
@@ -226,15 +226,15 @@ jobs:
           set -x
           # Give OCI a few seconds to propagate security list rules
           sleep 5
-          
+
           # Set up SSH directory
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          
+
           # Write SSH private key
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          
+
           # Populate known_hosts with retries
           for i in {1..5}; do
             ssh-keyscan -t ed25519,rsa -H "${{ env.VM_IP }}" >> ~/.ssh/known_hosts && break || {
@@ -242,13 +242,13 @@ jobs:
               sleep 3
             }
           done
-          
+
           # Test SSH connection
           ssh -i ~/.ssh/id_ed25519 -o BatchMode=yes -o ConnectTimeout=5 ubuntu@${{ env.VM_IP }} "echo 'SSH connection successful!'"
-          
+
           # Sync files
           rsync -avz -e "ssh -i ~/.ssh/id_ed25519" --exclude 'node_modules' --exclude '.git' --exclude '.venv' --exclude 'dist' --exclude '.astro' --exclude 'backend/.env' ./ ubuntu@${{ env.VM_IP }}:/home/ubuntu/mcintalmo.github.io/
-          
+
           # Rebuild and restart
           ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "sed -i '/rtc:/a \  node_ip: ${{ env.VM_IP }}' /home/ubuntu/mcintalmo.github.io/infra/livekit.yaml && cd /home/ubuntu/mcintalmo.github.io/infra && docker compose --profile telemetry build agent auth && docker compose --profile telemetry up -d && docker compose restart livekit"
 

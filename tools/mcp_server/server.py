@@ -182,10 +182,10 @@ def evaluate_ats_score(job_description: str) -> str:
     against the job description.
     Provide a brief analysis of missing keywords or mismatched experiences.
     End your response with a final ATS Score out of 100 formatted as "SCORE: X/100".
-    
+
     # Job Description
     {job_description}
-    
+
     # Resume
     {current_resume_yaml}
     """)

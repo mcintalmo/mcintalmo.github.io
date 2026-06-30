@@ -48,10 +48,10 @@ def run_agentic_tailor(jd_text, original_resume, inferred_company="target_compan
     prompt = textwrap.dedent(f"""
     # Job Description:
     {jd_text}
-    
+
     # Golden Resume (Current State):
     {yaml.dump(original_resume, sort_keys=False)}
-    
+
     Begin tailoring operations now.
     Remember to call init_resume first to load the Golden Resume context.
     """)

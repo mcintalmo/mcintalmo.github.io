@@ -66,7 +66,7 @@ services:
     image: fedirz/faster-whisper-server:latest-cpu
     environment:
       # Automatically downloads the model on first boot
-      - WHISPER__MODEL=Systran/faster-whisper-tiny.en 
+      - WHISPER__MODEL=Systran/faster-whisper-tiny.en
     volumes:
       - ./models:/root/.cache/huggingface
     ports:

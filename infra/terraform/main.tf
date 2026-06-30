@@ -35,7 +35,7 @@ resource "oci_core_route_table" "portfolio_rt" {
   vcn_id         = oci_core_vcn.portfolio_vcn.id
   display_name   = "${local.name_prefix}-rt"
   freeform_tags  = local.common_tags
-  
+
   route_rules {
     destination       = "0.0.0.0/0"
     network_entity_id = oci_core_internet_gateway.portfolio_ig.id
@@ -80,7 +80,7 @@ resource "oci_core_security_list" "portfolio_sl" {
       max = 443
     }
   }
-  
+
   # Allow LiveKit signaling ports (7880, 7881)
   ingress_security_rules {
     protocol = "6"
@@ -142,7 +142,7 @@ resource "oci_core_instance" "portfolio_server" {
   compartment_id      = var.compartment_ocid
   display_name        = "${local.name_prefix}-server"
   shape               = var.instance_shape
-  freeform_tags       = merge(local.common_tags, {
+  freeform_tags = merge(local.common_tags, {
     Name        = "Portfolio Server"
     Application = "portfolio-backend"
   })

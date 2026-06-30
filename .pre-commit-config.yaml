@@ -1,0 +1,56 @@
+repos:
+  # 1. Essential generic checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: detect-private-key
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: debug-statements
+
+  # 2. Secret scanning (Security)
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        exclude: (pnpm-lock\.yaml|uv\.lock|\.env\.example|test_.*\.py|infra/.*\.yaml|biome\.json)
+
+  # 3. Python linting & formatting (Ruff)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.0
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  # 4. JavaScript/TypeScript/JSON/CSS checks (Biome - Local system execution)
+  - repo: local
+    hooks:
+      - id: biome-check
+        name: Biome Check
+        entry: bash -c "cd frontend && npx biome check --write . ../resume/convert/"
+        language: system
+        pass_filenames: false
+        files: \.(jsx?|tsx?|json|css)$
+
+  # 5. Terraform Formatting & Validation
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.97.0
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_validate
+
+  # 6. Python strict type checking (Local system execution)
+  - repo: local
+    hooks:
+      - id: ty-check
+        name: Python Type Safety Check
+        entry: uv run --directory backend ty check
+        language: system
+        types: [python]
+        pass_filenames: false

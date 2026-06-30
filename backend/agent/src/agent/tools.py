@@ -42,7 +42,7 @@ def make_navigation_tools() -> list[llm.Tool | llm.Toolset]:
                     json.dumps(event.model_dump()).encode(),
                     reliable=True,
                 )
-        except RuntimeError, AttributeError, Exception:
+        except (RuntimeError, AttributeError, Exception):
             # Gracefully handle console mode where AgentSession lacks a room connection
             pass
         return f"Successfully navigated to the {target_name} section"

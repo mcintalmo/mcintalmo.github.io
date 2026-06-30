@@ -47,7 +47,7 @@ def stringify_dates(obj: Any) -> Any:
         return {k: stringify_dates(v) for k, v in obj.items()}
     if isinstance(obj, list):
         return [stringify_dates(x) for x in obj]
-    if isinstance(obj, (datetime.date, datetime.datetime)):
+    if isinstance(obj, datetime.date | datetime.datetime):
         return obj.isoformat()
     return obj
 

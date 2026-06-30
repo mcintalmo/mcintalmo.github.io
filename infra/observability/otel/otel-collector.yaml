@@ -11,12 +11,12 @@ exporters:
     endpoint: phoenix:4317
     tls:
       insecure: true
-      
+
   otlp/jaeger:
     endpoint: jaeger:4317
     tls:
       insecure: true
-      
+
   prometheus:
     endpoint: "0.0.0.0:8889"
 
@@ -28,5 +28,3 @@ service:
     metrics:
       receivers: [otlp]
       exporters: [prometheus]
-
-

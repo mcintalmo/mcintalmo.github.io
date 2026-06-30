@@ -14,11 +14,12 @@ dev-dependencies = [
     "testcontainers",
     "ty>=0.0.51",
     "types-pyyaml>=6.0.12",
+    "pre-commit",
 ]
 
 [tool.ruff]
 line-length = 88
-target-version = "py314"
+target-version = "py313"
 src = ["agent/src", "auth/src", "mcp/src", "common/src", "tailor/src"]
 
 [tool.ruff.lint]
@@ -41,6 +42,3 @@ pythonpath = [".", "agent/src", "auth/src", "mcp/src", "common/src", "tailor/src
 markers = [
     "eval: marks tests as evaluations (select with '-m eval')",
 ]
-
-
-

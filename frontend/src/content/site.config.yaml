@@ -11,7 +11,7 @@ agent:
       prompt: "What is Alex's educational background?"
 
 
-sections: 
+sections:
   basics:
     title: Home
     enabled: true
