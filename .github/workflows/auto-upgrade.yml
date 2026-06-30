@@ -1,0 +1,89 @@
+name: Time-Locked Dependency Upgrades
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Every Sunday at midnight
+  workflow_dispatch: {} # Manual trigger
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  upgrade:
+    name: Auto Upgrade Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Just
+        uses: taiki-e/install-action@just
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: "10"
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Run Dependency Upgrades (7-day time-locked)
+        run: just upgrade
+
+      - name: Run Code Style & Lint Validation
+        run: just check-all
+
+      - name: Run Pytest Unit/Integration Tests
+        run: |
+          echo "## Pytest Verification Results" > pytest_report.txt
+          echo '```' >> pytest_report.txt
+          set +e
+          uv run --directory backend pytest -m "not eval" >> pytest_report.txt 2>&1
+          TEST_EXIT_CODE=$?
+          set -e
+          echo '```' >> pytest_report.txt
+
+          if [ $TEST_EXIT_CODE -ne 0 ]; then
+            echo -e "\n⚠️ **Warning**: One or more tests failed during dependency upgrade validation!" >> pytest_report.txt
+          else
+            echo -e "\n✅ All tests passed successfully!" >> pytest_report.txt
+          fi
+
+      - name: Run Astro Build Verification
+        run: |
+          pnpm --prefix frontend generate-resume
+          pnpm --prefix frontend astro build
+
+      - name: Check for Lockfile Changes
+        id: git-check
+        run: |
+          if [ -n "$(git status --porcelain pnpm-lock.yaml backend/uv.lock)" ]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Pull Request
+        if: steps.git-check.outputs.changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(deps): auto-upgrade dependencies (7-day time-locked)"
+          branch: auto-dependency-upgrades
+          title: "chore(deps): auto-upgrade workspace dependencies"
+          body-path: pytest_report.txt
+          labels: |
+            dependencies
+            automated-pr
