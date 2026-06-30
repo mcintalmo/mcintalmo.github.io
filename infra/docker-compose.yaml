@@ -102,7 +102,7 @@ services:
       - ./kokoro_cache:/app/cache
     restart: always
     healthcheck:
-      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8880/health')"]
+      test: ["CMD", "python3", "-c", "import socket; s = socket.socket(); s.settimeout(2); s.connect(('127.0.0.1', 8880))"]
       interval: 10s
       timeout: 5s
       retries: 3
