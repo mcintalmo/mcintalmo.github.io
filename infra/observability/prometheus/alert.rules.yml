@@ -1,0 +1,42 @@
+groups:
+  - name: infrastructure-alerts
+    rules:
+      # 1. Container / Service Down
+      - alert: ServiceInstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service instance {{ $labels.instance }} is down"
+          description: "Scrape target {{ $labels.job }} has been unreachable for more than 1 minute."
+
+      # 2. Host Low Disk Space
+      - alert: HostDiskSpaceCritical
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} * 100) / node_filesystem_size_bytes{mountpoint="/"} < 10
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Host disk space running out on {{ $labels.instance }}"
+          description: "Available disk space on the root filesystem is less than 10% (currently {{ $value | printf \"%.2f\" }}% remaining)."
+
+      # 3. Host Low Memory (Out Of Memory risk)
+      - alert: HostMemoryLow
+        expr: (node_memory_MemAvailable_bytes * 100) / node_memory_MemTotal_bytes < 10
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Host memory low on {{ $labels.instance }}"
+          description: "Available memory is less than 10% (currently {{ $value | printf \"%.2f\" }}% remaining)."
+
+      # 4. Host High CPU Load
+      - alert: HostCpuHigh
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Host high CPU usage on {{ $labels.instance }}"
+          description: "CPU load has been above 85% for more than 5 minutes (currently {{ $value | printf \"%.2f\" }}% usage)."

@@ -281,6 +281,19 @@ jobs:
           # Sync files
           rsync -avz -e "ssh -i ~/.ssh/id_ed25519" --exclude 'node_modules' --exclude '.git' --exclude '.venv' --exclude 'dist' --exclude '.astro' --exclude 'backend/.env' ./ ubuntu@${{ env.VM_IP }}:/home/ubuntu/mcintalmo.github.io/
 
+          # Inject SMTP secrets into remote .env file on OCI VM
+          ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "
+            cd /home/ubuntu/mcintalmo.github.io &&
+            touch .env &&
+            for var in SMTP_SMARTHOST SMTP_AUTH_USERNAME SMTP_PASSWORD ALERT_DESTINATION_EMAIL; do
+              sed -i \"/^\${var}=/d\" .env
+            done &&
+            echo \"SMTP_SMARTHOST=${{ secrets.SMTP_SMARTHOST }}\" >> .env &&
+            echo \"SMTP_AUTH_USERNAME=${{ secrets.SMTP_AUTH_USERNAME }}\" >> .env &&
+            echo \"SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}\" >> .env &&
+            echo \"ALERT_DESTINATION_EMAIL=${{ secrets.ALERT_DESTINATION_EMAIL }}\" >> .env
+          "
+
           # Pull pre-compiled GHCR images and restart services
           ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u ${{ github.actor }} --password-stdin && sed -i '/rtc:/a \  node_ip: ${{ env.VM_IP }}' /home/ubuntu/mcintalmo.github.io/infra/livekit.yaml && cd /home/ubuntu/mcintalmo.github.io/infra && docker compose --profile telemetry pull agent auth && docker compose --profile telemetry up -d && docker compose restart livekit"
 
