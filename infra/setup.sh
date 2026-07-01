@@ -127,8 +127,8 @@ After=docker.service network-online.target
 Type=oneshot
 RemainAfterExit=yes
 WorkingDirectory=$APP_DIR/infra
-ExecStart=/usr/bin/docker compose -f docker-compose.yaml up -d
-ExecStop=/usr/bin/docker compose -f docker-compose.yaml down
+ExecStart=/usr/bin/docker compose -f docker-compose.yaml --profile telemetry up -d
+ExecStop=/usr/bin/docker compose -f docker-compose.yaml --profile telemetry down
 User=$USER
 
 [Install]
