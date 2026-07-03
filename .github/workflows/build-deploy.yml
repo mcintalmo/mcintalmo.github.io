@@ -297,6 +297,28 @@ jobs:
             echo \"ALERT_DESTINATION_EMAIL=${{ secrets.ALERT_DESTINATION_EMAIL }}\" >> .env
           "
 
+          # Inject LLM secrets into remote backend/.env file on OCI VM
+          ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "
+            cd /home/ubuntu/mcintalmo.github.io/backend &&
+            touch .env &&
+            if [ -n \"${{ secrets.CEREBRAS_API_KEY }}\" ]; then
+              sed -i \"/^CEREBRAS_API_KEY=/d\" .env
+              echo \"CEREBRAS_API_KEY=${{ secrets.CEREBRAS_API_KEY }}\" >> .env
+            fi &&
+            if [ -n \"${{ secrets.OPENROUTER_API_KEY }}\" ]; then
+              sed -i \"/^OPENROUTER_API_KEY=/d\" .env
+              echo \"OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}\" >> .env
+            fi &&
+            if [ -n \"${{ secrets.GITHUB_API_KEY }}\" ]; then
+              sed -i \"/^GITHUB_API_KEY=/d\" .env
+              echo \"GITHUB_API_KEY=${{ secrets.GITHUB_API_KEY }}\" >> .env
+            fi &&
+            if [ -n \"${{ secrets.NVIDIA_API_KEY }}\" ]; then
+              sed -i \"/^NVIDIA_API_KEY=/d\" .env
+              echo \"NVIDIA_API_KEY=${{ secrets.NVIDIA_API_KEY }}\" >> .env
+            fi
+          "
+
           # Pull pre-compiled GHCR images and restart services
           ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u ${{ github.actor }} --password-stdin && sed -i '/rtc:/a \  node_ip: ${{ env.VM_IP }}' /home/ubuntu/mcintalmo.github.io/infra/livekit.yaml && cd /home/ubuntu/mcintalmo.github.io/infra && docker compose --profile telemetry pull agent auth && docker compose --profile telemetry up -d && docker compose restart livekit"
 
