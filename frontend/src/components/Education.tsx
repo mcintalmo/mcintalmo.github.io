@@ -59,14 +59,14 @@ function EducationItem({
           <div className="flex items-start gap-3">
             <GraduationCap className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
             <div className="flex-1">
-              <div className="flex justify-between items-start gap-4">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                 <div>
                   <h3>
                     {edu.studyType} in {edu.area}
                   </h3>
                   <p className="text-primary mt-1">{edu.institution}</p>
                 </div>
-                <div className="flex items-center gap-1 text-sm text-muted-foreground mt-0.5 whitespace-nowrap">
+                <div className="flex items-center gap-1 text-sm text-muted-foreground sm:mt-1 whitespace-nowrap">
                   <Calendar className="w-4 h-4" />
                   <span>{period}</span>
                 </div>
@@ -172,7 +172,7 @@ export function Education({
           )}
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
+        <div className="flex flex-col gap-8 max-w-4xl mx-auto mb-16">
           {eduItems.map((edu, index) => (
             <EducationItem
               key={`${edu.institution || ""}-${edu.studyType || ""}-${edu.area || ""}`}

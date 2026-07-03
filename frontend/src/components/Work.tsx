@@ -113,47 +113,43 @@ export function Work({ work, config }: Props) {
   return (
     <section id="experience" className="py-20">
       <div className="container mx-auto px-6">
+        {/* Banner layout for Header + Download Resume Button */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16 group glass-panel rounded-xl py-8 px-6"
+          className="flex flex-col md:flex-row md:items-center md:justify-between mb-12 glass-panel rounded-xl py-6 px-8 gap-4 text-left"
         >
-          <h2 className="mb-4 inline-flex items-center gap-2">
-            {config.sections?.work?.title || "Work Experience"}
-            <SectionAnchor sectionId="experience" />
-          </h2>
-          {config.sections?.work?.description && (
-            <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-              {config.sections.work.description}
-            </p>
-          )}
+          <div>
+            <h2 className="mb-2 inline-flex items-center gap-2">
+              {config.sections?.work?.title || "Work Experience"}
+              <SectionAnchor sectionId="experience" />
+            </h2>
+            {config.sections?.work?.description && (
+              <p className="text-muted-foreground max-w-2xl">
+                {config.sections.work.description}
+              </p>
+            )}
+          </div>
 
-          {/* Download Resume Button */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            viewport={{ once: true }}
-          >
-            <a href="/downloads/McIntosh_Alexander_Resume.pdf" download tabIndex={-1}>
-              <Button
-                size="lg"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download Resume
-              </Button>
-            </a>
-          </motion.div>
+          <a href="/downloads/McIntosh_Alexander_Resume.pdf" download tabIndex={-1} className="flex-shrink-0">
+            <Button
+              size="lg"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg w-full md:w-auto"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Download Resume
+            </Button>
+          </a>
         </motion.div>
 
-        {/* Expanded width to align with other sections (Skills, Contact) */}
-        <div className="relative mx-auto max-w-5xl lg:max-w-6xl">
+        {/* Vertical Single-Column Timeline Layout */}
+        <div className="relative mx-auto max-w-4xl">
           {/* Cards + timeline wrapper so line does NOT include the toggle button height */}
           <div className="relative">
-            <div className="absolute left-6 md:left-1/2 md:transform md:-translate-x-1/2 w-0.5 bg-border h-full" />
+            {/* Left timeline line */}
+            <div className="absolute left-6 md:left-8 w-0.5 bg-border h-full" />
 
             {/* Always visible cards */}
             {annotatedExperiences
@@ -181,24 +177,15 @@ export function Work({ work, config }: Props) {
                       duration: 0.8,
                       ease: [0.25, 0.46, 0.45, 0.94],
                     }}
-                    className={`relative overflow-hidden py-3 will-change-transform mb-8 last:mb-0 group pointer-events-none${
-                      index > 0 ? " md:-mt-28" : ""
-                    }`}
+                    className="relative py-3 will-change-transform mb-8 last:mb-0 group pointer-events-none pl-16 md:pl-24"
                   >
-                    {/* Connector Line (Dashed) - Visual reinforcement connecting card to timeline dot */}
-                    <div
-                      className={`absolute top-[2.5625rem] h-0.5 border-t-2 border-dashed border-primary/20 group-hover:border-primary/50 transition-colors duration-300 left-6 w-10 md:w-auto ${
-                        index % 2 === 0
-                          ? "md:left-[46%] md:right-[50%]"
-                          : "md:left-[50%] md:right-[46%]"
-                      }`}
-                    />
+                    {/* Connector Line (Dashed) */}
+                    <div className="absolute top-[2.5625rem] h-0.5 border-t-2 border-dashed border-primary/20 group-hover:border-primary/50 transition-colors duration-300 left-6 w-10 md:left-8 md:w-16" />
 
-                    {/* Timeline dot - positioned for mobile first, then desktop, with custom indigo glow */}
-                    <div className="absolute left-6 md:left-1/2 md:transform md:-translate-x-1/2 w-5 h-5 bg-primary border-4 border-background rounded-full z-10 shadow-[0_0_10px_var(--color-primary)] transform -translate-x-1/2 top-8 group-hover:scale-125 group-hover:shadow-[0_0_18px_var(--color-primary)] transition-all duration-300 pointer-events-auto" />
+                    {/* Timeline dot */}
+                    <div className="absolute left-6 md:left-8 w-5 h-5 bg-primary border-4 border-background rounded-full z-10 shadow-[0_0_10px_var(--color-primary)] transform -translate-x-1/2 top-8 group-hover:scale-125 group-hover:shadow-[0_0_18px_var(--color-primary)] transition-all duration-300 pointer-events-auto" />
 
-                    {/* Mobile Layout: All items on the right side */}
-                    <MobileExperienceCard
+                    <ExperienceCard
                       exp={exp}
                       index={index}
                       hasDetails={hasDetails}
@@ -206,25 +193,6 @@ export function Work({ work, config }: Props) {
                       toggleExpanded={toggleExpanded}
                       period={period}
                     />
-
-                    {/* Desktop Layout: Alternating sides */}
-                    <div className="hidden md:flex md:items-center">
-                      <div
-                        className={`w-full flex ${
-                          index % 2 === 0 ? "justify-start pr-8" : "justify-end pl-8"
-                        }`}
-                      >
-                        {/* Slightly wider cards to use added horizontal space */}
-                        <DesktopExperienceCard
-                          exp={exp}
-                          index={index}
-                          hasDetails={hasDetails}
-                          expanded={expandedItems[index]}
-                          toggleExpanded={toggleExpanded}
-                          period={period}
-                        />
-                      </div>
-                    </div>
                   </motion.div>
                 );
               })}
@@ -237,7 +205,7 @@ export function Work({ work, config }: Props) {
                   animate={{ height: "auto" }}
                   exit={{ height: 0, transition: { duration: 0.4, ease: "easeInOut" } }}
                   transition={{ duration: 1.5, ease: [0.25, 1, 0.5, 1] }}
-                  className="overflow-hidden relative w-full md:-mt-28"
+                  className="overflow-hidden relative w-full"
                 >
                   {annotatedExperiences
                     .filter((exp) => exp._hidden)
@@ -258,11 +226,9 @@ export function Work({ work, config }: Props) {
                       return (
                         <div
                           key={key}
-                          className={`relative overflow-hidden py-3 will-change-transform mb-8 last:mb-0 group pointer-events-none${
-                            localIndex > 0 ? " md:-mt-28" : ""
-                          }`}
+                          className="relative py-3 will-change-transform mb-8 last:mb-0 group pointer-events-none pl-16 md:pl-24"
                         >
-                          {/* Connector Line (Dashed) - Visual reinforcement connecting card to timeline dot */}
+                          {/* Connector Line (Dashed) */}
                           <motion.div
                             initial={{ scaleX: 0, opacity: 0 }}
                             animate={{ scaleX: 1, opacity: 1 }}
@@ -271,15 +237,11 @@ export function Work({ work, config }: Props) {
                               ease: [0.25, 1, 0.5, 1],
                               delay: localIndex * 0.35 + 0.15,
                             }}
-                            style={{ originX: index % 2 === 0 ? 1 : 0 }}
-                            className={`absolute top-[2.5625rem] h-0.5 border-t-2 border-dashed border-primary/20 group-hover:border-primary/50 transition-colors duration-300 left-6 w-10 md:w-auto ${
-                              index % 2 === 0
-                                ? "md:left-[46%] md:right-[50%]"
-                                : "md:left-[50%] md:right-[46%]"
-                            }`}
+                            style={{ originX: 0 }}
+                            className="absolute top-[2.5625rem] h-0.5 border-t-2 border-dashed border-primary/20 group-hover:border-primary/50 transition-colors duration-300 left-6 w-10 md:left-8 md:w-16"
                           />
 
-                          {/* Timeline dot - positioned for mobile first, then desktop, with custom indigo glow */}
+                          {/* Timeline dot */}
                           <motion.div
                             initial={{ scale: 0, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
@@ -289,10 +251,9 @@ export function Work({ work, config }: Props) {
                               damping: 15,
                               delay: localIndex * 0.35,
                             }}
-                            className="absolute left-6 md:left-1/2 md:transform md:-translate-x-1/2 w-5 h-5 bg-primary border-4 border-background rounded-full z-10 shadow-[0_0_10px_var(--color-primary)] transform -translate-x-1/2 top-8 group-hover:scale-125 group-hover:shadow-[0_0_18px_var(--color-primary)] transition-all duration-300 pointer-events-auto"
+                            className="absolute left-6 md:left-8 w-5 h-5 bg-primary border-4 border-background rounded-full z-10 shadow-[0_0_10px_var(--color-primary)] transform -translate-x-1/2 top-8 group-hover:scale-125 group-hover:shadow-[0_0_18px_var(--color-primary)] transition-all duration-300 pointer-events-auto"
                           />
 
-                          {/* Mobile Layout: All items on the right side */}
                           <motion.div
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -301,9 +262,8 @@ export function Work({ work, config }: Props) {
                               ease: "easeOut",
                               delay: localIndex * 0.35 + 0.2,
                             }}
-                            className="md:hidden"
                           >
-                            <MobileExperienceCard
+                            <ExperienceCard
                               exp={exp}
                               index={index}
                               hasDetails={hasDetails}
@@ -312,43 +272,12 @@ export function Work({ work, config }: Props) {
                               period={period}
                             />
                           </motion.div>
-
-                          {/* Desktop Layout: Alternating sides */}
-                          <motion.div
-                            initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{
-                              duration: 0.8,
-                              ease: [0.25, 1, 0.5, 1],
-                              delay: localIndex * 0.35 + 0.25,
-                            }}
-                            className="hidden md:flex md:items-center"
-                          >
-                            <div
-                              className={`w-full flex ${
-                                index % 2 === 0
-                                  ? "justify-start pr-8"
-                                  : "justify-end pl-8"
-                              }`}
-                            >
-                              {/* Slightly wider cards to use added horizontal space */}
-                              <DesktopExperienceCard
-                                exp={exp}
-                                index={index}
-                                hasDetails={hasDetails}
-                                expanded={expandedItems[index]}
-                                toggleExpanded={toggleExpanded}
-                                period={period}
-                              />
-                            </div>
-                          </motion.div>
                         </div>
                       );
                     })}
                 </motion.div>
               )}
             </AnimatePresence>
-            {/* Toggle Button (no gradient) */}
           </div>
           {!showFullHistory && hiddenCount > 0 && (
             <div className="flex justify-center mt-0">
@@ -405,7 +334,7 @@ function getCompanyLogo(companyUrl?: string): string | null {
   return null;
 }
 
-function MobileExperienceCard({
+function ExperienceCard({
   exp,
   index,
   hasDetails,
@@ -420,9 +349,9 @@ function MobileExperienceCard({
   });
   const logoUrl = getCompanyLogo(exp.url);
   return (
-    <div className="md:hidden ml-16 pointer-events-auto">
+    <div className="pointer-events-auto w-full">
       <motion.div
-        whileHover={{ scale: 1.02 }}
+        whileHover={{ scale: 1.01 }}
         transition={{ duration: 0.2 }}
         className="group"
       >
@@ -451,10 +380,10 @@ function MobileExperienceCard({
             {...touchHandlers}
           >
             <CardHeader>
-              <div className="flex justify-between items-start gap-4">
-                <div className="flex gap-3 items-start">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                <div className="flex gap-4 items-start">
                   {logoUrl && (
-                    <div className="w-10 h-10 rounded-md bg-white border border-border/80 flex items-center justify-center overflow-hidden flex-shrink-0 p-1 shadow-sm mt-0.5">
+                    <div className="w-12 h-12 rounded-lg bg-white border border-border/80 flex items-center justify-center overflow-hidden flex-shrink-0 p-1.5 shadow-sm">
                       <img
                         src={logoUrl}
                         alt={`${exp.name || "Company"} logo`}
@@ -467,7 +396,7 @@ function MobileExperienceCard({
                     {exp.name && <p className="text-primary mt-1">{exp.name}</p>}
                   </CardTitle>
                 </div>
-                <span className="flex items-center gap-1 text-sm text-muted-foreground mt-1 whitespace-nowrap">
+                <span className="flex items-center gap-1 text-sm text-muted-foreground sm:mt-1 whitespace-nowrap">
                   <Calendar className="w-4 h-4" />
                   {period}
                 </span>
@@ -535,7 +464,6 @@ function MobileExperienceCard({
                                     className="text-sm text-muted-foreground list-disc"
                                   >
                                     <span
-                                      // biome-ignore lint/security/noDangerouslySetInnerHtml: rendering parsed inline markdown HTML is required for rich text formatting
                                       dangerouslySetInnerHTML={{
                                         __html: mdToInlineHtml(h),
                                       }}
@@ -594,184 +522,3 @@ function MobileExperienceCard({
   );
 }
 
-function DesktopExperienceCard({
-  exp,
-  index,
-  hasDetails,
-  expanded,
-  toggleExpanded,
-  period,
-}: ExperienceCardCommon) {
-  const { touchHandlers } = useTouchGestures({
-    onSwipeUp: () => !expanded && hasDetails && toggleExpanded(index),
-    onSwipeDown: () => expanded && hasDetails && toggleExpanded(index),
-    threshold: 30,
-  });
-  const logoUrl = getCompanyLogo(exp.url);
-  return (
-    <motion.div
-      className="w-[46%] group pointer-events-auto"
-      whileHover={{ scale: 1.02 }}
-      transition={{ duration: 0.2 }}
-    >
-      <Collapsible
-        open={hasDetails ? !!expanded : false}
-        onOpenChange={() => hasDetails && toggleExpanded(index)}
-      >
-        <Card
-          className={
-            "hover:shadow-lg transition-all duration-300 group-hover:border-primary/20 touch-manipulation " +
-            (hasDetails ? "cursor-pointer" : "cursor-default")
-          }
-          onClick={() => hasDetails && toggleExpanded(index)}
-          role={hasDetails ? "button" : undefined}
-          tabIndex={hasDetails ? 0 : -1}
-          aria-expanded={hasDetails ? !!expanded : undefined}
-          aria-label={`${expanded ? "Collapse" : "Expand"} details for ${exp.position || "role"} at ${
-            exp.name || "company"
-          }`}
-          onKeyDown={(e) => {
-            if (hasDetails && (e.key === "Enter" || e.key === " ")) {
-              e.preventDefault();
-              toggleExpanded(index);
-            }
-          }}
-          {...touchHandlers}
-        >
-          <CardHeader>
-            <div className="flex justify-between items-start gap-6">
-              <div className="flex gap-4 items-start">
-                {logoUrl && (
-                  <div className="w-12 h-12 rounded-lg bg-white border border-border/80 flex items-center justify-center overflow-hidden flex-shrink-0 p-1.5 shadow-sm">
-                    <img
-                      src={logoUrl}
-                      alt={`${exp.name || "Company"} logo`}
-                      className="max-w-full max-h-full object-contain"
-                    />
-                  </div>
-                )}
-                <CardTitle>
-                  {exp.position && <h3>{exp.position}</h3>}
-                  {exp.name && <p className="text-primary mt-1">{exp.name}</p>}
-                </CardTitle>
-              </div>
-              <span className="flex items-center gap-1 text-sm text-muted-foreground mt-1 whitespace-nowrap">
-                <Calendar className="w-4 h-4" />
-                {period}
-              </span>
-            </div>
-            {exp.location && (
-              <CardDescription className="flex items-center gap-1 mt-1">
-                <MapPin className="w-4 h-4" />
-                {exp.location}
-              </CardDescription>
-            )}
-          </CardHeader>
-          <CardContent>
-            {exp.description && (
-              <p className="mb-4 text-muted-foreground">{exp.description}</p>
-            )}
-            {hasDetails && (
-              <div className="w-full flex items-center justify-between p-0 h-auto">
-                <span className="text-sm text-primary group-hover:text-primary/80 transition-colors">
-                  {expanded ? "Show less details" : "Show more details"}
-                </span>
-                <motion.div
-                  animate={{ rotate: expanded ? 180 : 0 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="text-muted-foreground group-hover:text-primary transition-colors duration-200"
-                >
-                  <ChevronDown className="w-4 h-4" />
-                </motion.div>
-              </div>
-            )}
-            {hasDetails && (
-              <CollapsibleContent forceMount>
-                <AnimatePresence initial={false}>
-                  {expanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
-                      className="overflow-hidden space-y-6 mt-4 pt-2"
-                    >
-                      {exp.highlights && exp.highlights.length > 0 && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 15 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.4, delay: 0.1 }}
-                          className="space-y-2"
-                        >
-                          <h4 className="flex items-center gap-2 text-sm font-medium">
-                            <Trophy className="w-4 h-4 text-primary" />
-                            Achievements
-                          </h4>
-                          <ul className="space-y-1 ml-6">
-                            {exp.highlights.map((h: string, i: number) => {
-                              return (
-                                <motion.li
-                                  key={h}
-                                  initial={{ opacity: 0, x: -10 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ duration: 0.3, delay: 0.2 + i * 0.05 }}
-                                  className="text-sm text-muted-foreground list-disc"
-                                >
-                                  <span
-                                    // biome-ignore lint/security/noDangerouslySetInnerHtml: rendering parsed inline markdown HTML is required for rich text formatting
-                                    dangerouslySetInnerHTML={{
-                                      __html: mdToInlineHtml(h),
-                                    }}
-                                  />
-                                </motion.li>
-                              );
-                            })}
-                          </ul>
-                        </motion.div>
-                      )}
-                      {exp.summary && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 15 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.4, delay: 0.2 }}
-                          className="space-y-2"
-                        >
-                          <h4 className="flex items-center gap-2 text-sm font-medium">
-                            Summary
-                          </h4>
-                          <p className="text-sm text-muted-foreground leading-relaxed">
-                            {exp.summary}
-                          </p>
-                        </motion.div>
-                      )}
-                      {exp.keywords && exp.keywords.length > 0 && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 15 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.4, delay: 0.3 }}
-                          className="space-y-2"
-                        >
-                          <h4 className="flex items-center gap-2 text-sm font-medium">
-                            <Tag className="w-4 h-4 text-primary" />
-                            Technologies
-                          </h4>
-                          <div className="flex flex-wrap gap-2">
-                            {exp.keywords.map((kw: string) => (
-                              <Badge key={kw} variant="outline" className="text-xs">
-                                {kw}
-                              </Badge>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </CollapsibleContent>
-            )}
-          </CardContent>
-        </Card>
-      </Collapsible>
-    </motion.div>
-  );
-}

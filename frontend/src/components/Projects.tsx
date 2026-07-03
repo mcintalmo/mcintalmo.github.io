@@ -44,7 +44,7 @@ export function Projects({
           )}
         </motion.div>
 
-        <div className="columns-1 lg:columns-2 xl:columns-3 gap-8 [column-fill:balance]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {projects.map((project, index) => {
             const isHidden = !showAll && index >= limit;
             return (
@@ -70,26 +70,27 @@ export function Projects({
                 }}
                 animate={
                   isHidden
-                    ? { opacity: 0, height: 0, marginBottom: 0, scale: 0.98 }
-                    : { opacity: 1, height: "auto", marginBottom: 32, scale: 1 }
+                    ? { opacity: 0, height: 0, overflow: "hidden", display: "none", scale: 0.98 }
+                    : { opacity: 1, height: "auto", overflow: "visible", display: "flex", scale: 1 }
                 }
                 transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
-                style={{ perspective: "1000px", overflow: "hidden" }}
+                style={{ perspective: "1000px" }}
+                className="h-full flex flex-col will-change-transform"
               >
-                <Card className="overflow-hidden group hover:shadow-lg transition-all duration-300">
-                  <CardHeader>
+                <Card className="h-full flex flex-col overflow-hidden group hover:shadow-lg transition-all duration-300">
+                  <CardHeader className="flex-1">
                     <CardTitle>
                       <h3>{project.name}</h3>
                     </CardTitle>
                     {project.description && (
-                      <div className="text-muted-foreground">
+                      <div className="text-muted-foreground mt-2">
                         <Markdown className="prose prose-invert prose-sm">
                           {project.description}
                         </Markdown>
                       </div>
                     )}
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 mt-auto">
                     <div className="flex flex-wrap gap-2">
                       {project.keywords?.map((kw) => (
                         <Badge key={kw} variant="outline" className="text-xs">
