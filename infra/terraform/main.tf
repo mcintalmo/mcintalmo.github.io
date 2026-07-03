@@ -178,3 +178,17 @@ resource "oci_core_instance" "portfolio_server" {
     user_data           = base64encode(file("./cloud-init.yaml"))
   }
 }
+
+# 5. Object Storage Bucket for Terraform Remote State
+data "oci_objectstorage_namespace" "ns" {
+  compartment_id = var.compartment_ocid
+}
+
+resource "oci_objectstorage_bucket" "state_bucket" {
+  compartment_id = var.compartment_ocid
+  name           = "terraform-state"
+  namespace      = data.oci_objectstorage_namespace.ns.namespace
+  storage_tier   = "Standard"
+  versioning     = "Enabled"
+  freeform_tags  = local.common_tags
+}
