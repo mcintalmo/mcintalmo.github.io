@@ -231,6 +231,7 @@ export function Contact({
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.1 }}
                     viewport={{ once: true }}
+                    className="relative"
                   >
                     <Input
                       id="contact-name"
@@ -238,13 +239,21 @@ export function Contact({
                       placeholder="Your Name"
                       value={form.name}
                       onChange={(e) => update("name", e.target.value)}
+                      className="peer pt-5 pb-1 placeholder:text-transparent"
                     />
+                    <label
+                      htmlFor="contact-name"
+                      className="absolute left-3 top-1 text-[10px] font-medium text-muted-foreground transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-muted-foreground/60 peer-focus:top-1 peer-focus:text-[10px] peer-focus:text-primary pointer-events-none"
+                    >
+                      Your Name
+                    </label>
                   </motion.div>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
                     viewport={{ once: true }}
+                    className="relative"
                   >
                     <Input
                       id="contact-email"
@@ -254,13 +263,21 @@ export function Contact({
                       value={form.email}
                       onChange={(e) => update("email", e.target.value)}
                       required
+                      className="peer pt-5 pb-1 placeholder:text-transparent"
                     />
+                    <label
+                      htmlFor="contact-email"
+                      className="absolute left-3 top-1 text-[10px] font-medium text-muted-foreground transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-muted-foreground/60 peer-focus:top-1 peer-focus:text-[10px] peer-focus:text-primary pointer-events-none"
+                    >
+                      Your Email *
+                    </label>
                   </motion.div>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
                     viewport={{ once: true }}
+                    className="relative"
                   >
                     <Input
                       id="contact-subject"
@@ -268,23 +285,37 @@ export function Contact({
                       placeholder="Subject"
                       value={form.subject}
                       onChange={(e) => update("subject", e.target.value)}
+                      className="peer pt-5 pb-1 placeholder:text-transparent"
                     />
+                    <label
+                      htmlFor="contact-subject"
+                      className="absolute left-3 top-1 text-[10px] font-medium text-muted-foreground transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-muted-foreground/60 peer-focus:top-1 peer-focus:text-[10px] peer-focus:text-primary pointer-events-none"
+                    >
+                      Subject
+                    </label>
                   </motion.div>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.4 }}
                     viewport={{ once: true }}
+                    className="relative"
                   >
                     <Textarea
                       id="contact-message"
                       name="message"
                       placeholder="Your message..."
-                      className="min-h-[120px]"
+                      className="peer pt-6 pb-2 placeholder:text-transparent min-h-[120px]"
                       value={form.message}
                       onChange={(e) => update("message", e.target.value)}
                       required
                     />
+                    <label
+                      htmlFor="contact-message"
+                      className="absolute left-3 top-1.5 text-[10px] font-medium text-muted-foreground transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-3 peer-placeholder-shown:text-muted-foreground/60 peer-focus:top-1.5 peer-focus:text-[10px] peer-focus:text-primary pointer-events-none"
+                    >
+                      Your message *
+                    </label>
                   </motion.div>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}

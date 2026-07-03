@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Calendar, ChevronDown, Download, MapPin, Tag, Trophy } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { formatRange, parseDate } from "../lib/mappers";
 import { mdToInlineHtml } from "../lib/markdown";
 import type { DateRange, ResumeWork, SiteConfigRoot } from "../lib/types";
@@ -342,14 +342,28 @@ function ExperienceCard({
   toggleExpanded,
   period,
 }: ExperienceCardCommon) {
+  const cardRef = useRef<HTMLDivElement>(null);
   const { touchHandlers } = useTouchGestures({
     onSwipeUp: () => !expanded && hasDetails && toggleExpanded(index),
     onSwipeDown: () => expanded && hasDetails && toggleExpanded(index),
     threshold: 30,
   });
+
+  useEffect(() => {
+    if (expanded && cardRef.current) {
+      const timer = setTimeout(() => {
+        cardRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
+      }, 150); // delay to let height transition begin
+      return () => clearTimeout(timer);
+    }
+  }, [expanded]);
+
   const logoUrl = getCompanyLogo(exp.url);
   return (
-    <div className="pointer-events-auto w-full">
+    <div ref={cardRef} className="pointer-events-auto w-full">
       <motion.div
         whileHover={{ scale: 1.01 }}
         transition={{ duration: 0.2 }}

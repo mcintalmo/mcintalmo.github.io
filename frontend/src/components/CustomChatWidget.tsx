@@ -84,8 +84,26 @@ function VoicePanelInner({
   const { theme } = useTheme();
   const visualizerColor = theme === "dark" ? "#22d3ee" : "#0284c7";
 
+  const getStatusText = () => {
+    switch (state) {
+      case "connecting":
+        return "Connecting to Voice Agent...";
+      case "listening":
+        return "Listening... Speak now";
+      case "thinking":
+        return "Thinking...";
+      case "speaking":
+        return "Agent is speaking...";
+      default:
+        return "Voice chat ready";
+    }
+  };
+
   return (
-    <div className="p-4 border-t bg-background flex flex-col items-center gap-4">
+    <div className="p-4 border-t bg-background flex flex-col items-center gap-4 w-full">
+      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80 animate-pulse h-4 flex items-center justify-center">
+        {getStatusText()}
+      </div>
       {state !== "disconnected" && (
         <div className="h-24 w-full flex items-center justify-center bg-muted/30 rounded-xl overflow-hidden relative">
           <AgentAudioVisualizerWave
@@ -339,6 +357,25 @@ export function CustomChatWidget({
       if (recognitionRef.current && isDictating) {
         recognitionRef.current.stop();
       }
+
+      // Proactive Microphone Permission Check
+      if (typeof navigator !== "undefined" && navigator.mediaDevices) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          for (const track of stream.getTracks()) {
+            track.stop(); // release immediately
+          }
+        } catch (err) {
+          console.warn("Microphone permission denied:", err);
+          toast.error("Microphone Access Blocked", {
+            description:
+              "Microphone access is required for voice mode. Please click the lock/settings icon in the browser address bar, allow microphone access, and try again.",
+          });
+          setChatMode("text");
+          return;
+        }
+      }
+
       if (room.localParticipant) {
         await room.localParticipant.setMicrophoneEnabled(true);
       }
