@@ -12,7 +12,7 @@ Operationalizing **interpretable machine learning**, **explainable AI**, and **o
 
 
 # Experience
-## **Pioneer Management Consulting**, Consultant, Artificial Intelligence Practice
+## **Pioneer Management Consulting**, Consultant, Artificial Intelligence
 
 Minneapolis, MN
 
@@ -20,7 +20,7 @@ June 2026 – present
 
 
 
-1 month
+2 months
 
 Designing custom AI architectures and developing conversational analytics to drive sustainable enterprise AI adoption.
 
