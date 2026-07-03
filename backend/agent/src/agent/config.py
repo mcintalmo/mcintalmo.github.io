@@ -63,7 +63,7 @@ class YamlConfigSettingsSource(PydanticBaseSettingsSource):
 
 
 class SttSettings(BaseSettings):
-    model: str = "whisper"
+    model: str = "tiny.en"
     base_url: str = "http://localhost:10300/v1"
     api_key: str = "local-key"
     model_config = SettingsConfigDict(
