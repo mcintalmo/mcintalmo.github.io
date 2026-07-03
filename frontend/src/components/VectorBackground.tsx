@@ -7,21 +7,21 @@ interface Particle {
   y: number;
   vx: number;
   vy: number;
+  baseVx: number;
+  baseVy: number;
   radius: number;
   color: string;
 }
 
 /* ─────────── Constants ─────────── */
-const PARTICLE_COUNT = 300;
-const LINK_DISTANCE = 140;
+const PARTICLE_COUNT = 150;
+const LINK_DISTANCE = 120;
 const LINK_OPACITY_LIGHT = 0.1;
 const LINK_OPACITY_DARK = 0.18;
 const DOT_OPACITY_LIGHT = 0.35;
 const DOT_OPACITY_DARK = 0.55;
-const BROWNIAN_SPEED = 0.1;
-const DRAG = 0.97;
 const REPULSE_MAX_DIST = 180;
-const REPULSE_STRENGTH = 800;
+const REPULSE_STRENGTH = 600;
 const PARALLAX_FACTOR = 0.8;
 
 const COLORS_LIGHT = ["#6366F1", "#818CF8", "#38BDF8", "#0EA5E9"];
@@ -36,7 +36,6 @@ export const VectorBackground = () => {
   const mouseRef = React.useRef({ x: -9999, y: -9999 });
   const scrollYRef = React.useRef(0);
   const rafRef = React.useRef<number>(0);
-  const canvasHeightRef = React.useRef(0);
   const { theme } = useTheme();
   const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
 
@@ -46,28 +45,24 @@ export const VectorBackground = () => {
     );
   }, []);
 
-  // Get full document height for canvas sizing
-  const getDocHeight = React.useCallback(() => {
-    if (typeof document === "undefined") return window.innerHeight * 3;
-    return Math.max(
-      document.body.scrollHeight,
-      document.documentElement.scrollHeight,
-      window.innerHeight * 3, // minimum 3x viewport
-    );
-  }, []);
-
-  // Initialize particles across full page height
+  // Initialize particles across initial viewport region
   const initParticles = React.useCallback(
-    (w: number, fullH: number) => {
+    (w: number, viewportH: number, scrollY: number) => {
       const colors = theme === "dark" ? COLORS_DARK : COLORS_LIGHT;
       const particles: Particle[] = [];
+      const offset = scrollY * PARALLAX_FACTOR;
       for (let i = 0; i < PARTICLE_COUNT; i++) {
+        // Slow upward motion: vy is always negative
+        const vx = (Math.random() - 0.5) * 0.3; // -0.15 to +0.15 side drift
+        const vy = -(0.08 + Math.random() * 0.14); // -0.08 to -0.22 upward flow
         particles.push({
           x: Math.random() * w,
-          y: Math.random() * fullH,
-          vx: (Math.random() - 0.5) * BROWNIAN_SPEED * 2,
-          vy: (Math.random() - 0.5) * BROWNIAN_SPEED * 2,
-          radius: 1.5 + Math.random() * 2,
+          y: offset - 80 + Math.random() * (viewportH + 160),
+          vx,
+          vy,
+          baseVx: vx,
+          baseVy: vy,
+          radius: 0.8 + Math.random() * 3.8, // 0.8 to 4.6 radius
           color: colors[Math.floor(Math.random() * colors.length)],
         });
       }
@@ -87,8 +82,6 @@ export const VectorBackground = () => {
       const dpr = window.devicePixelRatio || 1;
       const w = window.innerWidth;
       const h = window.innerHeight;
-      const fullH = getDocHeight();
-      canvasHeightRef.current = fullH;
       canvas.width = w * dpr;
       canvas.height = h * dpr;
       canvas.style.width = `${w}px`;
@@ -99,7 +92,11 @@ export const VectorBackground = () => {
     // Initial size — delay slightly so DOM is laid out
     const initialResize = () => {
       resize();
-      particlesRef.current = initParticles(window.innerWidth, canvasHeightRef.current);
+      particlesRef.current = initParticles(
+        window.innerWidth,
+        window.innerHeight,
+        window.scrollY,
+      );
     };
     initialResize();
     // Re-measure after content loads (fonts, images)
@@ -134,12 +131,11 @@ export const VectorBackground = () => {
 
       const w = window.innerWidth;
       const viewportH = window.innerHeight;
-      const fullH = canvasHeightRef.current;
       const scrollY = scrollYRef.current;
       const offset = scrollY * PARALLAX_FACTOR;
 
       try {
-        // Draw background color since body is now transparent
+        // Draw background color
         let bgColor = theme === "dark" ? "#030712" : "#ffffff";
         if (typeof document !== "undefined" && document.body) {
           const rawBg = getComputedStyle(document.body)
@@ -157,9 +153,7 @@ export const VectorBackground = () => {
 
         for (const p of particles) {
           if (!prefersReducedMotion) {
-            p.vx += (Math.random() - 0.5) * BROWNIAN_SPEED * 0.3;
-            p.vy += (Math.random() - 0.5) * BROWNIAN_SPEED * 0.3;
-
+            // 1. Mouse Repulsion Force
             const dx = p.x - mx;
             const dy = p.y - myVirtual;
             const distSq = dx * dx + dy * dy;
@@ -173,26 +167,35 @@ export const VectorBackground = () => {
               p.vy += ny * force;
             }
 
-            p.vx *= DRAG;
-            p.vy *= DRAG;
+            // 2. Smoothly return current velocity to base velocity (friction & return)
+            p.vx += (p.baseVx - p.vx) * 0.04;
+            p.vy += (p.baseVy - p.vy) * 0.04;
+
+            // 3. Move particle
             p.x += p.vx;
             p.y += p.vy;
 
-            if (p.x < 0) {
-              p.x = 0;
-              p.vx = Math.abs(p.vx);
+            // 4. Viewport Wrapping (Infinite Nodes)
+            const buffer = 80;
+            const topBound = offset - buffer;
+            const bottomBound = offset + viewportH + buffer;
+            const leftBound = -buffer;
+            const rightBound = w + buffer;
+
+            if (p.x < leftBound) {
+              p.x = rightBound;
+              p.y = topBound + Math.random() * (viewportH + 2 * buffer);
+            } else if (p.x > rightBound) {
+              p.x = leftBound;
+              p.y = topBound + Math.random() * (viewportH + 2 * buffer);
             }
-            if (p.x > w) {
-              p.x = w;
-              p.vx = -Math.abs(p.vx);
-            }
-            if (p.y < 0) {
-              p.y = 0;
-              p.vy = Math.abs(p.vy);
-            }
-            if (p.y > fullH) {
-              p.y = fullH;
-              p.vy = -Math.abs(p.vy);
+
+            if (p.y < topBound) {
+              p.y = bottomBound + Math.random() * buffer;
+              p.x = Math.random() * w;
+            } else if (p.y > bottomBound) {
+              p.y = topBound - Math.random() * buffer;
+              p.x = Math.random() * w;
             }
           }
 
@@ -251,7 +254,7 @@ export const VectorBackground = () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", resize);
     };
-  }, [theme, initParticles, prefersReducedMotion, getDocHeight]);
+  }, [theme, initParticles, prefersReducedMotion]);
 
   return (
     <canvas ref={canvasRef} className="fixed top-0 left-0 z-0 pointer-events-none" />
