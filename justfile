@@ -97,6 +97,12 @@ upgrade:
     @echo "==> Upgrading e2e Python packages (limiting to >= 7 days old)..."
     uv lock --directory e2e --upgrade --exclude-newer "7 days"
     uv sync --directory e2e
+    @echo "==> Upgrading tools/rag_agent Python packages (limiting to >= 7 days old)..."
+    uv lock --directory tools/rag_agent --upgrade --exclude-newer "7 days"
+    @echo "==> Upgrading tools/tailor_resume Python packages (limiting to >= 7 days old)..."
+    uv lock --directory tools/tailor_resume --upgrade --exclude-newer "7 days"
+    @echo "==> Upgrading tools/mcp_server Python packages (limiting to >= 7 days old)..."
+    uv lock --directory tools/mcp_server --upgrade --exclude-newer "7 days"
     @echo "==> Upgrades complete!"
 
 # ==============================================================================

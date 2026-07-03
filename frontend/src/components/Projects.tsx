@@ -70,8 +70,20 @@ export function Projects({
                 }}
                 animate={
                   isHidden
-                    ? { opacity: 0, height: 0, overflow: "hidden", display: "none", scale: 0.98 }
-                    : { opacity: 1, height: "auto", overflow: "visible", display: "flex", scale: 1 }
+                    ? {
+                        opacity: 0,
+                        height: 0,
+                        overflow: "hidden",
+                        display: "none",
+                        scale: 0.98,
+                      }
+                    : {
+                        opacity: 1,
+                        height: "auto",
+                        overflow: "visible",
+                        display: "flex",
+                        scale: 1,
+                      }
                 }
                 transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
                 style={{ perspective: "1000px" }}

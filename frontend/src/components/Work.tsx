@@ -133,7 +133,12 @@ export function Work({ work, config }: Props) {
             )}
           </div>
 
-          <a href="/downloads/McIntosh_Alexander_Resume.pdf" download tabIndex={-1} className="flex-shrink-0">
+          <a
+            href="/downloads/McIntosh_Alexander_Resume.pdf"
+            download
+            tabIndex={-1}
+            className="flex-shrink-0"
+          >
             <Button
               size="lg"
               className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg w-full md:w-auto"
@@ -478,6 +483,7 @@ function ExperienceCard({
                                     className="text-sm text-muted-foreground list-disc"
                                   >
                                     <span
+                                      // biome-ignore lint/security/noDangerouslySetInnerHtml: mdToInlineHtml is sanitized
                                       dangerouslySetInnerHTML={{
                                         __html: mdToInlineHtml(h),
                                       }}
@@ -535,4 +541,3 @@ function ExperienceCard({
     </div>
   );
 }
-

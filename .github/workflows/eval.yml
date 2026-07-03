@@ -16,6 +16,9 @@ concurrency:
   group: deepeval-evals-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   evaluate:
     name: Run Tailoring Evals
