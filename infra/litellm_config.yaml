@@ -52,12 +52,13 @@ model_list:
 router_settings:
   num_retries: 0
   fallbacks:
-    - portfolio-llm: [
-        "portfolio-llm-openrouter-llama",
-        "portfolio-llm-github-direct"
-        "portfolio-llm-local",
-        "portfolio-llm-nvidia",
-        "portfolio-llm-openrouter-gemini",
-      ]
+    - portfolio-llm:
+        [
+          "portfolio-llm-openrouter-llama",
+          "portfolio-llm-github-direct",
+          "portfolio-llm-local",
+          "portfolio-llm-nvidia",
+          "portfolio-llm-openrouter-gemini",
+        ]
   cooldown_time: 10
   allowed_fails: 1
