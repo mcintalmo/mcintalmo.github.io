@@ -100,6 +100,9 @@ services:
       - "8880:8880"
     volumes:
       - ./kokoro_cache:/app/cache
+    environment:
+      - OMP_NUM_THREADS=2
+      - MKL_NUM_THREADS=2
     restart: always
     healthcheck:
       test: ["CMD", "python3", "-c", "import socket; s = socket.socket(); s.settimeout(2); s.connect(('127.0.0.1', 8880))"]

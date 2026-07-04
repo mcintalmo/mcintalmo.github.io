@@ -103,7 +103,7 @@ class TtsSettings(BaseSettings):
     base_url: str = "http://localhost:8880/v1"
     api_key: str = "local-key"
     voice: str = "af_heart"
-    response_format: str = "mp3"
+    response_format: str = "wav"
     model_config = SettingsConfigDict(
         env_file=(".env", ".env.local", "../.env", "../.env.local"), extra="ignore"
     )

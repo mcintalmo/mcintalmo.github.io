@@ -50,7 +50,7 @@ from livekit.plugins.turn_detector.multilingual import MultilingualModel
 
 from agent.config import AgentSessionSettings, LlmSettings
 from agent.prompt import get_portfolio_assistant_instructions
-from agent.tools import make_navigation_tools
+from agent.tools import make_portfolio_tools
 
 __all__ = ["Assistant", "LlmSettings"]
 
@@ -90,6 +90,10 @@ async def portfolio_agent(ctx: JobContext) -> None:
 
     turn_handling = TurnHandlingOptions(
         turn_detection=MultilingualModel(),
+        preemptive_generation={
+            "enabled": True,
+            "preemptive_tts": True,
+        },
     )
 
     session: AgentSession[Any] = AgentSession(
@@ -110,8 +114,7 @@ async def portfolio_agent(ctx: JobContext) -> None:
         ),
         tts=tts,
         turn_handling=turn_handling,
-        preemptive_generation=True,
-        tools=make_navigation_tools(),
+        tools=make_portfolio_tools(),
         max_tool_steps=1,
         conn_options=SessionConnectOptions(
             llm_conn_options=APIConnectOptions(max_retry=0, timeout=60.0)

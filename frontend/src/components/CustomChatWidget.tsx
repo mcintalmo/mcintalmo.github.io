@@ -18,6 +18,7 @@ import {
 import * as React from "react";
 import { toast } from "sonner";
 import { useInputControls } from "../hooks/agents-ui/use-agent-control-bar";
+import { mdToHtml } from "../lib/markdown";
 import { AgentAudioVisualizerWave } from "./agents-ui/agent-audio-visualizer-wave";
 import { AgentTrackControl } from "./agents-ui/agent-track-control";
 import { useTheme } from "./ThemeProvider";
@@ -727,7 +728,11 @@ export function CustomChatWidget({
                             : "bg-card text-foreground rounded-bl-none border-border/30"
                         }`}
                       >
-                        {msg.text}
+                        <div
+                          className="[&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_a]:underline"
+                          // biome-ignore lint/security/noDangerouslySetInnerHtml: mdToHtml is strictly sanitized via rehype-sanitize
+                          dangerouslySetInnerHTML={{ __html: mdToHtml(msg.text) }}
+                        />
                       </div>
                     </div>
                   );

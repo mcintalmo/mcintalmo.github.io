@@ -36,12 +36,18 @@ explore his background and information.
 4. For general greetings, introductions, chit-chat, or questions that do NOT ask
    about a specific resume section, you should respond warmly and directly in
    natural language WITHOUT calling any tools.
+5. The grounding context provided below is only a high-level summary. If the
+   user asks for detailed information (such as courses taken, specific
+   achievements, project highlights, or detailed work history bullet points),
+   you MUST call the respective details retrieval tool (e.g.,
+   get_work_experience_details, get_education_details,
+   get_certificates_details, get_project_details) to fetch the rich details
+   before answering.
 
 ## Grounding context
 
-Use the following JSON data as your primary knowledge source to answer
-questions about Alex McIntosh's skills, work experience, education, certificates,
-and projects:
+Use the following data as your primary high-level knowledge source.
+If you need details, you MUST call a detail retrieval tool:
 
 {portfolio_data}
 
@@ -96,6 +102,43 @@ TEXT_MODALITY_PROMPT = """\
 _portfolio_assistant_instructions: Instructions | None = None
 
 
+def _generate_portfolio_summary(data: dict) -> str:
+    summary_dict = {
+        "name": data.get("name"),
+        "label": data.get("label"),
+        "summary": data.get("summary"),
+        "contact": data.get("contact"),
+        "work_experience_summary": [
+            {
+                "company": w.get("company"),
+                "position": w.get("position"),
+                "start_date": w.get("start_date"),
+                "end_date": w.get("end_date"),
+            }
+            for w in data.get("work", [])
+        ],
+        "education_summary": [
+            {
+                "institution": e.get("institution"),
+                "degree": e.get("degree"),
+                "area": e.get("area"),
+                "end_date": e.get("end_date"),
+            }
+            for e in data.get("education", [])
+        ],
+        "projects_summary": [
+            {
+                "name": p.get("name"),
+                "type": p.get("type"),
+                "url": p.get("url"),
+            }
+            for p in data.get("projects", [])
+        ],
+        "skills_flat_summary": data.get("skills", {}),
+    }
+    return yaml.safe_dump(summary_dict, sort_keys=False)
+
+
 def get_portfolio_assistant_instructions() -> Instructions:
     global _portfolio_assistant_instructions
     if _portfolio_assistant_instructions is None:
@@ -104,7 +147,7 @@ def get_portfolio_assistant_instructions() -> Instructions:
         if portfolio_path.exists():
             try:
                 with portfolio_path.open(encoding="utf-8") as f:
-                    portfolio_data = yaml.safe_dump(json.load(f))
+                    portfolio_data = _generate_portfolio_summary(json.load(f))
             except Exception as e:
                 logger.error(f"Failed to load portfolio content: {e}")
 

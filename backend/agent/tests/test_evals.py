@@ -13,7 +13,7 @@ from livekit.agents.voice.run_result import FunctionCallEvent
 from livekit.plugins import openai
 
 from agent.main import Assistant, LlmSettings
-from agent.tools import make_navigation_tools
+from agent.tools import make_portfolio_tools
 
 
 @pytest.mark.eval
@@ -90,7 +90,7 @@ async def test_all_golden_cases() -> None:
 
         async with AgentSession(
             llm=agent_llm,
-            tools=make_navigation_tools(),
+            tools=make_portfolio_tools(),
             conn_options=SessionConnectOptions(
                 llm_conn_options=APIConnectOptions(max_retry=0, timeout=60.0)
             ),

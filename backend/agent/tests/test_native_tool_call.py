@@ -7,7 +7,7 @@ from livekit.agents.voice.run_result import RunResult
 from livekit.plugins import openai
 
 from agent.main import Assistant, LlmSettings
-from agent.tools import make_navigation_tools
+from agent.tools import make_portfolio_tools
 
 logging.basicConfig(level=logging.INFO)
 
@@ -26,7 +26,7 @@ async def main() -> None:
     )
 
     print("Starting AgentSession...")
-    async with AgentSession(llm=llm, tools=make_navigation_tools()) as session:
+    async with AgentSession(llm=llm, tools=make_portfolio_tools()) as session:
         await session.start(Assistant())
         print("Running turn: 'Navigate to the projects section'...")
         result: RunResult[Any] = await session.run(

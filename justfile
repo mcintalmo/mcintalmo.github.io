@@ -182,7 +182,7 @@ update-ip:
 
 # Synchronize backend, infra, and resume files to the OCI VM
 sync-vm:
-    rsync -avz --exclude 'node_modules' --exclude '.git' --exclude '.venv' --exclude 'dist' --exclude '.astro' --exclude 'backend/.env' -e "ssh -i ~/.ssh/id_ed25519" ./ ubuntu@163.192.208.235:/home/ubuntu/mcintalmo.github.io/
+    rsync -avz --exclude 'node_modules' --exclude '.git' --exclude '.venv' --exclude 'dist' --exclude '.astro' --exclude 'backend/.env' --exclude 'infra/livekit.yaml' -e "ssh -i ~/.ssh/id_ed25519" ./ ubuntu@163.192.208.235:/home/ubuntu/mcintalmo.github.io/
 
 # Run setup.sh on the OCI VM
 setup-vm:

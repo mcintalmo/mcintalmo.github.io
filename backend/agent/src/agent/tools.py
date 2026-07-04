@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 from typing import Any
 
 from livekit.agents import RunContext, llm
@@ -6,7 +7,18 @@ from livekit.agents import RunContext, llm
 from common.events import NavigateEvent, NavigationTarget
 
 
-def make_navigation_tools() -> list[llm.Tool | llm.Toolset]:
+def _load_portfolio() -> dict:
+    portfolio_path = Path(__file__).parent / "portfolio_content.json"
+    if portfolio_path.exists():
+        try:
+            with portfolio_path.open(encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
+
+def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
     @llm.function_tool(
         description="Navigate the portfolio to a specific section. "
         "Call this whenever the user asks to see, view, navigate to, "
@@ -47,4 +59,130 @@ def make_navigation_tools() -> list[llm.Tool | llm.Toolset]:
             pass
         return f"Successfully navigated to the {target_name} section"
 
-    return [navigate_to]
+    @llm.function_tool(
+        description="Get detailed work experience highlights and bullet points. "
+        "Use this when the user asks for detailed summaries, achievements, "
+        "highlights, or technologies used at specific companies "
+        "(e.g. Pioneer, Optum, Constelleum)."
+    )
+    async def get_work_experience_details(
+        company: str = "",
+    ) -> str:
+        """Get detailed work experience at a specific company or all companies.
+
+        Args:
+            company: Optional company name to filter by (e.g. 'Optum', 'Pioneer').
+        """
+        portfolio = _load_portfolio()
+        work = portfolio.get("work", [])
+        if not work:
+            return "No work experience details available."
+
+        if company:
+            matches = [
+                w for w in work if company.lower() in w.get("company", "").lower()
+            ]
+            if matches:
+                return json.dumps(matches, indent=2)
+            return f"No work experience found matching '{company}'."
+
+        return json.dumps(work, indent=2)
+
+    @llm.function_tool(
+        description="Get detailed education history, university coursework, and "
+        "degree details. Use this when the user asks for specific courses, "
+        "majors, achievements, or minors about Georgia Tech, "
+        "Saint John's University, or MITx."
+    )
+    async def get_education_details(
+        institution: str = "",
+    ) -> str:
+        """Get detailed education history at a specific institution or all institutions.
+
+        Args:
+            institution: Optional institution name to filter by
+                (e.g. 'Georgia Tech', 'MITx', 'Saint John').
+        """
+        portfolio = _load_portfolio()
+        edu = portfolio.get("education", [])
+        if not edu:
+            return "No education details available."
+
+        if institution:
+            matches = [
+                e
+                for e in edu
+                if institution.lower() in e.get("institution", "").lower()
+            ]
+            if matches:
+                return json.dumps(matches, indent=2)
+            return f"No education history found matching '{institution}'."
+
+        return json.dumps(edu, indent=2)
+
+    @llm.function_tool(
+        description="Get detailed list of professional certifications and licenses. "
+        "Use this when the user asks for certificates or credentials "
+        "(e.g. Snowflake, AWS, Databricks, Fabric)."
+    )
+    async def get_certificates_details(
+        name: str = "",
+    ) -> str:
+        """Get detailed certification records.
+
+        Args:
+            name: Optional name of the certificate to search for
+                (e.g. 'Azure', 'Fabric', 'Databricks', 'SnowPro').
+        """
+        portfolio = _load_portfolio()
+        certs = portfolio.get("certificates", [])
+        if not certs:
+            return "No certification details available."
+
+        if name:
+            matches = [
+                c
+                for c in certs
+                if name.lower() in c.get("name", "").lower()
+                or name.lower() in c.get("issuer", "").lower()
+            ]
+            if matches:
+                return json.dumps(matches, indent=2)
+            return f"No certificates found matching '{name}'."
+
+        return json.dumps(certs, indent=2)
+
+    @llm.function_tool(
+        description="Get details about Alex's key projects, including descriptions, "
+        "tech stack, and URLs. Use this when the user asks about specific "
+        "portfolio projects."
+    )
+    async def get_project_details(
+        name: str = "",
+    ) -> str:
+        """Get project details.
+
+        Args:
+            name: Optional project name to search for
+                (e.g. 'Portfolio', 'SimLM', 'ARC AGI').
+        """
+        portfolio = _load_portfolio()
+        projects = portfolio.get("projects", [])
+        if not projects:
+            return "No project details available."
+
+        if name:
+            matches = [p for p in projects if name.lower() in p.get("name", "").lower()]
+            if matches:
+                return json.dumps(matches, indent=2)
+            return f"No projects found matching '{name}'."
+
+        return json.dumps(projects, indent=2)
+
+    return [
+        navigate_to,
+        get_work_experience_details,
+        get_education_details,
+        get_certificates_details,
+        get_project_details,
+    ]
