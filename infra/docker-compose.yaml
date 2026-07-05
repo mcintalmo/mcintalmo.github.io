@@ -103,6 +103,13 @@ services:
     environment:
       - OMP_NUM_THREADS=2
       - MKL_NUM_THREADS=2
+      # Chunk size: lower values = faster first audio (default is 175/250)
+      # Trade-off: too small risks prosody artifacts
+      - TARGET_MIN_TOKENS=50
+      - TARGET_MAX_TOKENS=100
+      - ABSOLUTE_MAX_TOKENS=200
+      # Use ONNX Runtime instead of PyTorch for faster CPU inference
+      - USE_ONNX=true
     restart: always
     healthcheck:
       test: ["CMD", "python3", "-c", "import socket; s = socket.socket(); s.settimeout(2); s.connect(('127.0.0.1', 8880))"]
