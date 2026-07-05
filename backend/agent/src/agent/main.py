@@ -44,7 +44,7 @@ from livekit.agents import (
 )
 from livekit.agents.types import APIConnectOptions
 from livekit.agents.voice.agent_session import SessionConnectOptions
-from livekit.plugins import noise_cancellation, openai, silero
+from livekit.plugins import cartesia, noise_cancellation, openai, silero
 from livekit.plugins.openai.tts import AUDIO_STREAM_MODELS
 from livekit.plugins.turn_detector.multilingual import MultilingualModel
 
@@ -80,13 +80,23 @@ async def portfolio_agent(ctx: JobContext) -> None:
     ctx.log_context_fields = {
         "room": ctx.room.name,
     }
-    tts = openai.TTS(
-        model=settings.tts.model,
-        base_url=settings.tts.base_url,
-        api_key=settings.tts.api_key,
-        voice=settings.tts.voice,
-        response_format=settings.tts.response_format,
-    )
+    if settings.tts_provider == "cartesia" and settings.cartesia_tts.api_key:
+        tts = cartesia.TTS(
+            model=settings.cartesia_tts.model,
+            voice=settings.cartesia_tts.voice,
+            language=settings.cartesia_tts.language,
+            api_key=settings.cartesia_tts.api_key,
+        )
+        logger.info("Using Cartesia TTS (model=%s)", settings.cartesia_tts.model)
+    else:
+        tts = openai.TTS(
+            model=settings.tts.model,
+            base_url=settings.tts.base_url,
+            api_key=settings.tts.api_key,
+            voice=settings.tts.voice,
+            response_format=settings.tts.response_format,
+        )
+        logger.info("Using self-hosted TTS (model=%s)", settings.tts.model)
 
     turn_handling = TurnHandlingOptions(
         turn_detection=MultilingualModel(),

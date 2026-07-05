@@ -109,7 +109,27 @@ class TtsSettings(BaseSettings):
     )
 
 
+class CartesiaTtsSettings(BaseSettings):
+    api_key: str = ""
+    # sonic-2: best quality/latency balance. sonic-turbo: lowest latency.
+    model: str = "sonic-2"
+    # "Reflective" - clear, professional male voice
+    voice: str = "a0e99841-438c-4a64-b679-ae501e7d6091"
+    language: str = "en"
+    model_config = SettingsConfigDict(
+        env_prefix="CARTESIA_",
+        env_file=(".env", ".env.local", "../.env", "../.env.local"),
+        extra="ignore",
+    )
+
+
 class AgentSessionSettings(BaseSettings):
+    # Set TTS_PROVIDER=kokoro to fall back to self-hosted Kokoro
+    tts_provider: str = "cartesia"
     stt: SttSettings = SttSettings()
     llm: LlmSettings = LlmSettings()
     tts: TtsSettings = TtsSettings()
+    cartesia_tts: CartesiaTtsSettings = CartesiaTtsSettings()
+    model_config = SettingsConfigDict(
+        env_file=(".env", ".env.local", "../.env", "../.env.local"), extra="ignore"
+    )

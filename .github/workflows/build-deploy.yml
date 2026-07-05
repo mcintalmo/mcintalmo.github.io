@@ -216,6 +216,10 @@ jobs:
             if [ -n \"${{ secrets.NVIDIA_API_KEY }}\" ]; then
               sed -i \"/^NVIDIA_API_KEY=/d\" .env
               echo \"NVIDIA_API_KEY=${{ secrets.NVIDIA_API_KEY }}\" >> .env
+            fi &&
+            if [ -n \"${{ secrets.CARTESIA_API_KEY }}\" ]; then
+              sed -i \"/^CARTESIA_API_KEY=/d\" .env
+              echo \"CARTESIA_API_KEY=${{ secrets.CARTESIA_API_KEY }}\" >> .env
             fi
           "
 
