@@ -223,6 +223,9 @@ jobs:
             fi
           "
 
+          # Clean up unused images and build cache before pulling to prevent disk-full failures
+          ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "docker image prune -af && docker builder prune -af"
+
           # Pull pre-compiled GHCR images and restart services
           ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u ${{ github.actor }} --password-stdin && sed -i '/rtc:/a \  node_ip: ${{ env.VM_IP }}' /home/ubuntu/mcintalmo.github.io/infra/livekit.yaml && cd /home/ubuntu/mcintalmo.github.io/infra && docker compose --profile telemetry pull agent auth && docker compose --profile telemetry up -d && docker compose restart livekit"
 
