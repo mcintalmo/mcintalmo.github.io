@@ -2,20 +2,20 @@
 name = "tailor-resume"
 version = "0.1.0"
 description = "Agentic workflows for tailoring a resume to a job description."
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 dependencies = [
-    "ag-ui-adk",
-    "beautifulsoup4",
-    "fastapi",
-    "google-adk[extensions,a2a]",
-    "a2a",
-    "google-genai",
-    "litellm",
-    "pydantic",
-    "pytest",
-    "pyyaml",
-    "requests",
-    "uvicorn"
+    "a2a>=0.44",
+    "ag-ui-adk>=0.7.0",
+    "beautifulsoup4>=4.15.0",
+    "fastapi>=0.138.2",
+    "fastmcp>=3.4.2",
+    "google-adk[a2a]>=2.3.0",
+    "google-genai>=2.10.0",
+    "pydantic>=2.13.4",
+    "pytest>=9.1.1",
+    "pyyaml>=6.0.3",
+    "requests>=2.34.2",
+    "uvicorn>=0.49.0"
 ]
 
 [tool.uv]

@@ -4,17 +4,17 @@ version = "0.1.0"
 description = "LangGraph pipeline for agentic resume tailoring"
 requires-python = ">=3.14"
 dependencies = [
-    "fastapi>=0.136.1",
-    "uvicorn>=0.47.0",
-    "langgraph>=1.2.1",
-    "langchain-openai>=1.2.2",
-    "langchain-core>=1.4.0",
-    "pydantic>=2.13.4",
-    "pydantic-settings>=2.14.1",
-    "beautifulsoup4>=4.14.3",
+    "beautifulsoup4>=4.15.0",
+    "fastapi>=0.138.2",
     "httpx>=0.28.1",
+    "langchain-core>=1.4.8",
+    "langchain-openai>=1.3.3",
+    "langgraph>=1.2.6",
+    "pydantic-settings>=2.14.2",
+    "pydantic>=2.13.4",
     "pyyaml>=6.0.3",
     "resume",
+    "uvicorn>=0.49.0",
     "websockets>=15.0.1",
 ]
 

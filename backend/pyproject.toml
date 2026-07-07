@@ -6,6 +6,7 @@ exclude-newer = "7 days"
 dev-dependencies = [
     "deepeval>=4.0.2",
     "httpx",
+    "pre-commit",
     "pytest-asyncio",
     "pytest-httpx",
     "pytest>=8.0",
@@ -14,7 +15,6 @@ dev-dependencies = [
     "testcontainers",
     "ty>=0.0.51",
     "types-pyyaml>=6.0.12",
-    "pre-commit",
 ]
 
 [tool.ruff]

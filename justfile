@@ -44,6 +44,15 @@ lint:
 type-check:
     uv run --directory backend ty check
 
+# Upgrade minimum version constraints and sort all pyproject.toml dependencies
+uv-bump:
+    cd backend && uvx uv-bump -v
+    cd tools/rag_agent && uvx uv-bump -v
+    cd tools/tailor_resume && uvx uv-bump -v
+    cd tools/mcp_server && uvx uv-bump -v
+    cd e2e && uvx uv-bump -v
+    find . -name "pyproject.toml" -not -path "*/.venv/*" -exec uvx uv-sort {} +
+
 # ==============================================================================
 # 3. Testing Suites
 # ==============================================================================

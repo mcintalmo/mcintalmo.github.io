@@ -2,11 +2,11 @@
 name = "resume-mcp-server"
 version = "0.1.0"
 description = "FastMCP v3 Server exposing resume rewriting tools."
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 dependencies = [
-    "fastmcp>=0.11",
-    "pyyaml",
-    "google-genai"
+    "fastmcp>=3.4.2",
+    "google-genai>=2.10.0",
+    "pyyaml>=6.0.3"
 ]
 
 [tool.uv]

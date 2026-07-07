@@ -4,10 +4,13 @@ import sys
 
 import pytest
 
-# Add parental directory to path
+# Add parental and mcp_server directories to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../mcp_server"))
+)
 
-import tailor
+import server as tailor
 
 
 @pytest.fixture
