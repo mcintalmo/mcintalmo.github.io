@@ -58,4 +58,37 @@ describe("usePortfolioNavigation", () => {
       expect(el).not.toBeInTheDocument();
     });
   });
+
+  it("highlights specific text in the DOM and clears it", () => {
+    // Add text element to document
+    document.body.innerHTML = `
+      <section id="skills">
+        <p id="test-para">Alexander McIntosh has extensive experience in AI engineering.</p>
+      </section>
+    `;
+
+    // Stub scrollIntoView which is called by highlightText
+    const scrollIntoView = vi.fn();
+    window.HTMLElement.prototype.scrollIntoView = scrollIntoView;
+
+    const { result } = renderHook(() => usePortfolioNavigation());
+
+    // Highlight text
+    act(() => result.current.highlightText("Alexander McIntosh"));
+
+    const mark = document.querySelector("mark.agent-text-highlight");
+    expect(mark).not.toBeNull();
+    expect(mark?.textContent).toBe("Alexander McIntosh");
+    expect(scrollIntoView).toHaveBeenCalled();
+
+    // Reset should clear text highlights
+    act(() => result.current.reset());
+    const clearedMark = document.querySelector("mark.agent-text-highlight");
+    expect(clearedMark).toBeNull();
+
+    const para = document.getElementById("test-para");
+    expect(para?.textContent).toBe(
+      "Alexander McIntosh has extensive experience in AI engineering.",
+    );
+  });
 });

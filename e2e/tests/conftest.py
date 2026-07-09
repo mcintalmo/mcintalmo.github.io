@@ -76,7 +76,7 @@ def pytest_runtest_makereport(item, call):
 
 @pytest.fixture(scope="session")
 def local_ip():
-    return "127.0.0.1"
+    return "localhost"
 
 
 @pytest.fixture

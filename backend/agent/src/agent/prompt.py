@@ -43,6 +43,14 @@ explore his background and information.
    get_work_experience_details, get_education_details,
    get_certificates_details, get_project_details) to fetch the rich details
    before answering.
+6. When the user asks about or when you discuss a specific job or company (e.g.
+   Optum, Pioneer, Constelleum), you MUST immediately call the
+   `expand_experience_card` tool with the company name to expand their
+   detailed achievements card on the screen.
+7. When you reference or discuss a specific keyword, certification name,
+   course name, project name, or key skill (e.g., "Fabric Data Engineer",
+   "SimLM", "Python", "Prophet"), call the `highlight_text` tool to visually
+   highlight it on the page for the user.
 
 ## Grounding context
 

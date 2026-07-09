@@ -179,10 +179,73 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
 
         return json.dumps(projects, indent=2)
 
+    @llm.function_tool(
+        description="Highlight a specific piece of text on the web-page to draw the "
+        "user's attention. Call this whenever you reference a specific achievement, "
+        "credential, course, skill, or project, or when the user asks you to "
+        "highlight something specific on the page."
+    )
+    async def highlight_text(
+        ctx: RunContext[Any],
+        text: str,
+    ) -> str:
+        """Highlight a specific text string on the webpage.
+
+        Args:
+            text: The exact text snippet or keyword to highlight on the page.
+        """
+        text_clean = text.strip()
+        try:
+            room = ctx.session.room_io.room
+            remote_participants = room.remote_participants
+            if remote_participants:
+                recipient_identity = list(remote_participants.keys())[0]
+                await room.local_participant.perform_rpc(
+                    destination_identity=recipient_identity,
+                    method="highlight_text",
+                    payload=json.dumps({"text": text_clean}),
+                )
+        except (RuntimeError, AttributeError, Exception):
+            pass
+        return f"Successfully highlighted '{text_clean}' on the page"
+
+    @llm.function_tool(
+        description="Expand a specific work experience card to show achievements "
+        "and details. Call this when the user asks for details about a specific "
+        "role or company (e.g. Optum, Pioneer, etc.), or when you are describing "
+        "a specific work experience item."
+    )
+    async def expand_experience_card(
+        ctx: RunContext[Any],
+        company: str,
+    ) -> str:
+        """Expand a specific work experience card.
+
+        Args:
+            company: The name of the company or organization
+                (e.g. Optum, Pioneer, Constelleum).
+        """
+        company_clean = company.strip()
+        try:
+            room = ctx.session.room_io.room
+            remote_participants = room.remote_participants
+            if remote_participants:
+                recipient_identity = list(remote_participants.keys())[0]
+                await room.local_participant.perform_rpc(
+                    destination_identity=recipient_identity,
+                    method="expand_experience_card",
+                    payload=json.dumps({"company": company_clean}),
+                )
+        except (RuntimeError, AttributeError, Exception):
+            pass
+        return f"Successfully expanded the experience card for '{company_clean}'"
+
     return [
         navigate_to,
         get_work_experience_details,
         get_education_details,
         get_certificates_details,
         get_project_details,
+        highlight_text,
+        expand_experience_card,
     ]

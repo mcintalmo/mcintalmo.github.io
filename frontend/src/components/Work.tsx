@@ -110,6 +110,39 @@ export function Work({ work, config }: Props) {
     }));
   };
 
+  useEffect(() => {
+    const handleAgentAction = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.type === "expand-experience") {
+        const company = customEvent.detail.company?.toLowerCase().trim();
+        if (!company) return;
+
+        const foundIndex = annotatedExperiences.findIndex((exp) => {
+          const compMatch = exp.name?.toLowerCase().includes(company);
+          const posMatch = exp.position?.toLowerCase().includes(company);
+          return compMatch || posMatch;
+        });
+
+        if (foundIndex !== -1) {
+          const exp = annotatedExperiences[foundIndex];
+          if (exp._hidden) {
+            setShowFullHistory(true);
+          }
+          // Expand the card
+          setExpandedItems((prev) => ({
+            ...prev,
+            [foundIndex]: true,
+          }));
+        }
+      }
+    };
+
+    window.addEventListener("agent-action", handleAgentAction);
+    return () => {
+      window.removeEventListener("agent-action", handleAgentAction);
+    };
+  }, [annotatedExperiences]);
+
   return (
     <section id="experience" className="py-20">
       <div className="container mx-auto px-6">

@@ -342,3 +342,46 @@ html {
     background-position: 0% 50%;
   }
 }
+
+/* ── Agent Text Highlight Styles ── */
+mark.agent-text-highlight {
+  background-color: rgba(245, 158, 11, 0.35); /* Vibrant Amber */
+  color: #0f172a !important; /* High contrast dark text */
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin: 0 -2px;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+  transition: all 0.3s ease;
+  animation: agentPulseGlowLight 2.5s infinite ease-in-out;
+  display: inline;
+}
+
+.dark mark.agent-text-highlight {
+  background-color: rgba(34, 211, 238, 0.45); /* Bright Cyan */
+  color: #0b0f19 !important; /* High contrast dark text on glowing background */
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.6);
+  animation: agentPulseGlowDark 2.5s infinite ease-in-out;
+}
+
+@keyframes agentPulseGlowLight {
+  0%, 100% {
+    background-color: rgba(245, 158, 11, 0.25);
+    box-shadow: 0 0 8px rgba(245, 158, 11, 0.25);
+  }
+  50% {
+    background-color: rgba(245, 158, 11, 0.55);
+    box-shadow: 0 0 18px rgba(245, 158, 11, 0.65);
+  }
+}
+
+@keyframes agentPulseGlowDark {
+  0%, 100% {
+    background-color: rgba(34, 211, 238, 0.35);
+    box-shadow: 0 0 12px rgba(34, 211, 238, 0.45);
+  }
+  50% {
+    background-color: rgba(34, 211, 238, 0.65);
+    box-shadow: 0 0 24px rgba(34, 211, 238, 0.85);
+  }
+}
+
