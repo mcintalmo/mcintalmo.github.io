@@ -1,0 +1,56 @@
+# Configuration for generating the concise 1-page PDF and Markdown resume.
+
+# Sections to completely exclude from the PDF to fit on one page
+exclude_sections:
+  - certificates
+  - projects
+
+# Work experience filtering settings
+work:
+  # Limit to the most recent N work experience entries
+  max_entries: 4
+  # Limit highlights per entry to avoid page overflow
+  max_highlights: 3
+
+# Education formatting settings
+education:
+  # Render achievements horizontally as a single bullet item for these institutions
+  horizontal_highlights:
+    - "Saint John's University"
+  # Skip course details in the PDF highlights to save vertical space
+  exclude_courses: true
+
+# Skills formatting settings
+skills:
+  # Target section key/title
+  section_title: "skills"
+  # Group skills into logical, horizontal, comma-separated categories to be human readable
+  grouped:
+    "Datascience and ML":
+      - Python
+      - SQL
+      - R
+      - PyTorch
+      - TensorFlow
+      - Scikit-learn
+      - PySpark
+      - MLFlow
+      - Statistics and Probability
+    "Agentic AI & RAG":
+      - Model Context Protocol (MCP)
+      - Agent Development Kit (ADK)
+      - Agent-to-Agent (A2A) Protocol
+      - Semantic Kernel
+      - Retrieval-Augmented Generation (RAG)
+      - LiveKit
+    "Data & Cloud":
+      - Microsoft Fabric
+      - Databricks
+      - Delta Lake
+      - AirFlow
+      - ChromaDB
+      - Git
+      - Docker
+      - Microsoft Azure
+      - Google Cloud Platform
+      - OpenTelemetry

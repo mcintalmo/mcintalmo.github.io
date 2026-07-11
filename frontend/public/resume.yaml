@@ -336,6 +336,9 @@ skills:
   - name: TensorFlow
     level: Intermediate
     keywords: [Machine Learning & AI]
+  - name: Scikit-learn
+    level: Expert
+    keywords: [Machine Learning & AI]
   - name: Statistics and Probability
     level: Expert
     keywords: [Machine Learning & AI]
@@ -369,6 +372,9 @@ skills:
   - name: Retrieval-Augmented Generation (RAG)
     level: Expert
     keywords: [LLM & Agents]
+  - name: LiveKit
+    level: Advanced
+    keywords: [LLM & Agents]
   - name: Data Visualization
     level: Advanced
     keywords: [Data Engineering & Analytics]
@@ -378,7 +384,7 @@ skills:
   - name: Microsoft Fabric
     level: Expert
     keywords: [Data Engineering & Analytics]
-  - name: Data Bricks
+  - name: Databricks
     level: Advanced
     keywords: [Data Engineering & Analytics]
   - name: Delta Lake

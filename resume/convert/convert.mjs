@@ -115,7 +115,13 @@ function convert(r) {
   if (r.certificates?.length) {
     sections.certifications = r.certificates.map((c) => {
       const entry = { name: c.name };
-      if (c.date) entry.date = String(c.date).slice(0, 7); // YYYY-MM
+      if (c.date) {
+        const dateObj = c.date;
+        entry.date =
+          dateObj instanceof Date
+            ? dateObj.toISOString().slice(0, 7)
+            : String(dateObj).slice(0, 7);
+      }
       if (c.issuer) entry.location = c.issuer;
       if (c.url) entry.url = c.url;
       return entry;

@@ -220,6 +220,7 @@
     "Machine Learning & AI": [
       "PyTorch",
       "TensorFlow",
+      "Scikit-learn",
       "Statistics and Probability",
       "Data Science and Predictive Analytics",
       "Natural Language Processing (NLP)",
@@ -232,13 +233,14 @@
       "Agent Development Kit (ADK)",
       "Agent-to-Agent (A2A) Protocol",
       "Semantic Kernel",
-      "Retrieval-Augmented Generation (RAG)"
+      "Retrieval-Augmented Generation (RAG)",
+      "LiveKit"
     ],
     "Data Engineering & Analytics": [
       "Data Visualization",
       "Data Engineering",
       "Microsoft Fabric",
-      "Data Bricks",
+      "Databricks",
       "Delta Lake",
       "AirFlow",
       "ChromaDB"

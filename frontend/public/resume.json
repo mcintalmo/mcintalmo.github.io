@@ -413,6 +413,13 @@
       ]
     },
     {
+      "name": "Scikit-learn",
+      "level": "Expert",
+      "keywords": [
+        "Machine Learning & AI"
+      ]
+    },
+    {
       "name": "Statistics and Probability",
       "level": "Expert",
       "keywords": [
@@ -490,6 +497,13 @@
       ]
     },
     {
+      "name": "LiveKit",
+      "level": "Advanced",
+      "keywords": [
+        "LLM & Agents"
+      ]
+    },
+    {
       "name": "Data Visualization",
       "level": "Advanced",
       "keywords": [
@@ -511,7 +525,7 @@
       ]
     },
     {
-      "name": "Data Bricks",
+      "name": "Databricks",
       "level": "Advanced",
       "keywords": [
         "Data Engineering & Analytics"

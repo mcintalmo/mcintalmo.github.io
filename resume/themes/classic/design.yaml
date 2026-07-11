@@ -3,10 +3,10 @@ design:
 
   page:
     size: us-letter
-    top_margin: 0.6in
-    bottom_margin: 0.6in
-    left_margin: 0.65in
-    right_margin: 0.65in
+    top_margin: 0.5in
+    bottom_margin: 0.5in
+    left_margin: 0.5in
+    right_margin: 0.5in
     show_footer: false
 
   colors:
@@ -23,7 +23,7 @@ design:
       name: 20pt
       section_titles: 10pt
       headline: 10pt
-      connections: 9pt
+      connections: 8.2pt
     alignment: justified
     bold:
       name: true
@@ -40,13 +40,18 @@ design:
     type: with_full_line
     line_thickness: 0.5pt
     space_above: 0.3cm
-    space_below: 0.1cm
+    space_below: 0.05cm
+
+  sections:
+    space_between_regular_entries: 0.85em
+    space_between_text_based_entries: 0.25em
 
   entries:
     date_and_location_width: 4.5cm
     side_space: 0cm
     space_between_columns: 0.1cm
     allow_page_break: true
+    degree_width: 3.5cm
     highlights:
       bullet: "●"
       space_left: 0cm
@@ -54,15 +59,15 @@ design:
       space_between_items: 0cm
 
   header:
-    alignment: left
+    alignment: center
     space_below_name: 0.15cm
     space_below_headline: 0.1cm
     space_below_connections: 0.25cm
     connections:
-      separator: " | "
+      separator: " • "
       show_icons: false
       hyperlink: true
-      display_urls_instead_of_usernames: false
+      display_urls_instead_of_usernames: true
 
   links:
     underline: false
