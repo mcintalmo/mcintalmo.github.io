@@ -172,6 +172,16 @@ function VoicePanelInner({
   );
 }
 
+const TOOL_LABELS: Record<string, string> = {
+  navigate_to: "Navigating portfolio",
+  get_work_experience_details: "Fetching work experience details",
+  get_education_details: "Fetching education history",
+  get_certificates_details: "Fetching certifications",
+  get_project_details: "Fetching project details",
+  highlight_text: "Highlighting key phrase",
+  expand_experience_card: "Expanding experience card",
+};
+
 export function CustomChatWidget({
   onStartInteraction,
   recommendedQuestions,
@@ -207,6 +217,16 @@ export function CustomChatWidget({
     return unifiedMessages.some((msg) => msg.sender === "user");
   }, [unifiedMessages]);
   const [followups, setFollowups] = React.useState<SuggestedQuestion[]>([]);
+  const [toolEvents, setToolEvents] = React.useState<
+    {
+      id: string;
+      type: "tool_start" | "tool_end";
+      tool: string;
+      arguments?: Record<string, unknown>;
+      result?: string;
+      timestamp: number;
+    }[]
+  >([]);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -233,6 +253,30 @@ export function CustomChatWidget({
           }
         } catch (e) {
           console.error("Failed to parse followups:", e);
+        }
+      } else if (topic === "agent.observability") {
+        try {
+          const text = new TextDecoder().decode(payload);
+          const data = JSON.parse(text);
+          if (data && (data.type === "tool_start" || data.type === "tool_end")) {
+            setToolEvents((prev) => {
+              const id = `${data.tool}-${data.type === "tool_start" ? "start" : "end"}`;
+              const filtered = prev.filter((item) => item.id !== id);
+              return [
+                ...filtered,
+                {
+                  id,
+                  type: data.type,
+                  tool: data.tool,
+                  arguments: data.arguments,
+                  result: data.result,
+                  timestamp: Date.now(),
+                },
+              ];
+            });
+          }
+        } catch (e) {
+          console.error("Failed to parse agent observability:", e);
         }
       }
     };
@@ -555,6 +599,7 @@ export function CustomChatWidget({
         recognitionRef.current.stop();
       }
       setFollowups([]);
+      setToolEvents([]);
       await send(question);
     },
     [send, isSending, isConnecting, isAgentOnline, isDictating],
@@ -571,6 +616,7 @@ export function CustomChatWidget({
       const text = inputEl.value.trim();
       inputEl.value = "";
       setFollowups([]);
+      setToolEvents([]);
       await send(text);
       inputEl.focus();
     }
@@ -599,6 +645,7 @@ export function CustomChatWidget({
     const handleHeroSubmit = (e: Event) => {
       const detail = (e as CustomEvent).detail;
       openChat();
+      setToolEvents([]);
 
       if (detail?.mode === "voice") {
         enableVoiceMode();
@@ -715,6 +762,19 @@ export function CustomChatWidget({
                 )}
                 {unifiedMessages.map((msg) => {
                   const isUser = msg.sender === "user";
+                  let thought: string | undefined;
+                  let cleanText = msg.text;
+
+                  if (!isUser) {
+                    const thinkRegex =
+                      /<(think|thought)>([\s\S]*?)<\/(think|thought)>/i;
+                    const match = msg.text.match(thinkRegex);
+                    if (match) {
+                      thought = match[2].trim();
+                      cleanText = msg.text.replace(thinkRegex, "").trim();
+                    }
+                  }
+
                   return (
                     <div
                       key={msg.id}
@@ -728,11 +788,24 @@ export function CustomChatWidget({
                             : "bg-card text-foreground rounded-bl-none border-border/30"
                         }`}
                       >
-                        <div
-                          className="[&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_a]:underline"
-                          // biome-ignore lint/security/noDangerouslySetInnerHtml: mdToHtml is strictly sanitized via rehype-sanitize
-                          dangerouslySetInnerHTML={{ __html: mdToHtml(msg.text) }}
-                        />
+                        {thought && (
+                          <div className="text-xs text-muted-foreground/80 italic mb-2 border-l-2 border-accent-indigo/30 pl-2 py-0.5 flex items-start gap-1.5 leading-relaxed font-sans select-none">
+                            <span
+                              className="shrink-0 text-[11px] mt-0.5"
+                              aria-hidden="true"
+                            >
+                              🧠
+                            </span>
+                            <span>{thought}</span>
+                          </div>
+                        )}
+                        {cleanText && (
+                          <div
+                            className="[&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_a]:underline font-sans"
+                            // biome-ignore lint/security/noDangerouslySetInnerHtml: mdToHtml is strictly sanitized via rehype-sanitize
+                            dangerouslySetInnerHTML={{ __html: mdToHtml(cleanText) }}
+                          />
+                        )}
                       </div>
                     </div>
                   );
@@ -781,6 +854,43 @@ export function CustomChatWidget({
                         </button>
                       ))}
                     </div>
+                  </div>
+                )}
+
+                {toolEvents.length > 0 && (
+                  <div className="flex flex-col gap-1.5 justify-start max-w-[85%] pl-1.5">
+                    {toolEvents.map((evt) => {
+                      const label = TOOL_LABELS[evt.tool] || evt.tool;
+                      const isStart = evt.type === "tool_start";
+                      const hasEnded = toolEvents.some(
+                        (e) => e.tool === evt.tool && e.type === "tool_end",
+                      );
+
+                      if (isStart && hasEnded) {
+                        return null;
+                      }
+
+                      return (
+                        <div
+                          key={evt.id}
+                          className="flex items-center gap-2 text-xs text-muted-foreground/75 pl-2 py-0.5 select-none font-sans font-medium transition-all"
+                        >
+                          {isStart ? (
+                            <>
+                              <span className="animate-spin text-accent-cyan shrink-0">
+                                ⚙️
+                              </span>
+                              <span>{label}...</span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-green-500 shrink-0">✅</span>
+                              <span>{label} complete.</span>
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
 

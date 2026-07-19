@@ -72,6 +72,22 @@ server = AgentServer(setup_fnc=prewarm)
 app = server
 
 
+def strip_thoughts():
+    import asyncio
+    from collections.abc import AsyncIterable
+
+    from livekit.agents.llm.utils import strip_thinking_tokens
+
+    async def _transform(text: AsyncIterable[str]) -> AsyncIterable[str]:
+        thinking = asyncio.Event()
+        async for chunk in text:
+            clean = strip_thinking_tokens(chunk, thinking)
+            if clean:
+                yield clean
+
+    return _transform
+
+
 @server.rtc_session(agent_name="portfolio-agent")
 async def portfolio_agent(ctx: JobContext) -> None:
     # Logging setup
@@ -123,6 +139,11 @@ async def portfolio_agent(ctx: JobContext) -> None:
             timeout=httpx.Timeout(60.0),
         ),
         tts=tts,
+        tts_text_transforms=[
+            strip_thoughts(),
+            "filter_markdown",
+            "filter_emoji",
+        ],
         turn_handling=turn_handling,
         tools=make_portfolio_tools(),
         max_tool_steps=1,

@@ -18,6 +18,86 @@ def _load_portfolio() -> dict:
     return {}
 
 
+def observe_tool(func):
+    import functools
+    import json
+
+    from livekit.agents import RunContext
+
+    @functools.wraps(func)
+    async def wrapper(*args, **kwargs):
+        ctx = None
+        for arg in args:
+            if isinstance(arg, RunContext):
+                ctx = arg
+                break
+        if ctx is None:
+            for k, v in kwargs.items():
+                if isinstance(v, RunContext):
+                    ctx = v
+                    break
+
+        tool_name = func.__name__
+        tool_args = {}
+        for k, v in kwargs.items():
+            if not isinstance(v, RunContext):
+                try:
+                    json.dumps(v)
+                    tool_args[k] = v
+                except Exception:
+                    tool_args[k] = str(v)
+        pos_idx = 0
+        for arg in args:
+            if not isinstance(arg, RunContext):
+                try:
+                    json.dumps(arg)
+                    tool_args[f"arg_{pos_idx}"] = arg
+                except Exception:
+                    tool_args[f"arg_{pos_idx}"] = str(arg)
+                pos_idx += 1
+
+        if ctx:
+            try:
+                room = ctx.session.room_io.room
+                payload = {
+                    "type": "tool_start",
+                    "tool": tool_name,
+                    "arguments": tool_args,
+                }
+                await room.local_participant.publish_data(
+                    json.dumps(payload).encode("utf-8"),
+                    reliable=True,
+                    topic="agent.observability",
+                )
+            except Exception:
+                pass
+
+        try:
+            result = await func(*args, **kwargs)
+        except Exception as e:
+            result = f"Error: {e}"
+            raise e
+        finally:
+            if ctx:
+                try:
+                    room = ctx.session.room_io.room
+                    payload = {
+                        "type": "tool_end",
+                        "tool": tool_name,
+                        "result": str(result),
+                    }
+                    await room.local_participant.publish_data(
+                        json.dumps(payload).encode("utf-8"),
+                        reliable=True,
+                        topic="agent.observability",
+                    )
+                except Exception:
+                    pass
+        return result
+
+    return wrapper
+
+
 def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
     @llm.function_tool(
         description="Navigate the portfolio to a specific section. "
@@ -26,6 +106,7 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
         "skills, work experience, education, projects, or contact. "
         "DO NOT call this tool for general greetings or chit-chat."
     )
+    @observe_tool
     async def navigate_to(
         ctx: RunContext[Any],
         target: NavigationTarget,
@@ -54,7 +135,7 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
                     json.dumps(event.model_dump()).encode(),
                     reliable=True,
                 )
-        except (RuntimeError, AttributeError, Exception):
+        except RuntimeError, AttributeError, Exception:
             # Gracefully handle console mode where AgentSession lacks a room connection
             pass
         return f"Successfully navigated to the {target_name} section"
@@ -65,7 +146,9 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
         "highlights, or technologies used at specific companies "
         "(e.g. Pioneer, Optum, Constelleum)."
     )
+    @observe_tool
     async def get_work_experience_details(
+        ctx: RunContext[Any],
         company: str = "",
     ) -> str:
         """Get detailed work experience at a specific company or all companies.
@@ -94,7 +177,9 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
         "majors, achievements, or minors about Georgia Tech, "
         "Saint John's University, or MITx."
     )
+    @observe_tool
     async def get_education_details(
+        ctx: RunContext[Any],
         institution: str = "",
     ) -> str:
         """Get detailed education history at a specific institution or all institutions.
@@ -125,7 +210,9 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
         "Use this when the user asks for certificates or credentials "
         "(e.g. Snowflake, AWS, Databricks, Fabric)."
     )
+    @observe_tool
     async def get_certificates_details(
+        ctx: RunContext[Any],
         name: str = "",
     ) -> str:
         """Get detailed certification records.
@@ -157,7 +244,9 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
         "tech stack, and URLs. Use this when the user asks about specific "
         "portfolio projects."
     )
+    @observe_tool
     async def get_project_details(
+        ctx: RunContext[Any],
         name: str = "",
     ) -> str:
         """Get project details.
@@ -185,6 +274,7 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
         "credential, course, skill, or project, or when the user asks you to "
         "highlight something specific on the page."
     )
+    @observe_tool
     async def highlight_text(
         ctx: RunContext[Any],
         text: str,
@@ -205,7 +295,7 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
                     method="highlight_text",
                     payload=json.dumps({"text": text_clean}),
                 )
-        except (RuntimeError, AttributeError, Exception):
+        except RuntimeError, AttributeError, Exception:
             pass
         return f"Successfully highlighted '{text_clean}' on the page"
 
@@ -215,6 +305,7 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
         "role or company (e.g. Optum, Pioneer, etc.), or when you are describing "
         "a specific work experience item."
     )
+    @observe_tool
     async def expand_experience_card(
         ctx: RunContext[Any],
         company: str,
@@ -236,7 +327,7 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
                     method="expand_experience_card",
                     payload=json.dumps({"company": company_clean}),
                 )
-        except (RuntimeError, AttributeError, Exception):
+        except RuntimeError, AttributeError, Exception:
             pass
         return f"Successfully expanded the experience card for '{company_clean}'"
 

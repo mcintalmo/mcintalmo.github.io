@@ -19,7 +19,7 @@ dev-dependencies = [
 
 [tool.ruff]
 line-length = 88
-target-version = "py313"
+target-version = "py314"
 src = ["agent/src", "auth/src", "mcp/src", "common/src", "tailor/src"]
 
 [tool.ruff.lint]
