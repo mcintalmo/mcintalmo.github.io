@@ -66,7 +66,7 @@ test-backend *args:
 
 # Run JavaScript/TypeScript frontend tests
 test-frontend *args:
-    npx pnpm --prefix frontend run test:run {{args}}
+    pnpm --prefix frontend run test:run {{args}}
 
 # Run end-to-end testing pipeline via Playwright
 test-e2e *args:
@@ -86,7 +86,7 @@ bootstrap:
     uv sync --directory backend
     uv sync --directory e2e
     @echo "==> Bootstrapping JavaScript dependencies..."
-    CI=true npx pnpm install --ignore-scripts
+    CI=true pnpm install --ignore-scripts
     @echo "==> Installing Playwright browser binaries..."
     uv run --directory e2e playwright install --with-deps
     @echo "==> Environment ready!"
@@ -97,8 +97,8 @@ upgrade:
     @echo "==> Upgrading frontend packages (limiting to >= 7 days old)..."
     @echo "minimum-release-age=10080" > frontend/.npmrc
     @echo "minimum-release-age=10080" > resume/convert/.npmrc
-    cd frontend && npx pnpm update --ignore-scripts && npx pnpm install --ignore-scripts
-    cd resume/convert && npx pnpm update --ignore-scripts && npx pnpm install --ignore-scripts
+    cd frontend && pnpm update --ignore-scripts && pnpm install --ignore-scripts
+    cd resume/convert && pnpm update --ignore-scripts && pnpm install --ignore-scripts
     @rm -f frontend/.npmrc resume/convert/.npmrc
     @echo "==> Upgrading backend Python packages (limiting to >= 7 days old)..."
     uv lock --directory backend --upgrade --exclude-newer "7 days"
@@ -178,7 +178,7 @@ bootstrap-otel:
 
 # Run the frontend development server (port 4321)
 frontend:
-    npx pnpm --prefix frontend run dev
+    pnpm --prefix frontend run dev
 
 
 # ==============================================================================

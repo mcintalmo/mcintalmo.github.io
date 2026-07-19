@@ -1,16 +1,9 @@
 model_list:
   - model_name: portfolio-llm
     litellm_params:
-      model: gpt-oss-120b
-      custom_llm_provider: cerebras
-      api_key: os.environ/CEREBRAS_API_KEY
-      timeout: 15
-
-  - model_name: portfolio-llm-cerebras
-    litellm_params:
-      model: gpt-oss-120b
-      custom_llm_provider: cerebras
-      api_key: os.environ/CEREBRAS_API_KEY
+      model: meta-llama/llama-3.3-70b-instruct:free
+      custom_llm_provider: openrouter
+      api_key: os.environ/OPENROUTER_API_KEY
       timeout: 15
 
   - model_name: portfolio-llm-openrouter-gemini
@@ -54,7 +47,6 @@ router_settings:
   fallbacks:
     - portfolio-llm:
         [
-          "portfolio-llm-openrouter-llama",
           "portfolio-llm-github-direct",
           "portfolio-llm-local",
           "portfolio-llm-nvidia",
