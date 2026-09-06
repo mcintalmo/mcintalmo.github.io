@@ -72,9 +72,9 @@ class YamlConfigSettingsSource(PydanticBaseSettingsSource):
 
 
 class TailorLlmSettings(BaseSettings):
-    model: str = "meta/llama-3.3-70b-instruct"
-    base_url: str = "https://integrate.api.nvidia.com/v1"
-    api_key: str = Field(default="", validation_alias="NVIDIA_API_KEY")
+    model: str = "google/gemini-2.5-flash"
+    base_url: str = "https://openrouter.ai/api/v1"
+    api_key: str = Field(default="", validation_alias="OPENROUTER_API_KEY")
     model_config = SettingsConfigDict(env_file=(".env", ".env.local"), extra="ignore")
     temperature: float = 0.2
     max_tokens: int = 2048
@@ -103,7 +103,7 @@ def get_llm() -> ChatOpenAI:
         base_url=settings.base_url,
         api_key=SecretStr(settings.api_key),
         temperature=settings.temperature,
-        max_tokens=settings.max_tokens,  # type: ignore
+        max_tokens=settings.max_tokens,
     )
 
 

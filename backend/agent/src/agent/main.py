@@ -24,6 +24,7 @@ if os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT"):
 import asyncio
 import json
 import logging
+import time
 from typing import Any
 
 import httpx
@@ -44,17 +45,33 @@ from livekit.agents import (
 )
 from livekit.agents.types import APIConnectOptions
 from livekit.agents.voice.agent_session import SessionConnectOptions
-from livekit.plugins import cartesia, noise_cancellation, openai, silero
+from livekit.plugins import cartesia, openai, silero
 from livekit.plugins.openai.tts import AUDIO_STREAM_MODELS
-from livekit.plugins.turn_detector.multilingual import MultilingualModel
 
 from agent.config import AgentSessionSettings, LlmSettings
 from agent.prompt import get_portfolio_assistant_instructions
 from agent.tools import make_portfolio_tools
+from agent.whisper_stt import WhisperSTT
 
 __all__ = ["Assistant", "LlmSettings"]
 
 AUDIO_STREAM_MODELS.add("kokoro")
+
+# Patch Python 3.14 multiprocessing ValueError in livekit.agents IPC health check
+try:
+    from livekit.agents.ipc import inference_proc_executor
+
+    _orig_is_alive = inference_proc_executor.InferenceProcExecutor.is_alive
+
+    def _safe_is_alive(self: Any) -> bool:
+        try:
+            return _orig_is_alive(self)
+        except (ValueError, AttributeError):
+            return False
+
+    setattr(inference_proc_executor.InferenceProcExecutor, "is_alive", _safe_is_alive)
+except Exception:
+    pass
 
 logger = logging.getLogger("agent")
 
@@ -99,23 +116,38 @@ async def portfolio_agent(ctx: JobContext) -> None:
         logger.info("Using self-hosted TTS (model=%s)", settings.tts.model)
 
     turn_handling = TurnHandlingOptions(
-        turn_detection=MultilingualModel(),
+        turn_detection=None,
         preemptive_generation={
             "enabled": True,
             "preemptive_tts": True,
         },
     )
 
-    session: AgentSession[Any] = AgentSession(
-        vad=ctx.proc.userdata["vad"],
-        stt=stt.StreamAdapter(
+    if settings.stt_provider == "whisper-stream":
+        logger.info(
+            "Initializing Whisper streaming STT (with Silero VAD) at %s",
+            settings.stt.ws_url,
+        )
+        stt_instance: stt.STT = WhisperSTT(
+            ws_url=settings.stt.ws_url,
+            base_url=settings.stt.base_url,
+            model=settings.stt.model,
+            vad=ctx.proc.userdata["vad"],
+        )
+    else:
+        logger.info("Initializing batch Whisper STT (StreamAdapter)")
+        stt_instance = stt.StreamAdapter(
             stt=openai.STT(
                 model=settings.stt.model,
                 base_url=settings.stt.base_url,
                 api_key=settings.stt.api_key,
             ),
             vad=ctx.proc.userdata["vad"],
-        ),
+        )
+
+    session: AgentSession[Any] = AgentSession(
+        vad=ctx.proc.userdata["vad"],
+        stt=stt_instance,
         llm=openai.LLM(
             model=settings.llm.model,
             base_url=settings.llm.base_url,
@@ -131,9 +163,6 @@ async def portfolio_agent(ctx: JobContext) -> None:
         ),
     )
 
-    session.input.set_audio_enabled(False)
-    session.output.set_audio_enabled(False)
-
     @session.on("close")
     def on_session_close() -> None:
         logger.debug("AgentSession closed, shutting down JobContext")
@@ -148,12 +177,26 @@ async def portfolio_agent(ctx: JobContext) -> None:
 
                 async def send_chat() -> None:
                     try:
+                        # 1. Send via native text stream (topic="lk-chat-topic")
                         await ctx.room.local_participant.send_text(
                             text,
-                            topic="lk.chat",
+                            topic="lk-chat-topic",
+                        )
+                        # 2. Publish JSON data packet for LiveKit useChat hook
+                        chat_pkt = json.dumps(
+                            {
+                                "id": f"asst-{time.time()}",
+                                "message": text,
+                                "timestamp": int(time.time() * 1000),
+                            }
+                        )
+                        await ctx.room.local_participant.publish_data(
+                            chat_pkt.encode("utf-8"),
+                            reliable=True,
+                            topic="lk-chat-topic",
                         )
                     except Exception as e:
-                        logger.error(f"Failed to send text to lk.chat: {e}")
+                        logger.error(f"Failed to send text to lk-chat-topic: {e}")
 
                 asyncio.create_task(send_chat())
 
@@ -227,67 +270,86 @@ async def portfolio_agent(ctx: JobContext) -> None:
 
                 asyncio.create_task(generate_and_send_followups())
 
+    _recent_messages: set[str] = set()
+
+    def _process_user_message(text: str, source: str) -> None:
+        clean_text = text.strip()
+        if not clean_text:
+            return
+        # Deduplication key within 2-second window
+        msg_key = f"{clean_text}:{int(time.time() / 2)}"
+        if msg_key in _recent_messages:
+            logger.debug(
+                "Skipping duplicate user message from %s: %s", source, clean_text
+            )
+            return
+        _recent_messages.add(msg_key)
+        if len(_recent_messages) > 100:
+            _recent_messages.clear()
+
+        logger.info("Processing user message from %s: %s", source, clean_text)
+        session.interrupt()
+        session.generate_reply(user_input=clean_text)
+
     async def on_text_input(
         session: AgentSession[Any], event: room_io.TextInputEvent
     ) -> None:
-        logger.debug("Received text chat via text stream (native): %s", event.text)
-        await session.interrupt()
-        session.generate_reply(user_input=event.text)
+        _process_user_message(event.text, source="text_stream")
 
     @ctx.room.on("data_received")
-    def on_data_received(data_packet: rtc.DataPacket) -> None:
-        logger.debug(
-            "DATA RECEIVED on room: topic=%s, len=%d",
-            data_packet.topic,
-            len(data_packet.data),
-        )
-        if data_packet.topic in ("lk.chat", "lk-chat-topic"):
+    def on_data_received(dp: rtc.DataPacket) -> None:
+        try:
+            payload = dp.data.decode("utf-8")
+            text = payload
             try:
-                payload = data_packet.data.decode("utf-8")
-                text = payload
-                try:
-                    import json
+                msg_data = json.loads(payload)
+                if isinstance(msg_data, dict):
+                    if msg_data.get("type") == "set_chat_mode":
+                        mode = msg_data.get("mode", "text")
+                        is_voice = mode == "voice"
+                        logger.info("Setting chat mode via data packet: mode=%s", mode)
+                        session.input.set_audio_enabled(is_voice)
+                        session.output.set_audio_enabled(is_voice)
+                        return
+                    if "message" in msg_data and msg_data["message"]:
+                        text = msg_data["message"]
+                    elif "text" in msg_data and msg_data["text"]:
+                        text = msg_data["text"]
+            except Exception:
+                pass
 
-                    msg_data = json.loads(payload)
-                    if isinstance(msg_data, dict):
-                        if "text" in msg_data:
-                            text = msg_data["text"]
-                        elif "message" in msg_data:
-                            text = msg_data["message"]
-                except Exception:
-                    pass
+            if dp.topic in ("lk.chat", "lk-chat-topic", ""):
+                _process_user_message(text, source="data_packet")
+        except Exception as e:
+            logger.error(f"Failed to process incoming chat data packet: {e}")
 
-                logger.debug(
-                    "Received text chat via data packet (topic=%s): %s",
-                    data_packet.topic,
-                    text,
-                )
-                session.interrupt()
-                session.generate_reply(user_input=text)
-            except Exception as e:
-                logger.error(f"Failed to process incoming chat data packet: {e}")
-
-    # Start the session, which initializes the voice pipeline and warms up the models
-    import os
-
-    livekit_url = os.environ.get("LIVEKIT_URL", "")
-    is_local = (
-        "localhost" in livekit_url or "127.0.0.1" in livekit_url or not livekit_url
-    )
-    nc = None if is_local else noise_cancellation.BVC()
+    @ctx.room.on("track_published")
+    def on_track_published(
+        pub: rtc.RemoteTrackPublication, participant: rtc.RemoteParticipant
+    ) -> None:
+        if pub.kind == rtc.TrackKind.KIND_AUDIO:
+            logger.info(
+                "Audio track published by %s, enabling audio input for STT",
+                participant.identity,
+            )
+            session.input.set_audio_enabled(True)
+            session.output.set_audio_enabled(True)
 
     await session.start(
         agent=Assistant(),
         room=ctx.room,
         room_options=room_io.RoomOptions(
-            audio_input=room_io.AudioInputOptions(
-                noise_cancellation=nc,
-            ),
             text_input=room_io.TextInputOptions(
                 text_input_cb=on_text_input,
             ),
         ),
     )
+
+    # Enable audio input & output after session initialization
+    if session.input:
+        session.input.set_audio_enabled(True)
+    if session.output:
+        session.output.set_audio_enabled(True)
 
     # Join the room and connect to the user
     await ctx.connect()

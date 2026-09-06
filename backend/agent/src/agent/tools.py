@@ -1,10 +1,101 @@
+import functools
 import json
+import logging
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
 from livekit.agents import RunContext, llm
 
-from common.events import NavigateEvent, NavigationTarget
+from common.events import (
+    NavigateEvent,
+    NavigationTarget,
+    ToolCallCompletedEvent,
+    ToolCallStartedEvent,
+)
+
+logger = logging.getLogger("agent")
+
+
+def track_tool_call(f: Callable[..., Any]) -> Callable[..., Any]:
+    @functools.wraps(f)
+    async def wrapper(*args: Any, **kwargs: Any) -> Any:
+        ctx: RunContext[Any] | None = None
+        for arg in args:
+            if isinstance(arg, RunContext):
+                ctx = arg
+                break
+        if ctx is None:
+            for val in kwargs.values():
+                if isinstance(val, RunContext):
+                    ctx = val
+                    break
+
+        call_id = ""
+        tool_name = getattr(f, "__name__", "unknown")
+        if ctx and ctx.function_call:
+            call_id = ctx.function_call.id
+            tool_name = ctx.function_call.name
+
+        display_args = {k: v for k, v in kwargs.items() if k != "ctx"}
+
+        if ctx:
+            try:
+                room = ctx.session.room_io.room
+                event = ToolCallStartedEvent(
+                    call_id=call_id,
+                    tool_name=tool_name,
+                    arguments=json.dumps(display_args),
+                )
+                await room.local_participant.publish_data(
+                    json.dumps(event.model_dump()).encode("utf-8"),
+                    reliable=True,
+                )
+            except Exception as e:
+                logger.error(
+                    f"Failed to publish tool_call_started for {tool_name}: {e}"
+                )
+
+        try:
+            result = await f(*args, **kwargs)
+            if ctx:
+                try:
+                    room = ctx.session.room_io.room
+                    event = ToolCallCompletedEvent(
+                        call_id=call_id,
+                        tool_name=tool_name,
+                        result=str(result)[:200],
+                    )
+                    await room.local_participant.publish_data(
+                        json.dumps(event.model_dump()).encode("utf-8"),
+                        reliable=True,
+                    )
+                except Exception as e:
+                    logger.error(
+                        f"Failed to publish tool_call_completed for {tool_name}: {e}"
+                    )
+            return result
+        except Exception as e:
+            if ctx:
+                try:
+                    room = ctx.session.room_io.room
+                    event = ToolCallCompletedEvent(
+                        call_id=call_id,
+                        tool_name=tool_name,
+                        result=f"Error: {e}",
+                    )
+                    await room.local_participant.publish_data(
+                        json.dumps(event.model_dump()).encode("utf-8"),
+                        reliable=True,
+                    )
+                except Exception as ex:
+                    logger.error(
+                        "Failed to publish tool_call_completed error "
+                        f"for {tool_name}: {ex}"
+                    )
+            raise e
+
+    return wrapper
 
 
 def _load_portfolio() -> dict:
@@ -26,6 +117,7 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
         "skills, work experience, education, projects, or contact. "
         "DO NOT call this tool for general greetings or chit-chat."
     )
+    @track_tool_call
     async def navigate_to(
         ctx: RunContext[Any],
         target: NavigationTarget,
@@ -65,7 +157,9 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
         "highlights, or technologies used at specific companies "
         "(e.g. Pioneer, Optum, Constelleum)."
     )
+    @track_tool_call
     async def get_work_experience_details(
+        ctx: RunContext[Any],
         company: str = "",
     ) -> str:
         """Get detailed work experience at a specific company or all companies.
@@ -94,7 +188,9 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
         "majors, achievements, or minors about Georgia Tech, "
         "Saint John's University, or MITx."
     )
+    @track_tool_call
     async def get_education_details(
+        ctx: RunContext[Any],
         institution: str = "",
     ) -> str:
         """Get detailed education history at a specific institution or all institutions.
@@ -125,7 +221,9 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
         "Use this when the user asks for certificates or credentials "
         "(e.g. Snowflake, AWS, Databricks, Fabric)."
     )
+    @track_tool_call
     async def get_certificates_details(
+        ctx: RunContext[Any],
         name: str = "",
     ) -> str:
         """Get detailed certification records.
@@ -157,7 +255,9 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
         "tech stack, and URLs. Use this when the user asks about specific "
         "portfolio projects."
     )
+    @track_tool_call
     async def get_project_details(
+        ctx: RunContext[Any],
         name: str = "",
     ) -> str:
         """Get project details.
@@ -185,6 +285,7 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
         "credential, course, skill, or project, or when the user asks you to "
         "highlight something specific on the page."
     )
+    @track_tool_call
     async def highlight_text(
         ctx: RunContext[Any],
         text: str,
@@ -215,6 +316,7 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
         "role or company (e.g. Optum, Pioneer, etc.), or when you are describing "
         "a specific work experience item."
     )
+    @track_tool_call
     async def expand_experience_card(
         ctx: RunContext[Any],
         company: str,

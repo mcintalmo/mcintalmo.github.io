@@ -1,56 +1,42 @@
 model_list:
   - model_name: portfolio-llm
     litellm_params:
-      model: meta-llama/llama-3.3-70b-instruct:free
-      custom_llm_provider: openrouter
-      api_key: os.environ/OPENROUTER_API_KEY
-      timeout: 15
-
-  - model_name: portfolio-llm-openrouter-gemini
-    litellm_params:
-      model: google/gemini-2.5-flash
-      custom_llm_provider: openrouter
-      api_key: os.environ/OPENROUTER_API_KEY
-      timeout: 15
+      model: openai/qwen2.5:3b
+      api_base: http://localhost:11434/v1
+      api_key: ollama
+      timeout: 120
 
   - model_name: portfolio-llm-local
     litellm_params:
       model: openai/qwen2.5:3b
       api_base: http://localhost:11434/v1
       api_key: ollama
-      timeout: 25
+      timeout: 120
 
-  - model_name: portfolio-llm-nvidia
+  - model_name: portfolio-llm-openrouter-gemini
     litellm_params:
-      model: openai/meta/llama-3.3-70b-instruct
-      api_base: https://integrate.api.nvidia.com/v1
-      api_key: os.environ/NVIDIA_API_KEY
-      rpm: 1000
-      timeout: 15
-
-  - model_name: portfolio-llm-openrouter-llama
-    litellm_params:
-      model: meta-llama/llama-3.3-70b-instruct:free
+      model: google/gemini-2.5-flash
       custom_llm_provider: openrouter
       api_key: os.environ/OPENROUTER_API_KEY
+      max_tokens: 2048
       timeout: 15
-
-  - model_name: portfolio-llm-github-direct
-    litellm_params:
-      model: Llama-3.3-70B-Instruct
-      custom_llm_provider: github
-      api_key: os.environ/GITHUB_API_KEY
-      timeout: 15
+      extra_body:
+        provider:
+          zdr: true
+          data_collection: "deny"
 
 router_settings:
-  num_retries: 0
+  num_retries: 2
   fallbacks:
     - portfolio-llm:
         [
-          "portfolio-llm-github-direct",
           "portfolio-llm-local",
-          "portfolio-llm-nvidia",
           "portfolio-llm-openrouter-gemini",
         ]
   cooldown_time: 10
   allowed_fails: 1
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+
+

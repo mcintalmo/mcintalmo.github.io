@@ -7,8 +7,8 @@ from typing import Any, cast
 
 import pytest
 import yaml
-from deepeval import assert_test  # type: ignore[attr-defined]
 from deepeval.dataset import EvaluationDataset, Golden
+from deepeval.evaluate import assert_test
 from deepeval.test_case import LLMTestCase
 from dotenv import load_dotenv
 
@@ -104,7 +104,7 @@ def test_tailor_pipeline_eval(golden: Golden) -> None:
 
     # 2. Run Pipeline
     # Using 'final_resume' node as our main result to evaluate.
-    state = asyncio.run(graph.ainvoke(initial_state))  # type: ignore  # 3. Grab the generated message
+    state = asyncio.run(graph.ainvoke(initial_state))  # 3. Grab the generated message
     final_resume = state.get("final_resume", {})
 
     # Pre-eval structure validation

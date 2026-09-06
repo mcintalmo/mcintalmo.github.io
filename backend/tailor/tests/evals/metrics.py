@@ -10,20 +10,21 @@ from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
 
 
-class NvidiaDeepEvalLLM(DeepEvalBaseLLM):  # type: ignore[no-untyped-call]
+class NvidiaDeepEvalLLM(DeepEvalBaseLLM):
     def __init__(self, api_key: str):
         self.api_key = api_key
         # Use the 8b model: fast enough (<30s per call) for eval judge prompts
         # while still producing reliable scores. 70b is far too slow for the
         # large resume+JD context that each metric submits.
-        self.model_name = "meta/llama-3.1-8b-instruct"
+        self.model_name = "google/gemini-2.5-flash"
+        super().__init__(model_name=self.model_name)
         self.chat_model = ChatOpenAI(
             model=self.model_name,
             api_key=SecretStr(api_key),
-            base_url="https://integrate.api.nvidia.com/v1",
+            base_url="https://openrouter.ai/api/v1",
             temperature=0.1,
-            # Cap the per-call wait at 180s. NIM normally responds in 8-30s;
-            # if it returns a 504 it can otherwise hang for 16+ minutes.
+            max_tokens=2048,
+            # Cap the per-call wait at 180s.
             timeout=180,
         )
 
@@ -43,11 +44,15 @@ class NvidiaDeepEvalLLM(DeepEvalBaseLLM):  # type: ignore[no-untyped-call]
 
 def get_metrics() -> list[Any]:
     openai_key = os.getenv("OPENAI_API_KEY")
+    openrouter_key = os.getenv("OPENROUTER_API_KEY")
     nvidia_key = os.getenv("NVIDIA_API_KEY")
 
     evaluator_model = None
-    if not openai_key and nvidia_key:
-        evaluator_model = NvidiaDeepEvalLLM(api_key=nvidia_key)
+    if not openai_key:
+        if openrouter_key:
+            evaluator_model = NvidiaDeepEvalLLM(api_key=openrouter_key)
+        elif nvidia_key:
+            evaluator_model = NvidiaDeepEvalLLM(api_key=nvidia_key)
 
     # AnswerRelevancyMetric: is the tailored resume relevant to the JD?
     # HallucinationMetric: does the output invent details not in the source resume?

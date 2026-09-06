@@ -51,21 +51,35 @@ async def test_all_golden_cases() -> None:
         )
 
     # 3. Initialize model clients
-    # Target Agent LLM (pointing directly to Nvidia API to prevent test flakiness)
-    agent_llm = openai.LLM(
-        model="meta/llama-3.3-70b-instruct",
-        base_url="https://integrate.api.nvidia.com/v1",
-        api_key=nvidia_api_key,
-        timeout=httpx.Timeout(60.0),
-    )
-
-    # Nvidia Judge LLM (using high-quality Llama-3.3-70b-instruct)
-    judge_llm = openai.LLM(
-        model="meta/llama-3.3-70b-instruct",
-        base_url="https://integrate.api.nvidia.com/v1",
-        api_key=nvidia_api_key,
-        timeout=httpx.Timeout(60.0),
-    )
+    openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
+    if openrouter_api_key:
+        agent_llm = openai.LLM(
+            model="google/gemini-2.5-flash",
+            base_url="https://openrouter.ai/api/v1",
+            api_key=openrouter_api_key,
+            timeout=httpx.Timeout(60.0),
+            max_completion_tokens=2048,
+        )
+        judge_llm = openai.LLM(
+            model="google/gemini-2.5-flash",
+            base_url="https://openrouter.ai/api/v1",
+            api_key=openrouter_api_key,
+            timeout=httpx.Timeout(60.0),
+            max_completion_tokens=2048,
+        )
+    else:
+        agent_llm = openai.LLM(
+            model="meta/llama-3.1-8b-instruct",
+            base_url="https://integrate.api.nvidia.com/v1",
+            api_key=nvidia_api_key,
+            timeout=httpx.Timeout(60.0),
+        )
+        judge_llm = openai.LLM(
+            model="meta/llama-3.1-8b-instruct",
+            base_url="https://integrate.api.nvidia.com/v1",
+            api_key=nvidia_api_key,
+            timeout=httpx.Timeout(60.0),
+        )
 
     # 4. Load YAML dataset
     yaml_path = Path(__file__).parent / "golden_dataset.yaml"

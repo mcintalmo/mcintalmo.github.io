@@ -7,8 +7,11 @@ import {
   useVoiceAssistant,
 } from "@livekit/components-react";
 import {
+  AlertCircle,
   AudioLines,
   Bot,
+  Check,
+  Loader2,
   Maximize2,
   MessageSquareText,
   Mic,
@@ -172,6 +175,58 @@ function VoicePanelInner({
   );
 }
 
+interface ToolCall {
+  callId: string;
+  toolName: string;
+  arguments: string;
+  status: "running" | "completed" | "failed";
+  timestamp: number;
+}
+
+type TimelineItem =
+  | { type: "message"; data: UnifiedMessage }
+  | { type: "tool_call"; data: ToolCall };
+
+const formatToolCall = (name: string, argsStr: string): string => {
+  try {
+    const args = JSON.parse(argsStr);
+    switch (name) {
+      case "navigate_to":
+        return `Navigating to ${args.target || "section"}`;
+      case "get_work_experience_details":
+        return args.company
+          ? `Retrieving work experience details for ${args.company}`
+          : "Retrieving all work experience details";
+      case "get_education_details":
+        return args.institution
+          ? `Retrieving education details for ${args.institution}`
+          : "Retrieving all education details";
+      case "get_certificates_details":
+        return args.name
+          ? `Retrieving certification details for ${args.name}`
+          : "Retrieving all certification details";
+      case "get_project_details":
+        return args.name
+          ? `Retrieving project details for ${args.name}`
+          : "Retrieving all project details";
+      case "highlight_text":
+        return `Highlighting "${args.text || ""}" on page`;
+      case "expand_experience_card":
+        return `Expanding work experience card for ${args.company || "company"}`;
+      default: {
+        // Format camelCase or snake_case tool name to Title Case
+        const formattedName = name
+          .replace(/_/g, " ")
+          .replace(/([A-Z])/g, " $1")
+          .trim();
+        return `Executing ${formattedName}`;
+      }
+    }
+  } catch {
+    return `Executing ${name}`;
+  }
+};
+
 export function CustomChatWidget({
   onStartInteraction,
   recommendedQuestions,
@@ -207,6 +262,7 @@ export function CustomChatWidget({
     return unifiedMessages.some((msg) => msg.sender === "user");
   }, [unifiedMessages]);
   const [followups, setFollowups] = React.useState<SuggestedQuestion[]>([]);
+  const [toolCalls, setToolCalls] = React.useState<ToolCall[]>([]);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -234,6 +290,37 @@ export function CustomChatWidget({
         } catch (e) {
           console.error("Failed to parse followups:", e);
         }
+      } else {
+        try {
+          const text = new TextDecoder().decode(payload);
+          const event = JSON.parse(text);
+          if (event && event.type === "tool_call_started") {
+            setToolCalls((prev) => {
+              if (prev.some((tc) => tc.callId === event.call_id)) {
+                return prev;
+              }
+              return [
+                ...prev,
+                {
+                  callId: event.call_id,
+                  toolName: event.tool_name,
+                  arguments: event.arguments,
+                  status: "running",
+                  timestamp: event.timestamp || Date.now(),
+                },
+              ];
+            });
+          } else if (event && event.type === "tool_call_completed") {
+            setToolCalls((prev) => {
+              const status = event.result.startsWith("Error:") ? "failed" : "completed";
+              return prev.map((tc) =>
+                tc.callId === event.call_id ? { ...tc, status } : tc,
+              );
+            });
+          }
+        } catch {
+          // Ignore non-JSON or unrelated events
+        }
       }
     };
 
@@ -242,8 +329,16 @@ export function CustomChatWidget({
       room.off("dataReceived", handleDataReceived);
     };
   }, [room]);
-  const textInputRef = React.useRef<HTMLInputElement>(null);
+
   const [roomState, setRoomState] = React.useState(room.state);
+
+  React.useEffect(() => {
+    if (roomState === "connecting") {
+      setToolCalls([]);
+      setFollowups([]);
+    }
+  }, [roomState]);
+  const textInputRef = React.useRef<HTMLInputElement>(null);
 
   // Dictation state and SpeechRecognition initialization
   const [isDictating, setIsDictating] = React.useState(false);
@@ -439,9 +534,18 @@ export function CustomChatWidget({
           console.log(`Successfully sync'd chat mode ${chatMode} to agent`);
         } catch (e) {
           console.warn(
-            `Failed to sync chat mode to agent (retries left: ${retries}):`,
+            `RPC sync chat mode failed, sending fallback data packet (retries left: ${retries}):`,
             e,
           );
+          try {
+            const encoder = new TextEncoder();
+            await room.localParticipant.publishData(
+              encoder.encode(JSON.stringify({ type: "set_chat_mode", mode: chatMode })),
+              { reliable: true, topic: "lk-chat-topic" },
+            );
+          } catch (pubErr) {
+            console.error("Data packet mode sync failed:", pubErr);
+          }
           if (retries > 0 && active) {
             timeoutId = setTimeout(() => {
               syncChatMode(retries - 1, delay * 1.5);
@@ -542,11 +646,26 @@ export function CustomChatWidget({
     });
   }, [chatMessages, transcriptions, room.localParticipant?.identity, chatMode]);
 
+  const timeline = React.useMemo(() => {
+    const items: TimelineItem[] = [];
+    for (const msg of unifiedMessages) {
+      items.push({ type: "message", data: msg });
+    }
+    for (const tc of toolCalls) {
+      items.push({ type: "tool_call", data: tc });
+    }
+    return items.sort((a, b) => {
+      const timeA = a.type === "message" ? a.data.timestamp : a.data.timestamp;
+      const timeB = b.type === "message" ? b.data.timestamp : b.data.timestamp;
+      return timeA - timeB;
+    });
+  }, [unifiedMessages, toolCalls]);
+
   // Scroll to bottom on new messages
   // biome-ignore lint/correctness/useExhaustiveDependencies: scroll on changes
   React.useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [unifiedMessages, state]);
+  }, [timeline, state]);
 
   const handleSuggestedQuestionClick = React.useCallback(
     async (question: string) => {
@@ -713,26 +832,50 @@ export function CustomChatWidget({
                     </div>
                   </div>
                 )}
-                {unifiedMessages.map((msg) => {
-                  const isUser = msg.sender === "user";
-                  return (
-                    <div
-                      key={msg.id}
-                      className={`lk-chat-entry flex w-full ${isUser ? "justify-end" : "justify-start"}`}
-                      data-lk-message-origin={isUser ? "local" : "remote"}
-                    >
+                {timeline.map((item) => {
+                  if (item.type === "message") {
+                    const msg = item.data;
+                    const isUser = msg.sender === "user";
+                    return (
                       <div
-                        className={`lk-message-body rounded-2xl px-4 py-2.5 max-w-[85%] text-sm shadow-sm border ${
-                          isUser
-                            ? "bg-gradient-to-r from-accent-indigo to-primary text-white rounded-br-none border-primary/20"
-                            : "bg-card text-foreground rounded-bl-none border-border/30"
-                        }`}
+                        key={msg.id}
+                        className={`lk-chat-entry flex w-full ${isUser ? "justify-end" : "justify-start"}`}
+                        data-lk-message-origin={isUser ? "local" : "remote"}
                       >
                         <div
-                          className="[&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_a]:underline"
-                          // biome-ignore lint/security/noDangerouslySetInnerHtml: mdToHtml is strictly sanitized via rehype-sanitize
-                          dangerouslySetInnerHTML={{ __html: mdToHtml(msg.text) }}
-                        />
+                          className={`lk-message-body rounded-2xl px-4 py-2.5 max-w-[85%] text-sm shadow-sm border ${
+                            isUser
+                              ? "bg-gradient-to-r from-accent-indigo to-primary text-white rounded-br-none border-primary/20"
+                              : "bg-card text-foreground rounded-bl-none border-border/30"
+                          }`}
+                        >
+                          <div
+                            className="[&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_a]:underline"
+                            // biome-ignore lint/security/noDangerouslySetInnerHtml: mdToHtml is strictly sanitized via rehype-sanitize
+                            dangerouslySetInnerHTML={{ __html: mdToHtml(msg.text) }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  }
+                  const call = item.data;
+                  const isRunning = call.status === "running";
+                  const isFailed = call.status === "failed";
+                  return (
+                    <div
+                      key={call.callId}
+                      className="flex w-full justify-start lk-chat-entry"
+                      data-lk-message-origin="system"
+                    >
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-muted/30 border border-border/10 text-xs text-muted-foreground font-sans max-w-[85%] select-none">
+                        {isRunning ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin text-accent-cyan shrink-0" />
+                        ) : isFailed ? (
+                          <AlertCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
+                        ) : (
+                          <Check className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                        )}
+                        <span>{formatToolCall(call.toolName, call.arguments)}</span>
                       </div>
                     </div>
                   );

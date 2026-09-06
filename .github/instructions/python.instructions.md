@@ -154,6 +154,7 @@ except Exception:
 from pydantic_settings import BaseSettings
 from pydantic import SecretStr
 
+
 class Settings(BaseSettings):
     livekit_api_key: str
     livekit_api_secret: SecretStr
@@ -228,11 +229,13 @@ All services export traces, metrics, and logs to the OTel Collector.
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await startup()
     yield
     await shutdown()
+
 
 app = FastAPI(lifespan=lifespan)
 ```

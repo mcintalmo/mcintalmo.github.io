@@ -137,16 +137,11 @@ services:
     depends_on:
       ollama:
         condition: service_healthy
-    entrypoint: >
-      /bin/sh -c "
-      until curl -s http://localhost:11434/api/tags > /dev/null; do
-        echo 'Waiting for Ollama to start...';
-        sleep 2;
-      done;
-      echo 'Ollama started! Pulling qwen2.5:3b...';
-      curl -s -X POST http://localhost:11434/api/pull -d '{\"name\": \"qwen2.5:3b\"}';
-      echo 'Model pulled successfully!';
-      "
+    environment:
+      - OLLAMA_MODEL_NAME=${OLLAMA_MODEL_NAME:-qwen2.5:3b}
+    volumes:
+      - ./pull_model.sh:/pull_model.sh:ro
+    entrypoint: ["/bin/sh", "/pull_model.sh"]
     network_mode: host
 
   litellm:
@@ -181,6 +176,7 @@ services:
     build:
       context: ../backend
       dockerfile: ./mcp/Dockerfile
+
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest

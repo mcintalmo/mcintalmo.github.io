@@ -65,6 +65,7 @@ class YamlConfigSettingsSource(PydanticBaseSettingsSource):
 class SttSettings(BaseSettings):
     model: str = "tiny.en"
     base_url: str = "http://localhost:10300/v1"
+    ws_url: str = "ws://localhost:10300/v1/audio/transcriptions"
     api_key: str = "local-key"
     model_config = SettingsConfigDict(
         env_file=(".env", ".env.local", "../.env", "../.env.local"), extra="ignore"
@@ -111,8 +112,8 @@ class TtsSettings(BaseSettings):
 
 class CartesiaTtsSettings(BaseSettings):
     api_key: str = ""
-    # sonic-2: best quality/latency balance. sonic-turbo: lowest latency.
-    model: str = "sonic-2"
+    # sonic-3.5: best quality/latency balance. sonic-turbo: lowest latency.
+    model: str = "sonic-3.5"
     # "Reflective" - clear, professional male voice
     voice: str = "a0e99841-438c-4a64-b679-ae501e7d6091"
     language: str = "en"
@@ -126,6 +127,9 @@ class CartesiaTtsSettings(BaseSettings):
 class AgentSessionSettings(BaseSettings):
     # Set TTS_PROVIDER=kokoro to fall back to self-hosted Kokoro
     tts_provider: str = "cartesia"
+    stt_provider: str = (
+        "whisper-stream"  # "whisper" (batch) or "whisper-stream" (streaming)
+    )
     stt: SttSettings = SttSettings()
     llm: LlmSettings = LlmSettings()
     tts: TtsSettings = TtsSettings()

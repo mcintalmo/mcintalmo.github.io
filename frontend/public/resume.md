@@ -20,7 +20,7 @@ June 2026 – present
 
 
 
-2 months
+4 months
 
 Designing custom AI architectures and developing conversational analytics to drive sustainable enterprise AI adoption.
 

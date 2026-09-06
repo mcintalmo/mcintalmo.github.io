@@ -60,9 +60,13 @@ uv-bump:
 # Run all test suites across backend, frontend, and E2E frameworks
 test: test-backend test-frontend test-e2e
 
-# Run Python backend unit/integration tests (accepts standard pytest arguments)
+# Run Python backend unit/integration tests (excluding slow evals)
 test-backend *args:
-    uv run --directory backend pytest {{args}}
+    uv run --directory backend pytest -m "not eval" {{args}}
+
+# Run Python backend LLM evaluations
+test-backend-eval *args:
+    uv run --directory backend pytest -m "eval" {{args}}
 
 # Run JavaScript/TypeScript frontend tests
 test-frontend *args:
@@ -173,12 +177,26 @@ bootstrap-otel:
 
 
 # ==============================================================================
-# 6. Frontend
+# 6. Frontend & Production Build Verification
 # ==============================================================================
 
 # Run the frontend development server (port 4321)
 frontend:
     pnpm --prefix frontend run dev
+
+# Build the complete production bundle (resume artifacts + static Astro site)
+build: build-resume
+    pnpm --prefix frontend build
+
+# Build and preview the production static site locally (port 4321)
+preview: build
+    pnpm --prefix frontend preview --port 4321
+
+# Verify a new build: runs linters/types, builds production assets, and executes unit + Playwright E2E verification
+verify-build: check-all build test-backend test-frontend
+    @echo "==> Running Playwright browser verification against build..."
+    uv run --directory e2e pytest tests/test_portfolio_verification.py
+    @echo "==> Build verification complete! All tests and browser checks passed."
 
 
 # ==============================================================================

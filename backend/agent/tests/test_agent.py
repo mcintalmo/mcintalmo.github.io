@@ -36,10 +36,17 @@ async def test_assistant_greeting() -> None:
             "skipping LLM evaluation test."
         )
 
-    llm = openai.LLM(
-        model=settings.model,
+    import openai as oai
+
+    client = oai.AsyncOpenAI(
         base_url=settings.base_url,
         api_key=settings.api_key,
+        timeout=60.0,
+    )
+
+    llm = openai.LLM(
+        model=settings.model,
+        client=client,
     )
 
     # We test the basic session start and run logic
