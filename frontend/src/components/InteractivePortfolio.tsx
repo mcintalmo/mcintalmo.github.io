@@ -4,6 +4,7 @@ import { CustomChatWidget } from "./CustomChatWidget";
 import { TelemetryPopoffs, useTelemetry } from "./TelemetryPopoffs";
 import "@livekit/components-styles";
 
+import { fetchLiveKitToken } from "../lib/token";
 import type { ResumeRoot, SiteConfigRoot } from "../lib/types";
 import { AgentController } from "./AgentController";
 import { Home } from "./Home";
@@ -201,12 +202,7 @@ export function InteractivePortfolio({ resume, config }: Props) {
         `portfolio-${Math.random().toString(36).substring(2, 11)}`;
     }
     const roomName = roomNameRef.current;
-    const apiUrl = import.meta.env.PUBLIC_API_URL || "http://localhost:8000";
-    fetch(
-      `${apiUrl}/token?room_name=${roomName}&identity=user-` +
-        Math.floor(Math.random() * 10000),
-    )
-      .then((res) => res.json())
+    fetchLiveKitToken(roomName)
       .then((data) =>
         setTokenInfo({
           token: data.token,
@@ -214,7 +210,9 @@ export function InteractivePortfolio({ resume, config }: Props) {
           local_ip: data.local_ip,
         }),
       )
-      .catch(console.error);
+      .catch((err) => {
+        console.error("Failed to fetch LiveKit token:", err);
+      });
   }, []);
 
   const handleStartInteraction = React.useCallback(() => {

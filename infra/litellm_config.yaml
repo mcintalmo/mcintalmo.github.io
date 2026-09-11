@@ -1,17 +1,22 @@
 model_list:
   - model_name: portfolio-llm
     litellm_params:
-      model: openai/qwen2.5:3b
-      api_base: http://localhost:11434/v1
-      api_key: ollama
-      timeout: 120
+      model: google/gemini-2.5-flash
+      custom_llm_provider: openrouter
+      api_key: os.environ/OPENROUTER_API_KEY
+      max_tokens: 2048
+      timeout: 10
+      extra_body:
+        provider:
+          zdr: true
+          data_collection: "deny"
 
   - model_name: portfolio-llm-local
     litellm_params:
       model: openai/qwen2.5:3b
       api_base: http://localhost:11434/v1
       api_key: ollama
-      timeout: 120
+      timeout: 60
 
   - model_name: portfolio-llm-openrouter-gemini
     litellm_params:
@@ -19,7 +24,7 @@ model_list:
       custom_llm_provider: openrouter
       api_key: os.environ/OPENROUTER_API_KEY
       max_tokens: 2048
-      timeout: 15
+      timeout: 10
       extra_body:
         provider:
           zdr: true
@@ -31,7 +36,6 @@ router_settings:
     - portfolio-llm:
         [
           "portfolio-llm-local",
-          "portfolio-llm-openrouter-gemini",
         ]
   cooldown_time: 10
   allowed_fails: 1

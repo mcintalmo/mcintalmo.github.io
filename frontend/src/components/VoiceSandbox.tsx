@@ -9,6 +9,7 @@ import { Bot, LogOut, Mic, RefreshCw, Volume2, Wifi, WifiOff } from "lucide-reac
 import * as React from "react";
 import "@livekit/components-styles";
 import { useInputControls } from "../hooks/agents-ui/use-agent-control-bar";
+import { fetchLiveKitToken } from "../lib/token";
 import { AgentAudioVisualizerAura } from "./agents-ui/agent-audio-visualizer-aura";
 import { AgentDisconnectButton } from "./agents-ui/agent-disconnect-button";
 import { AgentTrackControl } from "./agents-ui/agent-track-control";
@@ -161,23 +162,14 @@ export const VoiceSandbox = () => {
     setLoading(true);
     setError(null);
     try {
-      const apiUrl = import.meta.env.PUBLIC_API_URL || "http://localhost:8000";
-      const response = await fetch(
-        `${apiUrl}/token?room_name=alex-chat&identity=sandbox-user-${Math.floor(
-          Math.random() * 1000,
-        )}`,
-      );
-      if (!response.ok) {
-        throw new Error(`Failed to fetch connection token: status ${response.status}`);
-      }
-      const data = await response.json();
+      const data = await fetchLiveKitToken("alex-chat", "sandbox-user");
       setTokenInfo({ token: data.token, ws_url: data.ws_url });
       setConnected(true);
     } catch (err: unknown) {
       setError(
         err instanceof Error
           ? err.message
-          : "Failed to fetch LiveKit token. Ensure auth server is running on port 8000.",
+          : "Failed to fetch LiveKit token. Ensure auth server is running.",
       );
     } finally {
       setLoading(false);

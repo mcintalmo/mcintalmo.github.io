@@ -1,5 +1,6 @@
 import { LiveKitRoom, RoomAudioRenderer } from "@livekit/components-react";
 import * as React from "react";
+import { fetchLiveKitToken } from "../lib/token";
 import type { SiteConfigRoot } from "../lib/types";
 import { CustomChatWidget } from "./CustomChatWidget";
 import { TelemetryPopoffs, useTelemetry } from "./TelemetryPopoffs";
@@ -30,60 +31,16 @@ export const ChatAgent = ({ config }: { config?: SiteConfigRoot }) => {
     let timeoutId: ReturnType<typeof setTimeout>;
 
     const fetchToken = async () => {
-      const hostname =
-        typeof window !== "undefined" ? window.location.hostname : "localhost";
-      const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
-      const localApiUrl = `http://${hostname}:8000`;
-      const prodApiUrl = "https://api.alexandermcintosh.com";
-
-      // If running on localhost, prioritize the local auth server first; otherwise use configured env or prod
-      const primaryUrl = isLocalHost
-        ? localApiUrl
-        : import.meta.env.PUBLIC_API_URL || prodApiUrl;
-      const fallbackUrl = isLocalHost ? prodApiUrl : undefined;
-
       const searchParams =
         typeof window !== "undefined"
           ? new URLSearchParams(window.location.search)
           : null;
       const roomName = searchParams?.get("room") || "alex-chat";
 
-      const tryFetch = async (url: string) => {
-        const res = await fetch(
-          `${url}/token?room_name=${encodeURIComponent(
-            roomName,
-          )}&identity=user-${Math.floor(Math.random() * 10000)}`,
-        );
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      };
-
       try {
-        let data: { token: string; ws_url?: string };
-        try {
-          data = await tryFetch(primaryUrl);
-        } catch (localErr) {
-          if (fallbackUrl && primaryUrl !== fallbackUrl) {
-            console.info(
-              "[ChatAgent] Primary auth server not reachable, falling back to",
-              fallbackUrl,
-            );
-            data = await tryFetch(fallbackUrl);
-          } else {
-            throw localErr;
-          }
-        }
-
+        const data = await fetchLiveKitToken(roomName);
         if (!isMounted) return;
-        let wsUrl = data.ws_url || `ws://${hostname}:7880`;
-        if (wsUrl.includes("localhost") || wsUrl.includes("127.0.0.1")) {
-          if (hostname !== "localhost" && wsUrl.includes("localhost")) {
-            wsUrl = wsUrl.replace("localhost", hostname);
-          } else if (hostname !== "127.0.0.1" && wsUrl.includes("127.0.0.1")) {
-            wsUrl = wsUrl.replace("127.0.0.1", hostname);
-          }
-        }
-        setTokenInfo({ token: data.token, ws_url: wsUrl });
+        setTokenInfo({ token: data.token, ws_url: data.ws_url });
       } catch (err) {
         console.warn("[ChatAgent] Token fetch pending/retrying...", err);
         if (isMounted) {

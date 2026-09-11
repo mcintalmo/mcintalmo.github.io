@@ -63,7 +63,7 @@ class YamlConfigSettingsSource(PydanticBaseSettingsSource):
 
 
 class SttSettings(BaseSettings):
-    model: str = "tiny.en"
+    model: str = "Systran/faster-whisper-tiny.en"
     base_url: str = "http://localhost:10300/v1"
     ws_url: str = "ws://localhost:10300/v1/audio/transcriptions"
     api_key: str = "local-key"
@@ -127,9 +127,7 @@ class CartesiaTtsSettings(BaseSettings):
 class AgentSessionSettings(BaseSettings):
     # Set TTS_PROVIDER=kokoro to fall back to self-hosted Kokoro
     tts_provider: str = "cartesia"
-    stt_provider: str = (
-        "whisper-stream"  # "whisper" (batch) or "whisper-stream" (streaming)
-    )
+    stt_provider: str = "whisper-stream"  # "whisper-stream" or "whisper"
     stt: SttSettings = SttSettings()
     llm: LlmSettings = LlmSettings()
     tts: TtsSettings = TtsSettings()

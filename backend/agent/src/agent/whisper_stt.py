@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
 from typing import TYPE_CHECKING
 
@@ -15,6 +14,7 @@ from livekit.agents import (
     vad,
 )
 from livekit.agents.types import NOT_GIVEN
+from livekit.plugins import silero
 
 if TYPE_CHECKING:
     from livekit.agents import APIConnectOptions
@@ -24,11 +24,12 @@ logger = logging.getLogger("agent.whisper_stt")
 
 
 class WhisperSTT(stt.STT):
-    """Whisper Speech-to-Text streaming client.
+    """Whisper Speech-to-Text progressive streaming client.
 
-    Connects to a Whisper-compatible server (e.g. Speaches or faster-whisper-server)
-    supporting live WebSocket audio streaming and HTTP batch fallbacks.
-    Optionally accepts a LiveKit VAD (Silero) for neural end-of-speech detection.
+    Connects to a Whisper-compatible server (e.g. Speaches or faster-whisper-server).
+    Uses Silero VAD for robust speech boundary detection and runs progressive chunk
+    recognition to emit real-time interim transcripts during user speech, followed
+    by a guaranteed final transcript on end-of-speech.
     """
 
     def __init__(
@@ -39,6 +40,7 @@ class WhisperSTT(stt.STT):
         model: str = "Systran/faster-whisper-tiny.en",
         language: str = "en",
         vad: vad.VAD | None = None,
+        interim_interval: float = 0.4,
     ) -> None:
         super().__init__(
             capabilities=stt.STTCapabilities(
@@ -53,7 +55,13 @@ class WhisperSTT(stt.STT):
         self._http_url = f"{base_url.rstrip('/')}/audio/transcriptions"
         self._model = model
         self._language = language
+        if vad is None:
+            try:
+                vad = silero.VAD.load()
+            except Exception as e:
+                logger.warning("Could not load default Silero VAD: %s", e)
         self._vad = vad
+        self._interim_interval = interim_interval
 
     @property
     def model(self) -> str:
@@ -63,6 +71,48 @@ class WhisperSTT(stt.STT):
     def provider(self) -> str:
         return "whisper-stream"
 
+    async def _transcribe_audio_raw(
+        self,
+        wav_bytes: bytes,
+        *,
+        language: str | None = None,
+        session: aiohttp.ClientSession | None = None,
+        timeout: float = 10.0,
+    ) -> str:
+        """Helper to transcribe raw WAV bytes against the Whisper HTTP endpoint."""
+        data = aiohttp.FormData()
+        data.add_field(
+            "file",
+            wav_bytes,
+            filename="audio.wav",
+            content_type="audio/wav",
+        )
+        data.add_field("model", self._model)
+        resolved_lang = language or self._language
+        if resolved_lang:
+            data.add_field("language", resolved_lang)
+        data.add_field("response_format", "json")
+
+        close_session = False
+        if session is None:
+            session = aiohttp.ClientSession(
+                timeout=aiohttp.ClientTimeout(total=timeout)
+            )
+            close_session = True
+
+        try:
+            async with session.post(self._http_url, data=data) as resp:
+                if resp.status != 200:
+                    err_text = await resp.text()
+                    raise RuntimeError(
+                        f"Whisper STT HTTP error {resp.status}: {err_text}"
+                    )
+                res_json = await resp.json()
+                return str(res_json.get("text", "")).strip()
+        finally:
+            if close_session:
+                await session.close()
+
     async def _recognize_impl(
         self,
         buffer: utils.AudioBuffer,
@@ -71,46 +121,30 @@ class WhisperSTT(stt.STT):
         conn_options: APIConnectOptions,
     ) -> stt.SpeechEvent:
         try:
-            # Combine audio frames and convert to WAV bytes
-            frame = rtc.combine_audio_frames(buffer)
+            if isinstance(buffer, rtc.AudioFrame):
+                frame = buffer
+            else:
+                frame = rtc.combine_audio_frames(buffer)
             wav_bytes = frame.to_wav_bytes()
 
-            # Prepare multipart form data
-            data = aiohttp.FormData()
-            data.add_field(
-                "file",
-                wav_bytes,
-                filename="audio.wav",
-                content_type="audio/wav",
-            )
-            data.add_field("model", self._model)
             resolved_lang = language if utils.is_given(language) else self._language
-            if resolved_lang:
-                data.add_field("language", resolved_lang)
-            data.add_field("response_format", "json")
+            text = await self._transcribe_audio_raw(
+                wav_bytes,
+                language=resolved_lang,
+                timeout=conn_options.timeout,
+            )
 
-            timeout = aiohttp.ClientTimeout(total=30, connect=conn_options.timeout)
-            async with aiohttp.ClientSession(timeout=timeout) as session:
-                async with session.post(self._http_url, data=data) as resp:
-                    if resp.status != 200:
-                        err_text = await resp.text()
-                        raise RuntimeError(
-                            f"Whisper STT HTTP error {resp.status}: {err_text}"
-                        )
-                    res_json = await resp.json()
-                    text = res_json.get("text", "").strip()
-
-                    return stt.SpeechEvent(
-                        type=stt.SpeechEventType.FINAL_TRANSCRIPT,
-                        alternatives=[
-                            stt.SpeechData(
-                                text=text,
-                                language=LanguageCode(resolved_lang or "en"),
-                            )
-                        ],
+            return stt.SpeechEvent(
+                type=stt.SpeechEventType.FINAL_TRANSCRIPT,
+                alternatives=[
+                    stt.SpeechData(
+                        text=text,
+                        language=LanguageCode(resolved_lang or "en"),
                     )
+                ],
+            )
         except Exception as e:
-            logger.error(f"Whisper STT recognize failed: {e}")
+            logger.error("Whisper STT recognize failed: %s", e)
             raise
 
     def stream(
@@ -125,10 +159,17 @@ class WhisperSTT(stt.STT):
             conn_options=conn_options,
             language=language if utils.is_given(language) else self._language,
             vad=self._vad,
+            interim_interval=self._interim_interval,
         )
 
 
 class WhisperSpeechStream(stt.SpeechStream):
+    """VAD-driven progressive speech stream for Whisper.
+
+    Stays persistently open for the entire room session, streaming interim
+    transcriptions as the user speaks, followed by a final transcript on end-of-speech.
+    """
+
     def __init__(
         self,
         *,
@@ -137,54 +178,91 @@ class WhisperSpeechStream(stt.SpeechStream):
         conn_options: APIConnectOptions,
         language: str | None = None,
         vad: vad.VAD | None = None,
+        interim_interval: float = 0.4,
     ) -> None:
         super().__init__(stt=stt_instance, conn_options=conn_options, sample_rate=16000)
+        self._stt_instance = stt_instance
         self._ws_url = ws_url
         self._language = language
-        self._speaking = False
+        if vad is None:
+            vad = silero.VAD.load()
         self._vad = vad
-        self._last_text = ""
+        self._interim_interval = interim_interval
 
     async def _run(self) -> None:
-        # Construct WebSocket connection URL with parameters
-        query_params = []
-        if self._stt.model:
-            query_params.append(f"model={self._stt.model}")
-        if self._language:
-            query_params.append(f"language={self._language}")
-        query_params.append("response_format=json")
-        query_params.append("vad_filter=true")
+        vad_stream = self._vad.stream()
+        speech_frames: list[rtc.AudioFrame] = []
+        speaking = False
+        last_interim_text = ""
+        is_recognizing_interim = False
 
-        url = f"{self._ws_url}?{'&'.join(query_params)}"
+        http_session = aiohttp.ClientSession(
+            timeout=aiohttp.ClientTimeout(total=15, connect=self._conn_options.timeout)
+        )
 
-        async with aiohttp.ClientSession() as session:
-            async with session.ws_connect(url) as ws:
-                logger.info(f"Connected to Whisper WebSocket stream: {url}")
+        async def _forward_input() -> None:
+            """Pumps audio frames from input channel to VAD and buffers speech."""
+            try:
+                async for data in self._input_ch:
+                    if isinstance(data, rtc.AudioFrame):
+                        vad_stream.push_frame(data)
+                        if speaking:
+                            speech_frames.append(data)
+                    elif isinstance(data, self._FlushSentinel):
+                        vad_stream.flush()
+            except Exception as e:
+                logger.debug("Whisper input stream closed: %s", e)
+            finally:
+                vad_stream.end_input()
 
-                vad_stream = self._vad.stream() if self._vad else None
-                tasks = [
-                    asyncio.create_task(self._send_loop(ws, vad_stream)),
-                    asyncio.create_task(self._recv_loop(ws)),
-                ]
-                if vad_stream:
-                    tasks.append(asyncio.create_task(self._vad_loop(vad_stream)))
+        async def _periodic_interim_loop() -> None:
+            """Periodically polls speech frames and emits interim transcripts."""
+            nonlocal last_interim_text, is_recognizing_interim
+            while True:
+                await asyncio.sleep(self._interim_interval)
+                if not speaking or is_recognizing_interim:
+                    continue
 
+                # Buffer must have at least ~300ms of audio (6 frames @ 50ms)
+                if len(speech_frames) < 6:
+                    continue
+
+                snapshot_frames = list(speech_frames)
+                is_recognizing_interim = True
                 try:
-                    await asyncio.gather(*tasks)
+                    merged = utils.merge_frames(snapshot_frames)
+                    wav_bytes = merged.to_wav_bytes()
+                    text = await self._stt_instance._transcribe_audio_raw(
+                        wav_bytes,
+                        language=self._language,
+                        session=http_session,
+                    )
+                    if text and speaking:
+                        last_interim_text = text
+                        self._event_ch.send_nowait(
+                            stt.SpeechEvent(
+                                type=stt.SpeechEventType.INTERIM_TRANSCRIPT,
+                                alternatives=[
+                                    stt.SpeechData(
+                                        text=text,
+                                        language=LanguageCode(self._language or "en"),
+                                    )
+                                ],
+                            )
+                        )
                 except Exception as e:
-                    logger.error(f"Whisper WebSocket stream session error: {e}")
-                    raise
+                    logger.debug("Whisper interim recognition skipped: %s", e)
                 finally:
-                    for task in tasks:
-                        task.cancel()
-                    if vad_stream:
-                        await vad_stream.aclose()
+                    is_recognizing_interim = False
 
-    async def _vad_loop(self, vad_stream: vad.VADStream) -> None:
-        async for event in vad_stream:
-            if event.type == vad.VADEventType.START_OF_SPEECH:
-                if not self._speaking:
-                    self._speaking = True
+        async def _vad_consumer() -> None:
+            """Monitors VAD events, orchestrating interim and final transcription."""
+            nonlocal speaking, speech_frames, last_interim_text
+            async for event in vad_stream:
+                if event.type == vad.VADEventType.START_OF_SPEECH:
+                    speaking = True
+                    speech_frames = list(event.frames)
+                    last_interim_text = ""
                     self._event_ch.send_nowait(
                         stt.SpeechEvent(
                             type=stt.SpeechEventType.START_OF_SPEECH,
@@ -196,10 +274,28 @@ class WhisperSpeechStream(stt.SpeechStream):
                             ],
                         )
                     )
-            elif event.type == vad.VADEventType.END_OF_SPEECH:
-                if self._speaking:
-                    self._speaking = False
-                    final_text = self._last_text.strip()
+                elif event.type == vad.VADEventType.END_OF_SPEECH:
+                    speaking = False
+                    # Silero VAD provides the complete user utterance in event.frames
+                    final_frames = event.frames if event.frames else list(speech_frames)
+                    speech_frames = []
+
+                    final_text = ""
+                    if final_frames:
+                        try:
+                            merged = utils.merge_frames(final_frames)
+                            wav_bytes = merged.to_wav_bytes()
+                            final_text = await self._stt_instance._transcribe_audio_raw(
+                                wav_bytes,
+                                language=self._language,
+                                session=http_session,
+                            )
+                        except Exception as e:
+                            logger.error("Whisper final STT recognition failed: %s", e)
+
+                    if not final_text and last_interim_text:
+                        final_text = last_interim_text
+
                     if final_text:
                         logger.info(
                             "Silero VAD END_OF_SPEECH, emitting FINAL_TRANSCRIPT: %s",
@@ -216,6 +312,7 @@ class WhisperSpeechStream(stt.SpeechStream):
                                 ],
                             )
                         )
+
                     self._event_ch.send_nowait(
                         stt.SpeechEvent(
                             type=stt.SpeechEventType.END_OF_SPEECH,
@@ -227,155 +324,23 @@ class WhisperSpeechStream(stt.SpeechStream):
                             ],
                         )
                     )
+                    last_interim_text = ""
 
-    async def _send_loop(
-        self,
-        ws: aiohttp.ClientWebSocketResponse,
-        vad_stream: vad.VADStream | None = None,
-    ) -> None:
-        # Buffer raw PCM audio data into 100ms chunks to send over WebSocket
-        # 16000Hz * 1 channel * 2 bytes/sample (16-bit) = 32000 bytes/sec
-        # 100ms chunk = 3200 bytes
-        audio_bstream = utils.audio.AudioByteStream(
-            sample_rate=16000,
-            num_channels=1,
-            samples_per_channel=1600,
+        forward_task = asyncio.create_task(_forward_input(), name="whisper_forward")
+        vad_task = asyncio.create_task(_vad_consumer(), name="whisper_vad")
+        interim_task = asyncio.create_task(
+            _periodic_interim_loop(), name="whisper_interim"
         )
 
         try:
-            async for data in self._input_ch:
-                if isinstance(data, rtc.AudioFrame):
-                    if vad_stream:
-                        vad_stream.push_frame(data)
-                    pcm_bytes = data.data.tobytes()
-                    for chunk in audio_bstream.write(pcm_bytes):
-                        await ws.send_bytes(chunk.data.tobytes())
-                elif isinstance(data, self._FlushSentinel):
-                    for chunk in audio_bstream.flush():
-                        await ws.send_bytes(chunk.data.tobytes())
-        except Exception as e:
-            logger.debug(f"Whisper send loop exception: {e}")
+            # Run forward input and VAD consumer concurrently until input stream closes
+            await asyncio.gather(forward_task, vad_task)
         finally:
-            try:
-                for chunk in audio_bstream.flush():
-                    await ws.send_bytes(chunk.data.tobytes())
-            except Exception:
-                pass
-
-    async def _recv_loop(self, ws: aiohttp.ClientWebSocketResponse) -> None:
-        silence_task: asyncio.Task[None] | None = None
-
-        async def _silence_timer() -> None:
-            await asyncio.sleep(1.2)
-            if self._speaking:
-                self._speaking = False
-                final_text = self._last_text.strip()
-                if final_text:
-                    logger.info(
-                        "Silence detected, emitting FINAL_TRANSCRIPT: %s", final_text
-                    )
-                    self._event_ch.send_nowait(
-                        stt.SpeechEvent(
-                            type=stt.SpeechEventType.FINAL_TRANSCRIPT,
-                            alternatives=[
-                                stt.SpeechData(
-                                    language=LanguageCode(self._language or "en"),
-                                    text=final_text,
-                                )
-                            ],
-                        )
-                    )
-                self._event_ch.send_nowait(
-                    stt.SpeechEvent(
-                        type=stt.SpeechEventType.END_OF_SPEECH,
-                        alternatives=[
-                            stt.SpeechData(
-                                language=LanguageCode(self._language or "en"),
-                                text="",
-                            )
-                        ],
-                    )
-                )
-
-        try:
-            async for msg in ws:
-                if msg.type == aiohttp.WSMsgType.TEXT:
-                    try:
-                        data = json.loads(msg.data)
-                        text = data.get("text", "").strip()
-                        if not text:
-                            continue
-
-                        self._last_text = text
-
-                        # Cancel previous silence timer if active
-                        if silence_task and not silence_task.done():
-                            silence_task.cancel()
-
-                        # Emit START_OF_SPEECH if not already speaking
-                        if not self._speaking:
-                            self._speaking = True
-                            self._event_ch.send_nowait(
-                                stt.SpeechEvent(
-                                    type=stt.SpeechEventType.START_OF_SPEECH,
-                                    alternatives=[
-                                        stt.SpeechData(
-                                            language=LanguageCode(
-                                                self._language or "en"
-                                            ),
-                                            text="",
-                                        )
-                                    ],
-                                )
-                            )
-
-                        # Emit intermediate transcript while user is actively speaking
-                        self._event_ch.send_nowait(
-                            stt.SpeechEvent(
-                                type=stt.SpeechEventType.INTERIM_TRANSCRIPT,
-                                alternatives=[
-                                    stt.SpeechData(
-                                        language=LanguageCode(self._language or "en"),
-                                        text=text,
-                                    )
-                                ],
-                            )
-                        )
-
-                        # Start 1.2s silence timer fallback if VAD is not active
-                        if not self._vad:
-                            silence_task = asyncio.create_task(_silence_timer())
-                    except Exception as e:
-                        logger.error(f"Error parsing Whisper stream message: {e}")
-                elif msg.type == aiohttp.WSMsgType.CLOSED:
-                    break
-        finally:
-            if silence_task and not silence_task.done():
-                silence_task.cancel()
-
-            if self._speaking:
-                self._speaking = False
-                final_text = self._last_text.strip()
-                if final_text:
-                    self._event_ch.send_nowait(
-                        stt.SpeechEvent(
-                            type=stt.SpeechEventType.FINAL_TRANSCRIPT,
-                            alternatives=[
-                                stt.SpeechData(
-                                    language=LanguageCode(self._language or "en"),
-                                    text=final_text,
-                                )
-                            ],
-                        )
-                    )
-                self._event_ch.send_nowait(
-                    stt.SpeechEvent(
-                        type=stt.SpeechEventType.END_OF_SPEECH,
-                        alternatives=[
-                            stt.SpeechData(
-                                language=LanguageCode(self._language or "en"),
-                                text="",
-                            )
-                        ],
-                    )
-                )
+            interim_task.cancel()
+            forward_task.cancel()
+            vad_task.cancel()
+            await asyncio.gather(
+                forward_task, vad_task, interim_task, return_exceptions=True
+            )
+            await vad_stream.aclose()
+            await http_session.close()

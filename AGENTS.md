@@ -64,7 +64,7 @@ mcintalmo.github.io/
 - **Server**: LiveKit server runs on `ws://localhost:7880` (or `wss://livekit.alexandermcintosh.com` in prod).
 - **Agent Lifecycle** (`backend/agent/src/agent/`):
   - Connects to room as `portfolio-agent`.
-  - Configurable STT (`WhisperSTT` streaming via WebSockets or batch `StreamAdapter`).
+  - Configurable STT (default: progressive streaming `WhisperSTT` with Silero VAD + self-hosted Whisper `Systran/faster-whisper-tiny.en` for live interim transcription and automatic turn detection).
   - LLM calls route through LiteLLM router on `http://localhost:4000/v1` (with fallbacks: GitHub Models, OpenRouter, NVIDIA, local Ollama).
   - TTS: Cartesia or local self-hosted Kokoro (`http://localhost:8880/v1`).
 - **Tool Calling**:

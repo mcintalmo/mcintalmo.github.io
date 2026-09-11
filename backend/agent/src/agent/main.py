@@ -85,7 +85,7 @@ def prewarm(proc: JobProcess) -> None:
     proc.userdata["vad"] = silero.VAD.load()
 
 
-server = AgentServer(setup_fnc=prewarm)
+server = AgentServer(setup_fnc=prewarm, num_idle_processes=3)
 app = server
 
 
@@ -116,7 +116,6 @@ async def portfolio_agent(ctx: JobContext) -> None:
         logger.info("Using self-hosted TTS (model=%s)", settings.tts.model)
 
     turn_handling = TurnHandlingOptions(
-        turn_detection=None,
         preemptive_generation={
             "enabled": True,
             "preemptive_tts": True,
