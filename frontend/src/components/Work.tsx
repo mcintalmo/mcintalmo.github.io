@@ -432,6 +432,8 @@ function ExperienceCard({
                       <img
                         src={logoUrl}
                         alt={`${exp.name || "Company"} logo`}
+                        loading="lazy"
+                        decoding="async"
                         className="max-w-full max-h-full object-contain"
                       />
                     </div>

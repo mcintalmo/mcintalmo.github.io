@@ -693,7 +693,7 @@ export function CustomChatWidget({
           </div>
 
           <div className="flex-1 flex flex-col min-h-0">
-            <div className="flex-grow overflow-y-auto p-4">
+            <div className="flex-grow overflow-y-auto overscroll-y-contain p-4">
               <div className="flex flex-col justify-end min-h-full space-y-4">
                 {unifiedMessages.length === 0 && (
                   <div className="flex flex-col items-center justify-center text-center p-4 space-y-6 my-auto">
