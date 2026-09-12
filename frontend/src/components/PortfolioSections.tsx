@@ -82,8 +82,8 @@ export default function PortfolioSections({ resume, config }: Props) {
           ))}
       </main>
       <SimpleAnimatedSection delay={0.1}>
-        <footer className="glass-panel text-foreground py-12 border-t border-border">
-          <div className="container mx-auto px-6 text-center">
+        <footer className="glass-panel text-foreground py-12 pb-safe border-t border-border">
+          <div className="container mx-auto px-4 sm:px-6 text-center">
             <p className="mb-4">
               © {year} {basicsName || ""}. All rights reserved.
             </p>

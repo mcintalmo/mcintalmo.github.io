@@ -242,7 +242,7 @@ export function InteractivePortfolio({ resume, config }: Props) {
           basics={resume.basics}
           recommendedQuestions={config.agent?.["recommended-questions"]}
         />
-        <div className="min-h-[3000px]">
+        <div className="relative">
           <PortfolioSections resume={resume} config={config} />
         </div>
       </div>

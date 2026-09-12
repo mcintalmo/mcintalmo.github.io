@@ -47,22 +47,22 @@ export const HeroPrompt = ({ recommendedQuestions }: HeroPromptProps) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-xl mx-auto z-10 mt-8">
-      <div className="flex flex-row items-center gap-3 w-full">
+    <div className="flex flex-col items-center justify-center w-full max-w-xl mx-auto z-10 mt-6 sm:mt-8">
+      <div className="flex flex-row items-center gap-2 sm:gap-3 w-full">
         {/* Chat input form */}
         <form
           onSubmit={handleSendText}
-          className="relative flex-1 flex items-center gap-2 group"
+          className="relative flex-1 flex items-center gap-1.5 sm:gap-2 group"
         >
           <div className="absolute -inset-1 bg-gradient-to-r from-accent-indigo to-accent-cyan rounded-xl blur opacity-30 group-hover:opacity-50 transition duration-1000" />
-          <div className="relative flex-grow flex items-center">
+          <div className="relative flex-grow flex items-center min-w-0">
             <input
               id="hero-ai-prompt"
               name="prompt"
               ref={inputRef}
               type="text"
               placeholder="Ask Alex's AI Agent..."
-              className="w-full pr-10 rounded-xl border border-input bg-background/80 backdrop-blur-md px-4 py-3 text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 shadow-md outline-none"
+              className="w-full pr-10 rounded-xl border border-input bg-background/80 backdrop-blur-md px-3.5 sm:px-4 py-2.5 sm:py-3 text-base sm:text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 shadow-md outline-none"
               onInput={(ev) => ev.stopPropagation()}
               onKeyDown={(ev) => ev.stopPropagation()}
               onKeyUp={(ev) => ev.stopPropagation()}
@@ -70,19 +70,22 @@ export const HeroPrompt = ({ recommendedQuestions }: HeroPromptProps) => {
             <button
               type="button"
               onClick={toggleDictation}
-              className={`absolute right-2.5 p-1.5 rounded-full hover:bg-muted transition-colors ${
+              className={`absolute right-2 sm:right-2.5 p-1.5 rounded-full hover:bg-muted transition-colors ${
                 isDictating
                   ? "text-red-500 animate-pulse bg-red-500/10"
                   : "text-muted-foreground hover:text-foreground"
               }`}
               title={isDictating ? "Stop Dictation" : "Dictate text"}
+              aria-label={
+                isDictating ? "Stop voice dictation" : "Start voice dictation"
+              }
             >
               <Mic className="h-4 w-4" />
             </button>
           </div>
           <button
             type="submit"
-            className="relative bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-3 rounded-xl text-sm font-medium transition-colors shadow-md active:scale-95 cursor-pointer shrink-0"
+            className="relative bg-primary hover:bg-primary/90 text-primary-foreground px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-xl text-sm font-medium transition-colors shadow-md active:scale-95 cursor-pointer shrink-0"
           >
             Send
           </button>
@@ -96,7 +99,7 @@ export const HeroPrompt = ({ recommendedQuestions }: HeroPromptProps) => {
             onClick={handleStartVoiceChat}
             title="Start Live Voice Chat with AI Agent"
             aria-label="Start Live Voice Chat"
-            className="relative w-12 h-12 flex items-center justify-center bg-background border border-border rounded-full shadow-lg hover:bg-secondary/20 transition-colors cursor-pointer text-accent-cyan hover:text-accent-indigo"
+            className="relative w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center bg-background border border-border rounded-full shadow-lg hover:bg-secondary/20 transition-colors cursor-pointer text-accent-cyan hover:text-accent-indigo"
           >
             <AudioLines className="h-5 w-5" />
           </button>
@@ -104,13 +107,13 @@ export const HeroPrompt = ({ recommendedQuestions }: HeroPromptProps) => {
       </div>
 
       {recommendedQuestions && recommendedQuestions.length > 0 && (
-        <div className="flex flex-wrap items-center justify-center gap-2 mt-4 max-w-lg">
+        <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-4 max-w-lg">
           {recommendedQuestions.map((q) => (
             <button
               key={q.prompt}
               type="button"
               onClick={() => handleSuggestionClick(q.prompt)}
-              className="px-3.5 py-1.5 text-xs rounded-full border border-border/40 bg-background/50 hover:bg-accent-indigo/5 hover:border-accent-indigo/20 transition-all duration-200 text-muted-foreground hover:text-foreground cursor-pointer shadow-xs active:scale-95 font-sans font-medium"
+              className="px-3 py-1.5 sm:px-3.5 text-xs rounded-full border border-border/40 bg-background/50 hover:bg-accent-indigo/5 hover:border-accent-indigo/20 transition-all duration-200 text-muted-foreground hover:text-foreground cursor-pointer shadow-xs active:scale-95 font-sans font-medium"
             >
               {q.title}
             </button>

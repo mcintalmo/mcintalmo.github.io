@@ -54,13 +54,13 @@ export function Contact({
 
   return (
     <section id="contact" className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16 glass-panel rounded-xl py-8 px-6"
+          className="text-center mb-16 glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6"
         >
           <h2 className="mb-4">{config.sections?.contact?.title || "Contact"}</h2>
           {config.sections?.contact?.description && (
@@ -324,7 +324,7 @@ export function Contact({
                     viewport={{ once: true }}
                   >
                     <Button
-                      className="w-full"
+                      className="w-full h-11 sm:h-10 text-base sm:text-sm"
                       type="submit"
                       disabled={!targetEmail || !form.email || !form.message}
                     >

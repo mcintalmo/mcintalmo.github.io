@@ -25,13 +25,13 @@ export function Projects({
   const hasHidden = projects.length > limit;
   return (
     <section id="projects" className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16 group glass-panel rounded-xl py-8 px-6"
+          className="text-center mb-16 group glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6"
         >
           <h2 className="mb-4 inline-flex items-center gap-2">
             {config.sections?.projects?.title || "Projects"}

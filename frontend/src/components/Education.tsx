@@ -11,7 +11,6 @@ import { useState } from "react";
 import { formatRange, parseDate } from "../lib/mappers";
 import { mdToInlineHtml } from "../lib/markdown";
 import type { ResumeCertificate, ResumeEducation, SiteConfigRoot } from "../lib/types";
-import { useTouchGestures } from "./hooks/useTouchGestures";
 import { SectionAnchor } from "./SectionAnchor";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -33,8 +32,6 @@ function EducationItem({
   loading: Record<number, boolean>;
   config: SiteConfigRoot;
 }) {
-  // Hook must be at top level of component, not inside parent map callback
-  const { touchHandlers } = useTouchGestures({ threshold: 30 });
   const d = edu._dates;
   const futureEnd = edu._futureEnd;
   let period = "";
@@ -51,10 +48,7 @@ function EducationItem({
       viewport={{ once: true }}
       className="group"
     >
-      <Card
-        className="h-full hover:shadow-lg transition-all duration-300 group-hover:border-primary/20 touch-manipulation"
-        {...touchHandlers}
-      >
+      <Card className="h-full hover:shadow-lg transition-all duration-300 group-hover:border-primary/20">
         <CardHeader>
           <div className="flex items-start gap-3">
             <GraduationCap className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
@@ -153,13 +147,13 @@ export function Education({
 
   return (
     <section id="education" className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16 group glass-panel rounded-xl py-8 px-6"
+          className="text-center mb-16 group glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6"
         >
           <h2 className="mb-4 inline-flex items-center gap-2">
             {config.sections?.education?.title || "Education"}

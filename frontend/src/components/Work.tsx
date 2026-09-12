@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { formatRange, parseDate } from "../lib/mappers";
 import { mdToInlineHtml } from "../lib/markdown";
 import type { DateRange, ResumeWork, SiteConfigRoot } from "../lib/types";
-import { useTouchGestures } from "./hooks/useTouchGestures";
 import { Markdown } from "./Markdown";
 import { SectionAnchor } from "./SectionAnchor";
 import { Badge } from "./ui/badge";
@@ -145,14 +144,14 @@ export function Work({ work, config }: Props) {
 
   return (
     <section id="experience" className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         {/* Banner layout for Header + Download Resume Button */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="flex flex-col md:flex-row md:items-center md:justify-between mb-12 glass-panel rounded-xl py-6 px-8 gap-4 text-left"
+          className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 sm:mb-12 glass-panel rounded-xl py-5 px-5 sm:py-6 sm:px-8 gap-4 text-left"
         >
           <div>
             <h2 className="mb-2 inline-flex items-center gap-2">
@@ -187,7 +186,7 @@ export function Work({ work, config }: Props) {
           {/* Cards + timeline wrapper so line does NOT include the toggle button height */}
           <div className="relative">
             {/* Left timeline line */}
-            <div className="absolute left-6 md:left-8 w-0.5 bg-border h-full" />
+            <div className="absolute left-4 sm:left-6 md:left-8 w-0.5 bg-border h-full" />
 
             {/* Always visible cards */}
             {annotatedExperiences
@@ -215,13 +214,13 @@ export function Work({ work, config }: Props) {
                       duration: 0.8,
                       ease: [0.25, 0.46, 0.45, 0.94],
                     }}
-                    className="relative py-3 will-change-transform mb-8 last:mb-0 group pointer-events-none pl-16 md:pl-24"
+                    className="relative py-3 will-change-transform mb-8 last:mb-0 group pointer-events-none pl-9 sm:pl-16 md:pl-24"
                   >
                     {/* Connector Line (Dashed) */}
-                    <div className="absolute top-[2.5625rem] h-0.5 border-t-2 border-dashed border-primary/20 group-hover:border-primary/50 transition-colors duration-300 left-6 w-10 md:left-8 md:w-16" />
+                    <div className="absolute top-[2.5625rem] h-0.5 border-t-2 border-dashed border-primary/20 group-hover:border-primary/50 transition-colors duration-300 left-4 w-5 sm:left-6 sm:w-10 md:left-8 md:w-16" />
 
                     {/* Timeline dot */}
-                    <div className="absolute left-6 md:left-8 w-5 h-5 bg-primary border-4 border-background rounded-full z-10 shadow-[0_0_10px_var(--color-primary)] transform -translate-x-1/2 top-8 group-hover:scale-125 group-hover:shadow-[0_0_18px_var(--color-primary)] transition-all duration-300 pointer-events-auto" />
+                    <div className="absolute left-4 sm:left-6 md:left-8 w-4 h-4 sm:w-5 sm:h-5 bg-primary border-4 border-background rounded-full z-10 shadow-[0_0_10px_var(--color-primary)] transform -translate-x-1/2 top-8 group-hover:scale-125 group-hover:shadow-[0_0_18px_var(--color-primary)] transition-all duration-300 pointer-events-auto" />
 
                     <ExperienceCard
                       exp={exp}
@@ -264,7 +263,7 @@ export function Work({ work, config }: Props) {
                       return (
                         <div
                           key={key}
-                          className="relative py-3 will-change-transform mb-8 last:mb-0 group pointer-events-none pl-16 md:pl-24"
+                          className="relative py-3 will-change-transform mb-8 last:mb-0 group pointer-events-none pl-9 sm:pl-16 md:pl-24"
                         >
                           {/* Connector Line (Dashed) */}
                           <motion.div
@@ -276,7 +275,7 @@ export function Work({ work, config }: Props) {
                               delay: localIndex * 0.35 + 0.15,
                             }}
                             style={{ originX: 0 }}
-                            className="absolute top-[2.5625rem] h-0.5 border-t-2 border-dashed border-primary/20 group-hover:border-primary/50 transition-colors duration-300 left-6 w-10 md:left-8 md:w-16"
+                            className="absolute top-[2.5625rem] h-0.5 border-t-2 border-dashed border-primary/20 group-hover:border-primary/50 transition-colors duration-300 left-4 w-5 sm:left-6 sm:w-10 md:left-8 md:w-16"
                           />
 
                           {/* Timeline dot */}
@@ -289,7 +288,7 @@ export function Work({ work, config }: Props) {
                               damping: 15,
                               delay: localIndex * 0.35,
                             }}
-                            className="absolute left-6 md:left-8 w-5 h-5 bg-primary border-4 border-background rounded-full z-10 shadow-[0_0_10px_var(--color-primary)] transform -translate-x-1/2 top-8 group-hover:scale-125 group-hover:shadow-[0_0_18px_var(--color-primary)] transition-all duration-300 pointer-events-auto"
+                            className="absolute left-4 sm:left-6 md:left-8 w-4 h-4 sm:w-5 sm:h-5 bg-primary border-4 border-background rounded-full z-10 shadow-[0_0_10px_var(--color-primary)] transform -translate-x-1/2 top-8 group-hover:scale-125 group-hover:shadow-[0_0_18px_var(--color-primary)] transition-all duration-300 pointer-events-auto"
                           />
 
                           <motion.div
@@ -381,11 +380,6 @@ function ExperienceCard({
   period,
 }: ExperienceCardCommon) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const { touchHandlers } = useTouchGestures({
-    onSwipeUp: () => !expanded && hasDetails && toggleExpanded(index),
-    onSwipeDown: () => expanded && hasDetails && toggleExpanded(index),
-    threshold: 30,
-  });
 
   useEffect(() => {
     if (expanded && cardRef.current) {
@@ -413,7 +407,7 @@ function ExperienceCard({
         >
           <Card
             className={
-              "hover:shadow-lg transition-all duration-300 group-hover:border-primary/20 touch-manipulation " +
+              "hover:shadow-lg transition-all duration-300 group-hover:border-primary/20 " +
               (hasDetails ? "cursor-pointer" : "cursor-default")
             }
             onClick={() => hasDetails && toggleExpanded(index)}
@@ -429,7 +423,6 @@ function ExperienceCard({
                 toggleExpanded(index);
               }
             }}
-            {...touchHandlers}
           >
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">

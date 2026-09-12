@@ -207,9 +207,24 @@
     }
 
     input {
-      font-size: var(--text-base);
+      font-size: 16px;
       font-weight: var(--font-weight-normal);
       line-height: 1.5;
+    }
+
+    textarea {
+      font-size: 16px;
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+  }
+
+  @media (min-width: 640px) {
+    :where(:not(:has([class*=" text-"]), :not(:has([class^="text-"])))) {
+      input,
+      textarea {
+        font-size: var(--text-base);
+      }
     }
   }
 }
@@ -219,6 +234,20 @@ html {
 }
 
 @layer utilities {
+  /* Safe-area utilities for notched mobile viewports (iOS status bar & home indicator) */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .pl-safe {
+    padding-left: env(safe-area-inset-left, 0px);
+  }
+  .pr-safe {
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
   .break-inside-avoid {
     break-inside: avoid;
     page-break-inside: avoid;
@@ -305,9 +334,15 @@ html {
 
   /* ── Chat Layout & Push Transitions ── */
 
-  /* Lock scroll ONLY when chat is expanded to full screen */
+  /* Lock scroll when chat is expanded or when open on mobile devices */
   body.chat-expanded {
     overflow: hidden !important;
+  }
+
+  @media (max-width: 767px) {
+    body.chat-open {
+      overflow: hidden !important;
+    }
   }
 
   /* Transition for the main content wrapper */

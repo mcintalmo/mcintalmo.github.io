@@ -14,7 +14,7 @@ const { config, resume } = loadAll();
 <Layout config={config} resume={resume}>
   <ThemeProvider client:only="react" defaultTheme="light" storageKey="portfolio-theme">
     <Navigation client:only="react" config={config} basics={resume.basics} />
-    <div class="relative z-10 flex flex-col md:flex-row min-h-screen">
+    <div class="relative flex flex-col md:flex-row min-h-screen">
       <InteractivePortfolio client:only="react" resume={resume} config={config} />
       <BackToTop client:only="react" />
     </div>
