@@ -1,29 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { AudioLines, Mic } from "lucide-react";
 import * as React from "react";
+import { useDictation } from "../hooks/useDictation";
 import type { SuggestedQuestion } from "../lib/types";
-
-interface SpeechRecognitionInstance {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  onstart: () => void;
-  onend: () => void;
-  onerror: (e: unknown) => void;
-  onresult: (event: {
-    resultIndex: number;
-    results: {
-      length: number;
-      [index: number]: {
-        isFinal: boolean;
-        length: number;
-        [index: number]: { transcript: string };
-      };
-    };
-  }) => void;
-  start: () => void;
-  stop: () => void;
-}
 
 interface HeroPromptProps {
   recommendedQuestions?: SuggestedQuestion[];
@@ -31,91 +10,11 @@ interface HeroPromptProps {
 
 export const HeroPrompt = ({ recommendedQuestions }: HeroPromptProps) => {
   const [submitted, setSubmitted] = React.useState(false);
-  const [isDictating, setIsDictating] = React.useState(false);
-  const recognitionRef = React.useRef<SpeechRecognitionInstance | null>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
-
-  React.useEffect(() => {
-    if (typeof window !== "undefined") {
-      const SpeechRecognition = ((window as unknown as Record<string, unknown>)
-        .SpeechRecognition ||
-        (window as unknown as Record<string, unknown>).webkitSpeechRecognition) as
-        | (new () => SpeechRecognitionInstance)
-        | undefined;
-      if (SpeechRecognition) {
-        const rec = new SpeechRecognition();
-        rec.continuous = true;
-        rec.interimResults = true;
-        rec.lang = "en-US";
-
-        rec.onstart = () => {
-          setIsDictating(true);
-        };
-
-        rec.onend = () => {
-          setIsDictating(false);
-        };
-
-        rec.onerror = (e) => {
-          console.error("Speech recognition error", e);
-          setIsDictating(false);
-        };
-
-        rec.onresult = (event) => {
-          let interimTranscript = "";
-          let finalTranscript = "";
-
-          for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-              finalTranscript += event.results[i][0].transcript;
-            } else {
-              interimTranscript += event.results[i][0].transcript;
-            }
-          }
-
-          if (inputRef.current) {
-            const baseText = inputRef.current.getAttribute("data-base-text") || "";
-            inputRef.current.value = baseText + finalTranscript + interimTranscript;
-          }
-        };
-
-        recognitionRef.current = rec;
-      }
-    }
-  }, []);
-
-  React.useEffect(() => {
-    return () => {
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.stop();
-        } catch {
-          // Ignore errors on cleanup
-        }
-      }
-    };
-  }, []);
-
-  const toggleDictation = React.useCallback(() => {
-    if (!recognitionRef.current) {
-      alert("Speech recognition is not supported in this browser.");
-      return;
-    }
-
-    if (isDictating) {
-      recognitionRef.current.stop();
-    } else {
-      if (inputRef.current) {
-        inputRef.current.setAttribute("data-base-text", inputRef.current.value);
-      }
-      recognitionRef.current.start();
-    }
-  }, [isDictating]);
+  const { isDictating, toggleDictation, stopDictation } = useDictation({ inputRef });
 
   const handleStartVoiceChat = () => {
-    if (recognitionRef.current && isDictating) {
-      recognitionRef.current.stop();
-    }
+    stopDictation();
     setSubmitted(true);
     // Dispatch custom event so the sidebar can pick it up
     window.dispatchEvent(
@@ -126,9 +25,7 @@ export const HeroPrompt = ({ recommendedQuestions }: HeroPromptProps) => {
 
   const handleSendText = (e: React.FormEvent) => {
     e.preventDefault();
-    if (recognitionRef.current && isDictating) {
-      recognitionRef.current.stop();
-    }
+    stopDictation();
     const inputEl = inputRef.current;
     if (inputEl?.value.trim()) {
       const text = inputEl.value.trim();

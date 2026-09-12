@@ -70,7 +70,7 @@ export const ChatAgent = ({ config }: { config?: SiteConfigRoot }) => {
       serverUrl={tokenInfo.ws_url}
       token={tokenInfo.token}
       connect={true}
-      audio={true}
+      audio={false}
       video={false}
       style={{ display: "contents" }}
     >

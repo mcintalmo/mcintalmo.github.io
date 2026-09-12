@@ -21,6 +21,7 @@ import {
 import * as React from "react";
 import { toast } from "sonner";
 import { useInputControls } from "../hooks/agents-ui/use-agent-control-bar";
+import { useDictation } from "../hooks/useDictation";
 import { mdToHtml } from "../lib/markdown";
 import { AgentAudioVisualizerWave } from "./agents-ui/agent-audio-visualizer-wave";
 import { AgentTrackControl } from "./agents-ui/agent-track-control";
@@ -39,28 +40,6 @@ import type { SuggestedQuestion } from "../lib/types";
 interface CustomChatWidgetProps {
   onStartInteraction?: () => void;
   recommendedQuestions?: SuggestedQuestion[];
-}
-
-interface SpeechRecognitionInstance {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  onstart: () => void;
-  onend: () => void;
-  onerror: (e: unknown) => void;
-  onresult: (event: {
-    resultIndex: number;
-    results: {
-      length: number;
-      [index: number]: {
-        isFinal: boolean;
-        length: number;
-        [index: number]: { transcript: string };
-      };
-    };
-  }) => void;
-  start: () => void;
-  stop: () => void;
 }
 
 interface VoicePanelInnerProps {
@@ -339,93 +318,15 @@ export function CustomChatWidget({
     }
   }, [roomState]);
   const textInputRef = React.useRef<HTMLInputElement>(null);
-
-  // Dictation state and SpeechRecognition initialization
-  const [isDictating, setIsDictating] = React.useState(false);
-  const recognitionRef = React.useRef<SpeechRecognitionInstance | null>(null);
-
-  React.useEffect(() => {
-    if (typeof window !== "undefined") {
-      const SpeechRecognition = ((window as unknown as Record<string, unknown>)
-        .SpeechRecognition ||
-        (window as unknown as Record<string, unknown>).webkitSpeechRecognition) as
-        | (new () => SpeechRecognitionInstance)
-        | undefined;
-      if (SpeechRecognition) {
-        const rec = new SpeechRecognition();
-        rec.continuous = true;
-        rec.interimResults = true;
-        rec.lang = "en-US";
-
-        rec.onstart = () => {
-          setIsDictating(true);
-        };
-
-        rec.onend = () => {
-          setIsDictating(false);
-        };
-
-        rec.onerror = (e) => {
-          console.error("Speech recognition error", e);
-          setIsDictating(false);
-        };
-
-        rec.onresult = (event) => {
-          let interimTranscript = "";
-          let finalTranscript = "";
-
-          for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-              finalTranscript += event.results[i][0].transcript;
-            } else {
-              interimTranscript += event.results[i][0].transcript;
-            }
-          }
-
-          if (textInputRef.current) {
-            const baseText = textInputRef.current.getAttribute("data-base-text") || "";
-            textInputRef.current.value = baseText + finalTranscript + interimTranscript;
-          }
-        };
-
-        recognitionRef.current = rec;
-      }
-    }
-  }, []);
+  const { isDictating, toggleDictation, stopDictation } = useDictation({
+    inputRef: textInputRef,
+  });
 
   React.useEffect(() => {
-    return () => {
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.stop();
-        } catch {
-          // Ignore errors on cleanup
-        }
-      }
-    };
-  }, []);
-
-  React.useEffect(() => {
-    if (!isOpen && recognitionRef.current && isDictating) {
-      recognitionRef.current.stop();
+    if (!isOpen && isDictating) {
+      stopDictation();
     }
-  }, [isOpen, isDictating]);
-
-  const toggleDictation = React.useCallback(() => {
-    if (!recognitionRef.current) {
-      alert("Speech recognition is not supported in this browser.");
-      return;
-    }
-
-    if (isDictating) {
-      recognitionRef.current.stop();
-    } else {
-      if (textInputRef.current) {
-        textInputRef.current.setAttribute("data-base-text", textInputRef.current.value);
-      }
-      recognitionRef.current.start();
-    }
-  }, [isDictating]);
+  }, [isOpen, isDictating, stopDictation]);
 
   const isConnecting =
     roomState === "connecting" || (roomState === "connected" && !isAgentOnline);
@@ -450,27 +351,7 @@ export function CustomChatWidget({
 
   const enableVoiceMode = React.useCallback(async () => {
     try {
-      if (recognitionRef.current && isDictating) {
-        recognitionRef.current.stop();
-      }
-
-      // Proactive Microphone Permission Check
-      if (typeof navigator !== "undefined" && navigator.mediaDevices) {
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          for (const track of stream.getTracks()) {
-            track.stop(); // release immediately
-          }
-        } catch (err) {
-          console.warn("Microphone permission denied:", err);
-          toast.error("Microphone Access Blocked", {
-            description:
-              "Microphone access is required for voice mode. Please click the lock/settings icon in the browser address bar, allow microphone access, and try again.",
-          });
-          setChatMode("text");
-          return;
-        }
-      }
+      stopDictation();
 
       if (room.localParticipant) {
         await room.localParticipant.setMicrophoneEnabled(true);
@@ -480,11 +361,11 @@ export function CustomChatWidget({
       console.error("Failed to enable voice mode:", e);
       toast.error("Microphone Access Blocked", {
         description:
-          "Please click the lock/settings icon in the browser address bar, set 'Microphone' to 'Allow', and reload.",
+          "Microphone access is required for voice mode. Please click the lock/settings icon in the browser address bar, allow microphone access, and try again.",
       });
       setChatMode("text");
     }
-  }, [room, isDictating]);
+  }, [room, stopDictation]);
 
   const enableTextMode = React.useCallback(async () => {
     try {
@@ -670,21 +551,17 @@ export function CustomChatWidget({
   const handleSuggestedQuestionClick = React.useCallback(
     async (question: string) => {
       if (isSending || isConnecting || !isAgentOnline) return;
-      if (recognitionRef.current && isDictating) {
-        recognitionRef.current.stop();
-      }
+      stopDictation();
       setFollowups([]);
       await send(question);
     },
-    [send, isSending, isConnecting, isAgentOnline, isDictating],
+    [send, isSending, isConnecting, isAgentOnline, stopDictation],
   );
 
   // Handle manual text sending
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (recognitionRef.current && isDictating) {
-      recognitionRef.current.stop();
-    }
+    stopDictation();
     const inputEl = textInputRef.current;
     if (inputEl?.value.trim()) {
       const text = inputEl.value.trim();
