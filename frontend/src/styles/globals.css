@@ -279,17 +279,22 @@ html {
   }
 
   .glass-panel {
-    background: rgba(248, 249, 250, 0.45);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     box-shadow:
-      0 4px 24px 0 rgba(0, 0, 0, 0.08),
-      0 1px 3px rgba(0, 0, 0, 0.06);
+      0 4px 24px 0 rgba(0, 0, 0, 0.06),
+      0 1px 3px rgba(0, 0, 0, 0.04);
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    isolation: isolate;
   }
 
   .dark .glass-panel {
-    background: rgba(11, 15, 25, 0.5);
+    background: rgba(11, 15, 25, 0.82);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow:
       0 4px 24px 0 rgba(0, 0, 0, 0.4),
@@ -350,7 +355,6 @@ html {
     transition:
       transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
       margin 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform, margin-right;
   }
 
   /* Desktop Sidebar Open: Push content by 400px (compressing it) */

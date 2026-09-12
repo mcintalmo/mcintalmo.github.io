@@ -155,22 +155,20 @@ function CategoryCard({ category, index }: { category: SkillCategory; index: num
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 30, rotateX: -15 }}
+      initial={{ opacity: 0, y: 24 }}
       animate={controls}
       variants={{
-        hidden: { opacity: 0, y: 30, rotateX: -15 },
+        hidden: { opacity: 0, y: 24 },
         visible: {
           opacity: 1,
           y: 0,
-          rotateX: 0,
           transition: {
-            duration: 0.8,
-            delay: index * 0.15,
+            duration: 0.6,
+            delay: index * 0.1,
             ease: [0.25, 0.46, 0.45, 0.94],
           },
         },
       }}
-      style={{ perspective: "1000px" }}
     >
       {/* Remove h-full so cards shrink to content; grid will no longer stretch items */}
       <Card>
@@ -235,10 +233,10 @@ export function Skills({
       <div className="container mx-auto px-4 sm:px-6">
         {/* Heading */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true, margin: "100px 0px" }}
           className="text-center mb-12 group glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6"
         >
           <h2 className="mb-4 inline-flex items-center gap-2">

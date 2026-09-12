@@ -27,10 +27,10 @@ export function Projects({
     <section id="projects" className="py-20">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true, margin: "100px 0px" }}
           className="text-center mb-16 group glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6"
         >
           <h2 className="mb-4 inline-flex items-center gap-2">
@@ -51,18 +51,17 @@ export function Projects({
               <motion.div
                 key={`project-${project.name || ""}`}
                 layout
-                initial={{ opacity: 0, y: 50, rotateY: -15 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{
                   opacity: 1,
                   y: 0,
-                  rotateY: 0,
                   transition: {
-                    duration: 0.8,
-                    delay: index * 0.12,
+                    duration: 0.6,
+                    delay: index * 0.1,
                     ease: [0.25, 0.46, 0.45, 0.94],
                   },
                 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, margin: "100px 0px" }}
                 whileHover={{
                   y: -6,
                   scale: 1.015,
@@ -86,8 +85,7 @@ export function Projects({
                       }
                 }
                 transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
-                style={{ perspective: "1000px" }}
-                className="h-full flex flex-col will-change-transform"
+                className="h-full flex flex-col"
               >
                 <Card className="h-full flex flex-col overflow-hidden group hover:shadow-lg transition-all duration-300">
                   <CardHeader className="flex-1">

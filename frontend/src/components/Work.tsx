@@ -147,10 +147,10 @@ export function Work({ work, config }: Props) {
       <div className="container mx-auto px-4 sm:px-6">
         {/* Banner layout for Header + Download Resume Button */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true, margin: "100px 0px" }}
           className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 sm:mb-12 glass-panel rounded-xl py-5 px-5 sm:py-6 sm:px-8 gap-4 text-left"
         >
           <div>
@@ -207,14 +207,14 @@ export function Work({ work, config }: Props) {
                 return (
                   <motion.div
                     key={key}
-                    initial={{ opacity: 0, y: 30 }}
+                    initial={{ opacity: 0, y: 24 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.25 }}
+                    viewport={{ once: true, margin: "100px 0px" }}
                     transition={{
-                      duration: 0.8,
+                      duration: 0.6,
                       ease: [0.25, 0.46, 0.45, 0.94],
                     }}
-                    className="relative py-3 will-change-transform mb-8 last:mb-0 group pointer-events-none pl-9 sm:pl-16 md:pl-24"
+                    className="relative py-3 mb-8 last:mb-0 group pointer-events-none pl-9 sm:pl-16 md:pl-24"
                   >
                     {/* Connector Line (Dashed) */}
                     <div className="absolute top-[2.5625rem] h-0.5 border-t-2 border-dashed border-primary/20 group-hover:border-primary/50 transition-colors duration-300 left-4 w-5 sm:left-6 sm:w-10 md:left-8 md:w-16" />
@@ -263,7 +263,7 @@ export function Work({ work, config }: Props) {
                       return (
                         <div
                           key={key}
-                          className="relative py-3 will-change-transform mb-8 last:mb-0 group pointer-events-none pl-9 sm:pl-16 md:pl-24"
+                          className="relative py-3 mb-8 last:mb-0 group pointer-events-none pl-9 sm:pl-16 md:pl-24"
                         >
                           {/* Connector Line (Dashed) */}
                           <motion.div

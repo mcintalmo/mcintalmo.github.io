@@ -56,10 +56,10 @@ export function Contact({
     <section id="contact" className="py-20">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true, margin: "100px 0px" }}
           className="text-center mb-16 glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6"
         >
           <h2 className="mb-4">{config.sections?.contact?.title || "Contact"}</h2>
@@ -75,8 +75,8 @@ export function Contact({
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: "100px 0px" }}
             className="space-y-6"
           >
             <Card>
@@ -217,8 +217,8 @@ export function Contact({
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: "100px 0px" }}
           >
             <Card>
               <CardHeader>

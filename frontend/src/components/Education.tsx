@@ -42,10 +42,10 @@ function EducationItem({
   } else if (d?.end) period = futureEnd ? `Expected ${d.end}` : d.end;
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: index * 0.15 }}
-      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      viewport={{ once: true, margin: "100px 0px" }}
       className="group"
     >
       <Card className="h-full hover:shadow-lg transition-all duration-300 group-hover:border-primary/20">
@@ -149,10 +149,10 @@ export function Education({
     <section id="education" className="py-20">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true, margin: "100px 0px" }}
           className="text-center mb-16 group glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6"
         >
           <h2 className="mb-4 inline-flex items-center gap-2">
@@ -180,10 +180,10 @@ export function Education({
 
         {certs.length > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true, margin: "100px 0px" }}
           >
             <Card>
               <CardHeader>

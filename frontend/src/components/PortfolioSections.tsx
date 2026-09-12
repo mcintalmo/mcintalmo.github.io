@@ -1,9 +1,5 @@
 import { Blog } from "../components/Blog";
 import { Education } from "../components/Education";
-import {
-  AnimatedSection,
-  SimpleAnimatedSection,
-} from "../components/hooks/useScrollAnimation";
 import { Projects } from "../components/Projects";
 import { Skills } from "../components/Skills";
 import { Contact } from "./Contact";
@@ -25,45 +21,23 @@ export default function PortfolioSections({ resume, config }: Props) {
   const renderSection = (key: string) => {
     switch (key) {
       case "work":
-        return (
-          <AnimatedSection delay={0.1}>
-            <Work work={resume.work ?? []} config={config} />
-          </AnimatedSection>
-        );
+        return <Work work={resume.work ?? []} config={config} />;
       case "education":
         return (
-          <AnimatedSection delay={0.1}>
-            <Education
-              education={resume.education ?? []}
-              certificates={resume.certificates ?? []}
-              config={config}
-            />
-          </AnimatedSection>
+          <Education
+            education={resume.education ?? []}
+            certificates={resume.certificates ?? []}
+            config={config}
+          />
         );
       case "skills":
-        return (
-          <AnimatedSection delay={0.1}>
-            <Skills skills={resume.skills ?? []} config={config} />
-          </AnimatedSection>
-        );
+        return <Skills skills={resume.skills ?? []} config={config} />;
       case "projects":
-        return (
-          <AnimatedSection delay={0.1}>
-            <Projects projects={resume.projects ?? []} config={config} />
-          </AnimatedSection>
-        );
+        return <Projects projects={resume.projects ?? []} config={config} />;
       case "blog":
-        return (
-          <AnimatedSection delay={0.1}>
-            <Blog />
-          </AnimatedSection>
-        );
+        return <Blog />;
       case "contact":
-        return (
-          <SimpleAnimatedSection delay={0.1}>
-            <Contact basics={resume.basics} config={config} />
-          </SimpleAnimatedSection>
-        );
+        return <Contact basics={resume.basics} config={config} />;
       default:
         return null;
     }
@@ -81,19 +55,17 @@ export default function PortfolioSections({ resume, config }: Props) {
             </div>
           ))}
       </main>
-      <SimpleAnimatedSection delay={0.1}>
-        <footer className="glass-panel text-foreground py-12 pb-safe border-t border-border">
-          <div className="container mx-auto px-4 sm:px-6 text-center">
-            <p className="mb-4">
-              © {year} {basicsName || ""}. All rights reserved.
-            </p>
-            <p className="text-sm opacity-80">
-              Built with React, Tailwind CSS, and Motion. Powered by LiveKit and Nvidia
-              NIM.
-            </p>
-          </div>
-        </footer>
-      </SimpleAnimatedSection>
+      <footer className="glass-panel text-foreground py-12 pb-safe border-t border-border">
+        <div className="container mx-auto px-4 sm:px-6 text-center">
+          <p className="mb-4">
+            © {year} {basicsName || ""}. All rights reserved.
+          </p>
+          <p className="text-sm opacity-80">
+            Built with React, Tailwind CSS, and Motion. Powered by LiveKit and Nvidia
+            NIM.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -151,10 +151,10 @@ export function Navigation({
         animate={{ opacity: 1 }}
         transition={{ duration: 0.9, ease: "easeOut" }}
         style={{ willChange: "opacity", pointerEvents: "auto" }}
-        className={`fixed top-0 left-0 right-0 z-50 duration-300 transition-colors ${
+        className={`fixed top-0 left-0 right-0 z-50 duration-300 transition-all ${
           isScrolled
-            ? "bg-background/95 backdrop-blur-sm border-b border-border shadow-sm"
-            : "bg-transparent"
+            ? "bg-background/90 backdrop-blur-md border-b border-border shadow-sm"
+            : "bg-background/60 backdrop-blur-md border-b border-transparent"
         }`}
       >
         {/* Scroll Progress Bar (kept outside of opacity animation impact) */}
