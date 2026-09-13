@@ -320,7 +320,7 @@ export function Work({ work, config }: Props) {
             <div className="flex justify-center mt-0">
               <Button
                 variant="outline"
-                className="h-11 sm:h-9"
+                className="h-12 sm:h-10 min-h-[48px] sm:min-h-0 text-base sm:text-sm"
                 onClick={() => setShowFullHistory(true)}
               >
                 Show full history ({hiddenCount} more{" "}
@@ -332,7 +332,7 @@ export function Work({ work, config }: Props) {
             <div className="flex justify-center mt-4">
               <Button
                 variant="outline"
-                className="h-11 sm:h-9"
+                className="h-12 sm:h-10 min-h-[48px] sm:min-h-0 text-base sm:text-sm"
                 onClick={() => {
                   // Scroll back to top of section smoothly when collapsing
                   const el = document.getElementById("experience");

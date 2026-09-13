@@ -114,7 +114,7 @@ export function Projects({
                           <Button
                             size="sm"
                             variant="outline"
-                            className="flex-1 h-10 sm:h-8 min-h-[40px] sm:min-h-0"
+                            className="flex-1 h-12 sm:h-9 min-h-[48px] sm:min-h-0"
                             asChild
                           >
                             <a
@@ -132,7 +132,7 @@ export function Projects({
                           <Button
                             size="sm"
                             variant="outline"
-                            className="flex-1 h-10 sm:h-8 min-h-[40px] sm:min-h-0"
+                            className="flex-1 h-12 sm:h-9 min-h-[48px] sm:min-h-0"
                             asChild
                           >
                             <a
@@ -158,7 +158,7 @@ export function Projects({
           <div className="flex justify-center mt-4">
             <Button
               variant="outline"
-              className="h-11 sm:h-9"
+              className="h-12 sm:h-10 min-h-[48px] sm:min-h-0"
               onClick={() => setShowAll(true)}
             >
               Show all projects ({projects.length - limit} more)
@@ -169,7 +169,7 @@ export function Projects({
           <div className="flex justify-center mt-8">
             <Button
               variant="outline"
-              className="h-11 sm:h-9"
+              className="h-12 sm:h-10 min-h-[48px] sm:min-h-0"
               onClick={() => setShowAll(false)}
             >
               Collapse projects

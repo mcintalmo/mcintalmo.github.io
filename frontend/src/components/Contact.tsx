@@ -91,17 +91,22 @@ export function Contact({
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: 0.1 }}
                       viewport={{ once: true }}
-                      className="flex items-center gap-4"
                     >
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <Mail className="w-6 h-6 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Email</p>
-                        <a href={`mailto:${basics.email}`} className="underline">
-                          {basics.email}
-                        </a>
-                      </div>
+                      <a
+                        href={`mailto:${basics.email}`}
+                        className="flex items-center gap-4 group p-2 -m-2 rounded-lg hover:bg-muted/50 transition-colors min-h-[48px]"
+                        aria-label={`Send email to ${basics.email}`}
+                      >
+                        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                          <Mail className="w-6 h-6 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Email</p>
+                          <span className="underline group-hover:text-primary transition-colors break-all">
+                            {basics.email}
+                          </span>
+                        </div>
+                      </a>
                     </motion.div>
                   )}
 
@@ -111,17 +116,22 @@ export function Contact({
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: 0.2 }}
                       viewport={{ once: true }}
-                      className="flex items-center gap-4"
                     >
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <Phone className="w-6 h-6 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Phone</p>
-                        <a href={`tel:${basics.phone}`} className="underline">
-                          {basics.phone}
-                        </a>
-                      </div>
+                      <a
+                        href={`tel:${basics.phone}`}
+                        className="flex items-center gap-4 group p-2 -m-2 rounded-lg hover:bg-muted/50 transition-colors min-h-[48px]"
+                        aria-label={`Call ${basics.phone}`}
+                      >
+                        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                          <Phone className="w-6 h-6 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Phone</p>
+                          <span className="underline group-hover:text-primary transition-colors">
+                            {basics.phone}
+                          </span>
+                        </div>
+                      </a>
                     </motion.div>
                   )}
 
@@ -131,9 +141,9 @@ export function Contact({
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: 0.3 }}
                       viewport={{ once: true }}
-                      className="flex items-center gap-4"
+                      className="flex items-center gap-4 p-2 -m-2 min-h-[48px]"
                     >
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                         <MapPin className="w-6 h-6 text-primary" />
                       </div>
                       <div>
@@ -153,37 +163,37 @@ export function Contact({
                       whileInView={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5, delay: 0.35 }}
                       viewport={{ once: true }}
-                      className="flex items-center gap-4"
                     >
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <Linkedin className="w-6 h-6 text-primary" />
-                      </div>
-                      <div className="flex flex-col">
-                        <p className="text-sm text-muted-foreground">LinkedIn</p>
-                        {(() => {
-                          const profile = basics.profiles?.find((p) =>
-                            /linkedin/i.test(p.network || ""),
-                          );
-                          if (!profile) return null;
-                          const label =
-                            profile.username ||
-                            profile.url?.replace(/^https?:\/\//, "");
-                          return (
-                            <a
-                              href={
-                                profile.url ||
-                                `https://www.linkedin.com/in/${profile.username}`
-                              }
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="underline break-all"
-                              aria-label="LinkedIn profile"
-                            >
-                              {label}
-                            </a>
-                          );
-                        })()}
-                      </div>
+                      {(() => {
+                        const profile = basics.profiles?.find((p) =>
+                          /linkedin/i.test(p.network || ""),
+                        );
+                        if (!profile) return null;
+                        const label =
+                          profile.username || profile.url?.replace(/^https?:\/\//, "");
+                        return (
+                          <a
+                            href={
+                              profile.url ||
+                              `https://www.linkedin.com/in/${profile.username}`
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-4 group p-2 -m-2 rounded-lg hover:bg-muted/50 transition-colors min-h-[48px]"
+                            aria-label="LinkedIn profile"
+                          >
+                            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                              <Linkedin className="w-6 h-6 text-primary" />
+                            </div>
+                            <div className="flex flex-col">
+                              <p className="text-sm text-muted-foreground">LinkedIn</p>
+                              <span className="underline break-all group-hover:text-primary transition-colors">
+                                {label}
+                              </span>
+                            </div>
+                          </a>
+                        );
+                      })()}
                     </motion.div>
                   )}
                 </div>
@@ -239,11 +249,11 @@ export function Contact({
                       placeholder="Your Name"
                       value={form.name}
                       onChange={(e) => update("name", e.target.value)}
-                      className="peer pt-5 pb-1 placeholder:text-transparent"
+                      className="peer pt-5 pb-1 placeholder:text-transparent h-12"
                     />
                     <label
                       htmlFor="contact-name"
-                      className="absolute left-3 top-1 text-[10px] font-medium text-muted-foreground transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-muted-foreground/60 peer-focus:top-1 peer-focus:text-[10px] peer-focus:text-primary pointer-events-none"
+                      className="absolute left-3 top-1 text-[10px] font-medium text-muted-foreground transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-muted-foreground/60 peer-focus:top-1 peer-focus:text-[10px] peer-focus:text-primary pointer-events-none"
                     >
                       Your Name
                     </label>
@@ -263,11 +273,11 @@ export function Contact({
                       value={form.email}
                       onChange={(e) => update("email", e.target.value)}
                       required
-                      className="peer pt-5 pb-1 placeholder:text-transparent"
+                      className="peer pt-5 pb-1 placeholder:text-transparent h-12"
                     />
                     <label
                       htmlFor="contact-email"
-                      className="absolute left-3 top-1 text-[10px] font-medium text-muted-foreground transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-muted-foreground/60 peer-focus:top-1 peer-focus:text-[10px] peer-focus:text-primary pointer-events-none"
+                      className="absolute left-3 top-1 text-[10px] font-medium text-muted-foreground transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-muted-foreground/60 peer-focus:top-1 peer-focus:text-[10px] peer-focus:text-primary pointer-events-none"
                     >
                       Your Email *
                     </label>
@@ -285,11 +295,11 @@ export function Contact({
                       placeholder="Subject"
                       value={form.subject}
                       onChange={(e) => update("subject", e.target.value)}
-                      className="peer pt-5 pb-1 placeholder:text-transparent"
+                      className="peer pt-5 pb-1 placeholder:text-transparent h-12"
                     />
                     <label
                       htmlFor="contact-subject"
-                      className="absolute left-3 top-1 text-[10px] font-medium text-muted-foreground transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-muted-foreground/60 peer-focus:top-1 peer-focus:text-[10px] peer-focus:text-primary pointer-events-none"
+                      className="absolute left-3 top-1 text-[10px] font-medium text-muted-foreground transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-muted-foreground/60 peer-focus:top-1 peer-focus:text-[10px] peer-focus:text-primary pointer-events-none"
                     >
                       Subject
                     </label>
@@ -324,7 +334,7 @@ export function Contact({
                     viewport={{ once: true }}
                   >
                     <Button
-                      className="w-full h-11 sm:h-10 text-base sm:text-sm"
+                      className="w-full h-12 sm:h-10 min-h-[48px] sm:min-h-0 text-base sm:text-sm"
                       type="submit"
                       disabled={!targetEmail || !form.email || !form.message}
                     >

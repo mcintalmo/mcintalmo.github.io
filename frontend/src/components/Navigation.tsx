@@ -253,7 +253,7 @@ export function Navigation({
               </div>
 
               {/* Theme Toggle — capsule slider styled like the chat mode toggle */}
-              <div className="relative flex bg-muted/60 p-0.5 rounded-full border border-border/10 w-20 h-8 items-center select-none shrink-0">
+              <div className="relative flex bg-muted/60 p-0.5 rounded-full border border-border/10 w-22 sm:w-20 h-10 sm:h-8 items-center select-none shrink-0">
                 <div
                   className={`absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-background rounded-full shadow-sm border border-border/10 transition-all duration-300 ease-out ${
                     theme === "light" ? "left-0.5" : "left-[calc(50%)]"
@@ -270,7 +270,7 @@ export function Navigation({
                   title="Light Theme"
                   aria-label="Set light theme"
                 >
-                  <Sun className="h-3.5 w-3.5" />
+                  <Sun className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                 </button>
                 <button
                   type="button"
@@ -283,7 +283,7 @@ export function Navigation({
                   title="Dark Theme"
                   aria-label="Set dark theme"
                 >
-                  <Moon className="h-3.5 w-3.5" />
+                  <Moon className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                 </button>
               </div>
 
@@ -294,7 +294,7 @@ export function Navigation({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-11 w-11"
+                      className="h-12 w-12"
                       aria-label="Open navigation menu"
                     >
                       <Menu className="h-6 w-6" />
@@ -310,7 +310,7 @@ export function Navigation({
                           Navigation
                         </span>
                       </div>
-                      <nav className="flex flex-col space-y-1.5">
+                      <nav className="flex flex-col space-y-2">
                         {navItems.map((item) => (
                           <a
                             key={item.name}
@@ -319,7 +319,7 @@ export function Navigation({
                               e.preventDefault();
                               scrollToSection(item.href);
                             }}
-                            className={`text-left py-3 px-3.5 rounded-lg transition-colors font-medium text-sm flex items-center min-h-[44px] ${
+                            className={`text-left py-3 px-4 rounded-lg transition-colors font-medium text-sm flex items-center min-h-[48px] ${
                               activeSection === item.href.substring(1)
                                 ? "bg-primary/15 text-primary font-semibold"
                                 : "hover:bg-muted text-foreground/80 hover:text-foreground"
@@ -338,7 +338,7 @@ export function Navigation({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-11 w-11 text-muted-foreground hover:text-accent-cyan"
+                            className="h-12 w-12 text-muted-foreground hover:text-accent-cyan"
                           >
                             <Mail className="h-5 w-5" />
                           </Button>
@@ -354,7 +354,7 @@ export function Navigation({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-11 w-11 text-muted-foreground hover:text-accent-cyan"
+                            className="h-12 w-12 text-muted-foreground hover:text-accent-cyan"
                           >
                             <Github className="h-5 w-5" />
                           </Button>
@@ -370,7 +370,7 @@ export function Navigation({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-11 w-11 text-muted-foreground hover:text-accent-cyan"
+                            className="h-12 w-12 text-muted-foreground hover:text-accent-cyan"
                           >
                             <Linkedin className="h-5 w-5" />
                           </Button>

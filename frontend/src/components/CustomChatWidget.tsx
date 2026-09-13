@@ -682,7 +682,7 @@ export function CustomChatWidget({
                 id="chat-close-btn"
                 variant="ghost"
                 size="icon"
-                className="h-11 w-11 sm:h-9 sm:w-9"
+                className="h-12 w-12 sm:h-9 sm:w-9"
                 onClick={() => setIsOpen(false)}
                 title="Close"
                 aria-label="Close chat panel"
@@ -861,7 +861,7 @@ export function CustomChatWidget({
                           : "Type a message..."
                     }
                     disabled={isSending || isConnecting || !isAgentOnline}
-                    className="lk-chat-form-input w-full pr-10 rounded-md border border-input bg-background px-3 py-2 text-base sm:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="lk-chat-form-input w-full pr-10 rounded-md border border-input bg-background px-3 py-2 h-12 sm:h-9 text-base sm:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     onInput={(ev) => ev.stopPropagation()}
                     onKeyDown={(ev) => ev.stopPropagation()}
                     onKeyUp={(ev) => ev.stopPropagation()}
@@ -870,7 +870,7 @@ export function CustomChatWidget({
                     type="button"
                     onClick={toggleDictation}
                     disabled={isSending || isConnecting || !isAgentOnline}
-                    className={`absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full hover:bg-muted transition-colors ${
+                    className={`absolute right-1 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-muted transition-colors ${
                       isDictating
                         ? "text-red-500 animate-pulse bg-red-500/10"
                         : "text-muted-foreground hover:text-foreground"
@@ -883,7 +883,7 @@ export function CustomChatWidget({
 
                 <Button
                   type="submit"
-                  className="shrink-0 px-3.5 sm:px-4 h-10 sm:h-9"
+                  className="shrink-0 px-3.5 sm:px-4 h-12 sm:h-9 min-h-[48px] sm:min-h-0 text-base sm:text-sm"
                   disabled={isSending || isConnecting || !isAgentOnline}
                 >
                   {isConnecting ? "Connecting" : "Send"}
