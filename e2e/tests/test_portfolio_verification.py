@@ -91,3 +91,43 @@ def test_chat_widget_open_and_online_state(page: Page, app_url: str):
         for log in console_logs:
             print(log)
         print("----------------------------\n")
+
+
+def test_business_card_navigation_and_qr_toggle(page: Page, app_url: str) -> None:
+    """
+    Verifies that /card renders the digital business card by default,
+    allows toggling to the QR code view (updating the URL parameter ?view=qr),
+    allows toggling back to the contact card, and verifies direct deep-linking.
+    """
+    page.goto(f"{app_url}/card")
+
+    # 1. Contact Card View is default
+    name_heading = page.locator('h1:has-text("Alex McIntosh")')
+    save_contact_btn = page.locator('button:has-text("Save to Contacts")')
+    show_qr_btn = page.locator('button:has-text("Show QR Code")')
+
+    expect(name_heading).to_be_visible(timeout=10000)
+    expect(save_contact_btn).to_be_visible(timeout=10000)
+    expect(show_qr_btn).to_be_visible(timeout=10000)
+
+    # 2. Toggle to QR Code view
+    show_qr_btn.click()
+
+    qr_heading = page.locator('text="Scan to Connect"')
+    qr_image = page.locator('img[alt*="QR code"]')
+    show_card_btn = page.locator('button:has-text("Show Contact Card")')
+
+    expect(qr_heading).to_be_visible(timeout=10000)
+    expect(qr_image).to_be_visible(timeout=10000)
+    expect(show_card_btn).to_be_visible(timeout=10000)
+    expect(page).to_have_url(f"{app_url}/card?view=qr")
+
+    # 3. Toggle back to Contact Card
+    show_card_btn.click()
+    expect(name_heading).to_be_visible(timeout=10000)
+    expect(page).to_have_url(f"{app_url}/card")
+
+    # 4. Direct deep link with ?view=qr opens directly in QR view
+    page.goto(f"{app_url}/card?view=qr")
+    expect(qr_heading).to_be_visible(timeout=10000)
+    expect(qr_image).to_be_visible(timeout=10000)
