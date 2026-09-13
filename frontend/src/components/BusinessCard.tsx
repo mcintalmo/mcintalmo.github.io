@@ -166,18 +166,19 @@ export function BusinessCard({ basics = {}, work = [] }: BusinessCardProps) {
       </header>
 
       {/* Main Container */}
-      <div className="w-full max-w-sm relative">
-        <AnimatePresence mode="wait">
+      <div className="w-full max-w-sm relative [perspective:1000px]">
+        <AnimatePresence mode="wait" initial={false}>
           {view === "card" ? (
             /* ============================================================ */
             /* 1. CONTACT CARD VIEW                                          */
             /* ============================================================ */
             <motion.div
               key="card-view"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
+              initial={{ rotateY: -90, opacity: 0 }}
+              animate={{ rotateY: 0, opacity: 1 }}
+              exit={{ rotateY: 90, opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+              style={{ transformStyle: "preserve-3d" }}
               className="glass-panel border border-border/40 rounded-3xl p-6 shadow-2xl relative overflow-hidden backdrop-blur-xl"
             >
               {/* Holographic top accent glow */}
@@ -373,10 +374,11 @@ export function BusinessCard({ basics = {}, work = [] }: BusinessCardProps) {
             /* ============================================================ */
             <motion.div
               key="qr-view"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.35, ease: "easeOut" }}
+              initial={{ rotateY: -90, opacity: 0 }}
+              animate={{ rotateY: 0, opacity: 1 }}
+              exit={{ rotateY: 90, opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+              style={{ transformStyle: "preserve-3d" }}
               className="glass-panel border border-border/40 rounded-3xl p-6 shadow-2xl relative overflow-hidden backdrop-blur-xl flex flex-col items-center text-center"
             >
               {/* Holographic top accent glow */}
