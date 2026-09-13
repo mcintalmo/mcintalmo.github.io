@@ -22,14 +22,14 @@ export function Home({ basics, recommendedQuestions }: Props) {
       id="home"
       className="min-h-screen flex items-center justify-center relative overflow-hidden pt-16"
     >
-      <div className="container mx-auto px-6 text-center relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 text-center relative z-10">
         <div
           className="max-w-4xl mx-auto hero-content"
           style={{ animation: "fadeInUp 1.2s ease-out forwards" }}
         >
           {/* Professional Headshot */}
-          <div className="mb-8">
-            <div className="relative mx-auto w-40 h-40 sm:w-48 sm:h-48">
+          <div className="mb-6 sm:mb-8">
+            <div className="relative mx-auto w-32 h-32 sm:w-48 sm:h-48">
               {/* Pulse ring */}
               <div
                 aria-hidden="true"
@@ -38,7 +38,7 @@ export function Home({ basics, recommendedQuestions }: Props) {
               ></div>
 
               {/* Profile image */}
-              <div className="absolute inset-4 rounded-full overflow-hidden border-4 border-background shadow-2xl">
+              <div className="absolute inset-3 sm:inset-4 rounded-full overflow-hidden border-4 border-background shadow-2xl">
                 <div className="w-full h-full image-hover transition-transform duration-300 hover:scale-105">
                   <img
                     src={useYamlDirect ? yamlImage : profileImg.src}
@@ -48,7 +48,7 @@ export function Home({ basics, recommendedQuestions }: Props) {
                     decoding="async"
                     alt={name || "Profile photo"}
                     className="w-full h-full object-cover"
-                    sizes="(max-width: 640px) 160px, 192px"
+                    sizes="(max-width: 640px) 128px, 192px"
                   />
                 </div>
               </div>
@@ -56,9 +56,9 @@ export function Home({ basics, recommendedQuestions }: Props) {
           </div>
 
           {/* Name & Label */}
-          <div className="glass-panel rounded-3xl p-8 sm:p-12 relative z-10 mx-4">
+          <div className="glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 relative z-10 mx-0 sm:mx-4">
             {name && (
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium mb-4 tracking-tight font-sans">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-medium mb-3 sm:mb-4 tracking-tight font-sans">
                 Hi, I'm{" "}
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-accent-indigo to-accent-cyan font-bold">
                   {name}

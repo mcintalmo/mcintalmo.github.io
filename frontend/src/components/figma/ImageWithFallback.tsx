@@ -12,7 +12,15 @@ export function ImageWithFallback(props: React.ImgHTMLAttributes<HTMLImageElemen
     setDidError(true);
   };
 
-  const { src, alt, style, className, ...rest } = props;
+  const {
+    src,
+    alt,
+    style,
+    className,
+    loading = "lazy",
+    decoding = "async",
+    ...rest
+  } = props;
 
   return didError ? (
     <div
@@ -23,6 +31,8 @@ export function ImageWithFallback(props: React.ImgHTMLAttributes<HTMLImageElemen
         <img
           src={ERROR_IMG_SRC}
           alt="Failed to load"
+          loading={loading}
+          decoding={decoding}
           {...rest}
           data-original-url={src}
         />
@@ -32,6 +42,8 @@ export function ImageWithFallback(props: React.ImgHTMLAttributes<HTMLImageElemen
     <img
       src={src}
       alt={alt}
+      loading={loading}
+      decoding={decoding}
       className={className}
       style={style}
       {...rest}

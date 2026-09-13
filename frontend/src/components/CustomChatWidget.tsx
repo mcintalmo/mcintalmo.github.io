@@ -83,7 +83,7 @@ function VoicePanelInner({
   };
 
   return (
-    <div className="p-4 border-t bg-background flex flex-col items-center gap-4 w-full">
+    <div className="p-4 pb-[calc(env(safe-area-inset-bottom,0px)+1rem)] border-t bg-background flex flex-col items-center gap-4 w-full">
       <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80 animate-pulse h-4 flex items-center justify-center">
         {getStatusText()}
       </div>
@@ -100,7 +100,7 @@ function VoicePanelInner({
       )}
       <div className="flex items-center gap-4 w-full justify-between">
         {/* Bottom Toggle in Voice Mode */}
-        <div className="relative flex bg-muted/60 p-0.5 rounded-full border border-border/10 w-20 h-8 items-center cursor-pointer select-none shrink-0">
+        <div className="relative flex bg-muted/60 p-0.5 rounded-full border border-border/10 w-22 h-9 items-center cursor-pointer select-none shrink-0">
           <div
             className={`absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-background rounded-full shadow-sm border border-border/10 transition-all duration-300 ease-out ${
               chatMode === "text" ? "left-0.5" : "left-[calc(50%)]"
@@ -626,24 +626,24 @@ export function CustomChatWidget({
     <>
       <div
         ref={sidebarRef}
-        className={`transition-all duration-500 ease-in-out border-l bg-background hidden md:block shrink-0 fixed top-0 right-0 h-[100dvh] z-40 ${
+        className={`transition-all duration-500 ease-in-out bg-background shrink-0 fixed top-0 right-0 h-[100dvh] z-[70] md:z-40 border-l border-border ${
           isOpen
             ? isExpanded
-              ? "w-full !z-[60] translate-x-0"
-              : "w-[400px] opacity-100 translate-x-0"
-            : "w-[400px] opacity-0 translate-x-full pointer-events-none"
+              ? "w-full !z-[80] md:!z-[60] translate-x-0 opacity-100 pointer-events-auto"
+              : "w-full md:w-[400px] opacity-100 translate-x-0 pointer-events-auto"
+            : "w-full md:w-[400px] opacity-0 translate-x-full pointer-events-none"
         }`}
       >
         <div
-          className={`h-full flex flex-col shadow-2xl glass-panel ${isExpanded ? "w-full" : "w-[400px]"}`}
+          className={`h-full flex flex-col shadow-2xl glass-panel w-full ${isExpanded ? "md:w-full" : "md:w-[400px]"}`}
         >
-          <div className="p-4 pt-[4.5rem] border-b flex justify-between items-center z-10 bg-background/95 backdrop-blur">
-            <h2 className="font-semibold flex items-center gap-2 font-sans text-lg">
-              <Bot className="h-6 w-6 text-accent-cyan animate-pulse" />
-              Alex's AI Agent
+          <div className="p-3 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] sm:p-4 md:pt-[4.5rem] border-b flex justify-between items-center z-10 bg-background/95 backdrop-blur">
+            <h2 className="font-semibold flex items-center gap-2 font-sans text-base sm:text-lg min-w-0">
+              <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-accent-cyan animate-pulse shrink-0" />
+              <span className="truncate">Alex's AI Agent</span>
               <span
                 id="agent-status"
-                className={`text-xs ml-2 ${
+                className={`text-xs ml-1 sm:ml-2 shrink-0 ${
                   isAgentOnline
                     ? "text-green-500 font-medium"
                     : isConnecting
@@ -658,31 +658,34 @@ export function CustomChatWidget({
                     : "(Offline)"}
               </span>
               {state === "speaking" && (
-                <AudioLines className="h-4 w-4 text-green-500 animate-pulse ml-2" />
+                <AudioLines className="h-4 w-4 text-green-500 animate-pulse ml-1 shrink-0" />
               )}
             </h2>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-9 w-9"
+                className="hidden md:inline-flex h-9 w-9"
                 onClick={() => setIsExpanded(!isExpanded)}
                 title={isExpanded ? "Collapse" : "Expand"}
+                aria-label={
+                  isExpanded ? "Collapse sidebar" : "Expand sidebar to full screen"
+                }
               >
                 {isExpanded ? (
-                  <Minimize2 className="h-5 w-5" />
+                  <Minimize2 className="h-4 w-4" />
                 ) : (
-                  <Maximize2 className="h-5 w-5" />
+                  <Maximize2 className="h-4 w-4" />
                 )}
               </Button>
               <Button
+                id="chat-close-btn"
                 variant="ghost"
                 size="icon"
-                className="h-9 w-9 hover:bg-destructive/10 hover:text-destructive"
-                onClick={() => {
-                  setIsOpen(false);
-                  setIsExpanded(false);
-                }}
+                className="h-12 w-12 sm:h-9 sm:w-9"
+                onClick={() => setIsOpen(false)}
+                title="Close"
+                aria-label="Close chat panel"
               >
                 <X className="h-5 w-5" />
               </Button>
@@ -690,7 +693,7 @@ export function CustomChatWidget({
           </div>
 
           <div className="flex-1 flex flex-col min-h-0">
-            <div className="flex-grow overflow-y-auto p-4">
+            <div className="flex-grow overflow-y-auto overscroll-y-contain p-4">
               <div className="flex flex-col justify-end min-h-full space-y-4">
                 {unifiedMessages.length === 0 && (
                   <div className="flex flex-col items-center justify-center text-center p-4 space-y-6 my-auto">
@@ -764,7 +767,7 @@ export function CustomChatWidget({
                       <p className="text-[10px] uppercase tracking-wider text-muted-foreground/80 font-medium text-left px-1 font-sans">
                         Suggested Questions
                       </p>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {recommendedQuestions.map((q) => (
                           <button
                             key={q.prompt}
@@ -820,10 +823,10 @@ export function CustomChatWidget({
             {chatMode === "text" && (
               <form
                 onSubmit={handleSend}
-                className="p-4 border-t bg-background flex gap-2 items-center"
+                className="p-3 sm:p-4 pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] border-t bg-background flex gap-2 items-center"
               >
                 {/* Bottom Toggle in Text Mode */}
-                <div className="relative flex bg-muted/60 p-0.5 rounded-full border border-border/10 w-20 h-8 items-center cursor-pointer select-none shrink-0">
+                <div className="relative flex bg-muted/60 p-0.5 rounded-full border border-border/10 w-22 h-9 items-center cursor-pointer select-none shrink-0">
                   <div className="absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-background rounded-full shadow-sm border border-border/10 transition-all duration-300 ease-out left-0.5" />
                   <button
                     type="button"
@@ -858,7 +861,7 @@ export function CustomChatWidget({
                           : "Type a message..."
                     }
                     disabled={isSending || isConnecting || !isAgentOnline}
-                    className="lk-chat-form-input w-full pr-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="lk-chat-form-input w-full pr-10 rounded-md border border-input bg-background px-3 py-2 h-12 sm:h-9 text-base sm:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     onInput={(ev) => ev.stopPropagation()}
                     onKeyDown={(ev) => ev.stopPropagation()}
                     onKeyUp={(ev) => ev.stopPropagation()}
@@ -867,7 +870,7 @@ export function CustomChatWidget({
                     type="button"
                     onClick={toggleDictation}
                     disabled={isSending || isConnecting || !isAgentOnline}
-                    className={`absolute right-2 p-1.5 rounded-full hover:bg-muted transition-colors ${
+                    className={`absolute right-1 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-muted transition-colors ${
                       isDictating
                         ? "text-red-500 animate-pulse bg-red-500/10"
                         : "text-muted-foreground hover:text-foreground"
@@ -880,6 +883,7 @@ export function CustomChatWidget({
 
                 <Button
                   type="submit"
+                  className="shrink-0 px-3.5 sm:px-4 h-12 sm:h-9 min-h-[48px] sm:min-h-0 text-base sm:text-sm"
                   disabled={isSending || isConnecting || !isAgentOnline}
                 >
                   {isConnecting ? "Connecting" : "Send"}
@@ -904,7 +908,8 @@ export function CustomChatWidget({
         <Button
           id="chat-fab"
           onClick={openChat}
-          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-2xl z-50 flex items-center justify-center p-0 hover:scale-105 transition-transform bg-gradient-to-r from-accent-indigo to-accent-cyan text-white"
+          className="fixed bottom-5 right-5 md:bottom-6 md:right-6 h-14 w-14 rounded-full shadow-2xl z-40 md:z-50 flex items-center justify-center p-0 hover:scale-105 active:scale-95 transition-transform bg-gradient-to-r from-accent-indigo to-accent-cyan text-white touch-manipulation cursor-pointer"
+          aria-label="Open AI chat panel"
         >
           <Bot className="h-6 w-6" />
         </Button>

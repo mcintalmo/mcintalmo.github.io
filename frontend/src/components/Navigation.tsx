@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Github, Linkedin, Mail, Menu, Moon, Sun, X } from "lucide-react";
+import { Github, Linkedin, Mail, Menu, Moon, Sun } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { ResumeBasics, SiteConfigRoot } from "../lib/types";
 import { useTheme } from "./ThemeProvider";
@@ -151,10 +151,10 @@ export function Navigation({
         animate={{ opacity: 1 }}
         transition={{ duration: 0.9, ease: "easeOut" }}
         style={{ willChange: "opacity", pointerEvents: "auto" }}
-        className={`fixed top-0 left-0 right-0 z-50 duration-300 transition-colors ${
+        className={`fixed top-0 left-0 right-0 z-50 duration-300 transition-all ${
           isScrolled
-            ? "bg-background/95 backdrop-blur-sm border-b border-border shadow-sm"
-            : "bg-transparent"
+            ? "bg-background/90 backdrop-blur-md border-b border-border shadow-sm"
+            : "bg-background/60 backdrop-blur-md border-b border-transparent"
         }`}
       >
         {/* Scroll Progress Bar (kept outside of opacity animation impact) */}
@@ -253,7 +253,7 @@ export function Navigation({
               </div>
 
               {/* Theme Toggle — capsule slider styled like the chat mode toggle */}
-              <div className="relative flex bg-muted/60 p-0.5 rounded-full border border-border/10 w-20 h-8 items-center select-none shrink-0">
+              <div className="relative flex bg-muted/60 p-0.5 rounded-full border border-border/10 w-22 sm:w-20 h-10 sm:h-8 items-center select-none shrink-0">
                 <div
                   className={`absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-background rounded-full shadow-sm border border-border/10 transition-all duration-300 ease-out ${
                     theme === "light" ? "left-0.5" : "left-[calc(50%)]"
@@ -270,7 +270,7 @@ export function Navigation({
                   title="Light Theme"
                   aria-label="Set light theme"
                 >
-                  <Sun className="h-3.5 w-3.5" />
+                  <Sun className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                 </button>
                 <button
                   type="button"
@@ -283,7 +283,7 @@ export function Navigation({
                   title="Dark Theme"
                   aria-label="Set dark theme"
                 >
-                  <Moon className="h-3.5 w-3.5" />
+                  <Moon className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
                 </button>
               </div>
 
@@ -291,71 +291,92 @@ export function Navigation({
               <div className="md:hidden">
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
                   <SheetTrigger asChild>
-                    <Button variant="ghost" size="sm">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-12 w-12"
+                      aria-label="Open navigation menu"
+                    >
                       <Menu className="h-6 w-6" />
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="right" className="w-64">
-                    <div className="flex items-center justify-between mb-8">
-                      <span className="text-lg font-medium">Menu</span>
-                      <div className="flex items-center gap-2">
-                        <div className="relative flex bg-muted/60 p-0.5 rounded-full border border-border/10 w-20 h-8 items-center select-none shrink-0">
-                          <div
-                            className={`absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] bg-background rounded-full shadow-sm border border-border/10 transition-all duration-300 ease-out ${
-                              theme === "light" ? "left-0.5" : "left-[calc(50%)]"
-                            }`}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => setTheme("light")}
-                            className={`flex-1 flex justify-center items-center h-full relative z-10 transition-colors duration-300 rounded-full focus:outline-hidden ${
-                              theme === "light"
-                                ? "text-foreground"
-                                : "text-muted-foreground hover:text-foreground"
-                            }`}
-                            title="Light Theme"
-                            aria-label="Set light theme"
-                          >
-                            <Sun className="h-3.5 w-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setTheme("dark")}
-                            className={`flex-1 flex justify-center items-center h-full relative z-10 transition-colors duration-300 rounded-full focus:outline-hidden ${
-                              theme === "dark"
-                                ? "text-foreground"
-                                : "text-muted-foreground hover:text-foreground"
-                            }`}
-                            title="Dark Theme"
-                            aria-label="Set dark theme"
-                          >
-                            <Moon className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          <X className="h-5 w-5" />
-                        </Button>
+                  <SheetContent
+                    side="right"
+                    className="w-72 max-w-[80vw] p-6 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-6 pt-1 pr-8">
+                        <span className="text-lg font-semibold font-sans">
+                          Navigation
+                        </span>
                       </div>
+                      <nav className="flex flex-col space-y-2">
+                        {navItems.map((item) => (
+                          <a
+                            key={item.name}
+                            href={item.href}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              scrollToSection(item.href);
+                            }}
+                            className={`text-left py-3 px-4 rounded-lg transition-colors font-medium text-sm flex items-center min-h-[48px] ${
+                              activeSection === item.href.substring(1)
+                                ? "bg-primary/15 text-primary font-semibold"
+                                : "hover:bg-muted text-foreground/80 hover:text-foreground"
+                            }`}
+                          >
+                            {item.name}
+                          </a>
+                        ))}
+                      </nav>
                     </div>
-                    <nav className="flex flex-col space-y-4">
-                      {navItems.map((item) => (
-                        <a
-                          key={item.name}
-                          href={item.href}
-                          className={`text-left py-2 px-3 rounded-lg transition-colors ${
-                            activeSection === item.href.substring(1)
-                              ? "bg-primary text-primary-foreground"
-                              : "hover:bg-muted text-foreground"
-                          }`}
-                        >
-                          {item.name}
+
+                    {/* Social links inside mobile drawer */}
+                    <div className="pt-6 border-t border-border flex items-center justify-around">
+                      {email && (
+                        <a href={`mailto:${email}`} aria-label="Email">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-12 w-12 text-muted-foreground hover:text-accent-cyan"
+                          >
+                            <Mail className="h-5 w-5" />
+                          </Button>
                         </a>
-                      ))}
-                    </nav>
+                      )}
+                      {github?.url && (
+                        <a
+                          href={github.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label="GitHub"
+                        >
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-12 w-12 text-muted-foreground hover:text-accent-cyan"
+                          >
+                            <Github className="h-5 w-5" />
+                          </Button>
+                        </a>
+                      )}
+                      {linkedin?.url && (
+                        <a
+                          href={linkedin.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label="LinkedIn"
+                        >
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-12 w-12 text-muted-foreground hover:text-accent-cyan"
+                          >
+                            <Linkedin className="h-5 w-5" />
+                          </Button>
+                        </a>
+                      )}
+                    </div>
                   </SheetContent>
                 </Sheet>
               </div>

@@ -46,15 +46,13 @@ export function AnimatedSection({
   const variants: Variants = {
     hidden: {
       opacity: 0,
-      y: 50,
-      scale: 0.95,
+      y: 24,
     },
     visible: {
       opacity: 1,
       y: 0,
-      scale: 1,
       transition: {
-        duration: 0.8,
+        duration: 0.6,
         delay,
         ease: [0.4, 0.0, 0.2, 1],
       },

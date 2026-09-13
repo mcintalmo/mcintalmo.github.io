@@ -4,7 +4,7 @@
 
 Personal portfolio monorepo featuring an Astro 5 + React frontend, a Python uv-workspace backend with real-time LiveKit conversational agents and resume tailoring, and local Docker infrastructure.
 
-```
+```txt
 mcintalmo.github.io/
 ├── frontend/        # Astro 5 (Static Output) + React Islands, TypeScript, Biome
 ├── backend/         # Python uv workspace (Python 3.14+)
@@ -38,7 +38,7 @@ mcintalmo.github.io/
 ## Essential Commands
 
 | Command | Description |
-|---|---|
+| --- | --- |
 | `just check-all` | Run all formatting, strict linting, and type checking (`ruff`, `biome`, `ty`) |
 | `just format` | Safely format all Python and TS/TSX/.astro files |
 | `just lint` | Run strict linting and safe autofixes across repo |
@@ -61,6 +61,7 @@ mcintalmo.github.io/
 ## Architecture & Data Contracts
 
 ### 1. LiveKit Conversational Agent
+
 - **Server**: LiveKit server runs on `ws://localhost:7880` (or `wss://livekit.alexandermcintosh.com` in prod).
 - **Agent Lifecycle** (`backend/agent/src/agent/`):
   - Connects to room as `portfolio-agent`.
@@ -72,13 +73,16 @@ mcintalmo.github.io/
   - Broadcasts `ToolCallStartedEvent` and `ToolCallCompletedEvent` over LiveKit room data packets to synchronize frontend visual states.
 
 ### 2. Frontend React Islands & Chat UI
+
 - `frontend/src/components/ChatAgent.tsx`:
   - Fetches room JWTs from local auth (`http://localhost:8000`) with automatic production fallback (`https://api.alexandermcintosh.com`) if local auth is unreachable.
 - `frontend/src/components/CustomChatWidget.tsx`:
   - Renders unified chronological timeline combining user/agent messages and real-time tool call indicators (running spinners, completion checkmarks, and human-readable action labels).
 
 ### 3. Agent Event Contract Synchronization
+
 When modifying agent events, keep both files strictly in sync:
+
 - TypeScript: `frontend/src/lib/events.ts`
 - Python: `backend/common/src/common/events.py`
 

@@ -40,9 +40,9 @@ export function BackToTop() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40"
+          className="fixed bottom-5 left-5 md:bottom-6 md:left-1/2 md:-translate-x-1/2 z-30 md:z-40"
         >
-          <div className="relative h-14 w-14 flex items-center justify-center">
+          <div className="relative h-12 w-12 md:h-14 md:w-14 flex items-center justify-center">
             {/* Progress circle wraps around button with gap */}
             <svg
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
@@ -77,8 +77,9 @@ export function BackToTop() {
             </svg>
             <Button
               onClick={scrollToTop}
-              size="lg"
-              className="relative h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors z-10"
+              size="icon"
+              aria-label="Scroll back to top of page"
+              className="relative h-12 w-12 md:h-14 md:w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors z-10 cursor-pointer"
             >
               {/* Arrow icon */}
               <ArrowUp className="h-5 w-5" />

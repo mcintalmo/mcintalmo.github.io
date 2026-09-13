@@ -149,8 +149,8 @@ export function Blog() {
 
   return (
     <section id="blog" className="py-20">
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16 glass-panel rounded-xl py-8 px-6">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="text-center mb-16 glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6">
           <h2 className="mb-4">Thought Leadership</h2>
           <p className="max-w-2xl mx-auto text-muted-foreground">
             Insights on artificial intelligence, machine learning, and data science from

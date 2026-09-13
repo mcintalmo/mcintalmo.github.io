@@ -30,19 +30,19 @@ function SkillSlots({ level }: { level?: string }) {
     <div className="flex gap-1">
       {level && <span className="sr-only">Level: {level}</span>}
       <div
-        className={`h-1.5 w-4 rounded-full transition-colors ${0 < filled ? "bg-primary" : "bg-muted"}`}
+        className={`h-1.5 w-3 sm:w-4 rounded-full transition-colors ${0 < filled ? "bg-primary" : "bg-muted"}`}
       />
       <div
-        className={`h-1.5 w-4 rounded-full transition-colors ${1 < filled ? "bg-primary" : "bg-muted"}`}
+        className={`h-1.5 w-3 sm:w-4 rounded-full transition-colors ${1 < filled ? "bg-primary" : "bg-muted"}`}
       />
       <div
-        className={`h-1.5 w-4 rounded-full transition-colors ${2 < filled ? "bg-primary" : "bg-muted"}`}
+        className={`h-1.5 w-3 sm:w-4 rounded-full transition-colors ${2 < filled ? "bg-primary" : "bg-muted"}`}
       />
       <div
-        className={`h-1.5 w-4 rounded-full transition-colors ${3 < filled ? "bg-primary" : "bg-muted"}`}
+        className={`h-1.5 w-3 sm:w-4 rounded-full transition-colors ${3 < filled ? "bg-primary" : "bg-muted"}`}
       />
       <div
-        className={`h-1.5 w-4 rounded-full transition-colors ${4 < filled ? "bg-primary" : "bg-muted"}`}
+        className={`h-1.5 w-3 sm:w-4 rounded-full transition-colors ${4 < filled ? "bg-primary" : "bg-muted"}`}
       />
     </div>
   );
@@ -155,22 +155,20 @@ function CategoryCard({ category, index }: { category: SkillCategory; index: num
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 30, rotateX: -15 }}
+      initial={{ opacity: 0, y: 24 }}
       animate={controls}
       variants={{
-        hidden: { opacity: 0, y: 30, rotateX: -15 },
+        hidden: { opacity: 0, y: 24 },
         visible: {
           opacity: 1,
           y: 0,
-          rotateX: 0,
           transition: {
-            duration: 0.8,
-            delay: index * 0.15,
+            duration: 0.6,
+            delay: index * 0.1,
             ease: [0.25, 0.46, 0.45, 0.94],
           },
         },
       }}
-      style={{ perspective: "1000px" }}
     >
       {/* Remove h-full so cards shrink to content; grid will no longer stretch items */}
       <Card>
@@ -193,23 +191,25 @@ function CategoryCard({ category, index }: { category: SkillCategory; index: num
               }}
               viewport={{ once: true }}
             >
-              <div className="flex items-center gap-3 py-0.5">
+              <div className="flex items-center gap-2 sm:gap-3 py-0.5">
                 <span
                   className="text-sm font-medium flex-1 truncate"
                   title={skill.name}
                 >
                   {skill.name}
                 </span>
-                <div className="w-28 flex justify-start">
-                  <SkillSlots level={skill.level} />
+                <div className="flex-shrink-0 flex items-center gap-2">
+                  <div className="flex justify-start">
+                    <SkillSlots level={skill.level} />
+                  </div>
+                  {skill.level ? (
+                    <span className="hidden sm:inline-block w-16 text-[10px] font-medium tracking-wide text-muted-foreground whitespace-nowrap capitalize text-right">
+                      {skill.level}
+                    </span>
+                  ) : (
+                    <span className="hidden sm:inline-block w-16" />
+                  )}
                 </div>
-                {skill.level ? (
-                  <span className="w-20 text-[10px] font-medium tracking-wide text-muted-foreground whitespace-nowrap capitalize text-right">
-                    {skill.level}
-                  </span>
-                ) : (
-                  <span className="w-20" />
-                )}
               </div>
             </motion.div>
           ))}
@@ -230,14 +230,14 @@ export function Skills({
 
   return (
     <section id="skills" className="py-20">
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6">
         {/* Heading */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-center mb-12 group glass-panel rounded-xl py-8 px-6"
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true, margin: "100px 0px" }}
+          className="text-center mb-12 group glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6"
         >
           <h2 className="mb-4 inline-flex items-center gap-2">
             {config.sections?.skills?.title || "Skills & Technologies"}
