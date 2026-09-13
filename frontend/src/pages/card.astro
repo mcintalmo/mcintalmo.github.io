@@ -1,0 +1,27 @@
+---
+import { BusinessCard } from "../components/BusinessCard";
+import { ThemeProvider } from "../components/ThemeProvider";
+import Layout from "../layouts/Layout.astro";
+import { loadAll } from "../lib/data";
+import "../styles/globals.css";
+
+const { config, resume } = loadAll();
+const name = resume.basics?.name || "Alex McIntosh";
+const title = resume.basics?.label || "Data Scientist & AI/ML Engineer";
+---
+
+<Layout
+  config={config}
+  resume={resume}
+  title={`${name} | Digital Business Card & QR Code`}
+  description={`Digital business card for ${name}, ${title}. Scan QR code to connect, save contact details, or talk with AI voice assistant.`}
+>
+  <ThemeProvider client:only="react" defaultTheme="light" storageKey="portfolio-theme">
+    <BusinessCard
+      client:only="react"
+      basics={resume.basics}
+      work={resume.work}
+      config={config}
+    />
+  </ThemeProvider>
+</Layout>
