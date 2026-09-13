@@ -173,7 +173,7 @@ export function Work({ work, config }: Props) {
           >
             <Button
               size="lg"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg w-full md:w-auto"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg w-full md:w-auto h-12 sm:h-10 text-base sm:text-sm"
             >
               <Download className="w-4 h-4 mr-2" />
               Download Resume
@@ -318,7 +318,11 @@ export function Work({ work, config }: Props) {
           </div>
           {!showFullHistory && hiddenCount > 0 && (
             <div className="flex justify-center mt-0">
-              <Button variant="outline" onClick={() => setShowFullHistory(true)}>
+              <Button
+                variant="outline"
+                className="h-11 sm:h-9"
+                onClick={() => setShowFullHistory(true)}
+              >
                 Show full history ({hiddenCount} more{" "}
                 {hiddenCount === 1 ? "role" : "roles"})
               </Button>
@@ -328,6 +332,7 @@ export function Work({ work, config }: Props) {
             <div className="flex justify-center mt-4">
               <Button
                 variant="outline"
+                className="h-11 sm:h-9"
                 onClick={() => {
                   // Scroll back to top of section smoothly when collapsing
                   const el = document.getElementById("experience");

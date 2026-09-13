@@ -70,7 +70,7 @@ export const HeroPrompt = ({ recommendedQuestions }: HeroPromptProps) => {
             <button
               type="button"
               onClick={toggleDictation}
-              className={`absolute right-2 sm:right-2.5 p-1.5 rounded-full hover:bg-muted transition-colors ${
+              className={`absolute right-1 sm:right-1.5 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-muted transition-colors ${
                 isDictating
                   ? "text-red-500 animate-pulse bg-red-500/10"
                   : "text-muted-foreground hover:text-foreground"
@@ -85,7 +85,7 @@ export const HeroPrompt = ({ recommendedQuestions }: HeroPromptProps) => {
           </div>
           <button
             type="submit"
-            className="relative bg-primary hover:bg-primary/90 text-primary-foreground px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-xl text-sm font-medium transition-colors shadow-md active:scale-95 cursor-pointer shrink-0"
+            className="relative bg-primary hover:bg-primary/90 text-primary-foreground h-11 sm:h-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-sm font-medium transition-colors shadow-md active:scale-95 cursor-pointer shrink-0 flex items-center justify-center"
           >
             Send
           </button>
@@ -107,13 +107,13 @@ export const HeroPrompt = ({ recommendedQuestions }: HeroPromptProps) => {
       </div>
 
       {recommendedQuestions && recommendedQuestions.length > 0 && (
-        <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-4 max-w-lg">
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-4 max-w-lg">
           {recommendedQuestions.map((q) => (
             <button
               key={q.prompt}
               type="button"
               onClick={() => handleSuggestionClick(q.prompt)}
-              className="px-3 py-1.5 sm:px-3.5 text-xs rounded-full border border-border/40 bg-background/50 hover:bg-accent-indigo/5 hover:border-accent-indigo/20 transition-all duration-200 text-muted-foreground hover:text-foreground cursor-pointer shadow-xs active:scale-95 font-sans font-medium"
+              className="px-3.5 py-2 sm:py-1.5 min-h-[36px] flex items-center text-xs rounded-full border border-border/40 bg-background/50 hover:bg-accent-indigo/5 hover:border-accent-indigo/20 transition-all duration-200 text-muted-foreground hover:text-foreground cursor-pointer shadow-xs active:scale-95 font-sans font-medium"
             >
               {q.title}
             </button>

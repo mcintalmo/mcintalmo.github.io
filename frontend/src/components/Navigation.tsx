@@ -294,7 +294,7 @@ export function Navigation({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-10 w-10"
+                      className="h-11 w-11"
                       aria-label="Open navigation menu"
                     >
                       <Menu className="h-6 w-6" />
@@ -319,7 +319,7 @@ export function Navigation({
                               e.preventDefault();
                               scrollToSection(item.href);
                             }}
-                            className={`text-left py-2.5 px-3 rounded-lg transition-colors font-medium text-sm ${
+                            className={`text-left py-3 px-3.5 rounded-lg transition-colors font-medium text-sm flex items-center min-h-[44px] ${
                               activeSection === item.href.substring(1)
                                 ? "bg-primary/15 text-primary font-semibold"
                                 : "hover:bg-muted text-foreground/80 hover:text-foreground"
@@ -338,7 +338,7 @@ export function Navigation({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-10 w-10 text-muted-foreground hover:text-accent-cyan"
+                            className="h-11 w-11 text-muted-foreground hover:text-accent-cyan"
                           >
                             <Mail className="h-5 w-5" />
                           </Button>
@@ -354,7 +354,7 @@ export function Navigation({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-10 w-10 text-muted-foreground hover:text-accent-cyan"
+                            className="h-11 w-11 text-muted-foreground hover:text-accent-cyan"
                           >
                             <Github className="h-5 w-5" />
                           </Button>
@@ -370,7 +370,7 @@ export function Navigation({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-10 w-10 text-muted-foreground hover:text-accent-cyan"
+                            className="h-11 w-11 text-muted-foreground hover:text-accent-cyan"
                           >
                             <Linkedin className="h-5 w-5" />
                           </Button>

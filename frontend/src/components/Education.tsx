@@ -308,6 +308,7 @@ export function Education({
                         <div className="flex justify-center mt-2">
                           <Button
                             variant="outline"
+                            className="h-11 sm:h-9"
                             onClick={() => setShowAllCerts(true)}
                           >
                             Show all certifications ({certs.length - limit} more)
@@ -318,6 +319,7 @@ export function Education({
                         <div className="flex justify-center mt-6">
                           <Button
                             variant="outline"
+                            className="h-11 sm:h-9"
                             onClick={() => setShowAllCerts(false)}
                           >
                             Collapse certifications
