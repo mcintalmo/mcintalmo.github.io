@@ -39,6 +39,20 @@ def test_cors_allowed_origin() -> None:
     assert response.headers.get("access-control-allow-credentials") == "true"
 
 
+def test_cors_preflight_options() -> None:
+    headers = {
+        "Origin": "https://www.alexandermcintosh.com",
+        "Access-Control-Request-Method": "GET",
+    }
+    response = client.options("/token", headers=headers)
+    assert response.status_code == 200
+    assert (
+        response.headers.get("access-control-allow-origin")
+        == "https://www.alexandermcintosh.com"
+    )
+    assert response.headers.get("access-control-allow-credentials") == "true"
+
+
 def test_cors_disallowed_origin() -> None:
     headers = {"Origin": "https://malicious-site.com"}
     response = client.get(
