@@ -1,4 +1,5 @@
 import asyncio
+import os
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +15,7 @@ from common.config import CorsSettings
 from .graph import create_graph
 
 cors_settings = CorsSettings()
+environment = os.getenv("ENVIRONMENT", "development")
 
 app = FastAPI(
     title="Resume Tailor API",
@@ -24,6 +26,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_settings.allowed_origins,
+    allow_origin_regex=cors_settings.get_origin_regex(environment),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

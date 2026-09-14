@@ -53,6 +53,19 @@ def test_cors_preflight_options() -> None:
     assert response.headers.get("access-control-allow-credentials") == "true"
 
 
+def test_cors_local_lan_origin_allowed_in_dev() -> None:
+    headers = {"Origin": "http://192.168.1.150:4321"}
+    response = client.get(
+        "/token?room_name=test_room&identity=test_user", headers=headers
+    )
+    assert response.status_code == 200
+    assert (
+        response.headers.get("access-control-allow-origin")
+        == "http://192.168.1.150:4321"
+    )
+    assert response.headers.get("access-control-allow-credentials") == "true"
+
+
 def test_cors_disallowed_origin() -> None:
     headers = {"Origin": "https://malicious-site.com"}
     response = client.get(

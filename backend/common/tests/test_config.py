@@ -25,6 +25,26 @@ def test_app_settings_ttl_default() -> None:
     assert settings.token_ttl_seconds == 900
 
 
+def test_cors_origin_regex() -> None:
+    import re
+
+    cors = CorsSettings()
+    regex_dev = cors.get_origin_regex("development")
+    assert regex_dev is not None
+
+    pattern = re.compile(regex_dev)
+    assert pattern.match("http://localhost:4321")
+    assert pattern.match("http://127.0.0.1:3000")
+    assert pattern.match("http://192.168.1.50:4321")
+    assert pattern.match("http://10.0.0.2:8000")
+    assert pattern.match("http://172.16.1.1:4321")
+    assert not pattern.match("http://attacker.com")
+    assert not pattern.match("http://8.8.8.8:4321")
+
+    # In production, default regex is None
+    assert cors.get_origin_regex("production") is None
+
+
 def test_livekit_security_validation_warns_in_prod() -> None:
     # Weak secret in production (wss://) triggers warning without exception
     livekit = LiveKitSettings(

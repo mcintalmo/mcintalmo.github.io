@@ -15,8 +15,12 @@ DEFAULT_ALLOWED_ORIGINS: list[str] = [
 ]
 
 
+LOCAL_ORIGIN_REGEX: str = r"^https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$"
+
+
 class CorsSettings(BaseSettings):
     allowed_origins: list[str] = DEFAULT_ALLOWED_ORIGINS
+    allow_origin_regex: str | None = None
 
     @field_validator("allowed_origins", mode="before")
     @classmethod
@@ -24,6 +28,13 @@ class CorsSettings(BaseSettings):
         if isinstance(v, str):
             return [origin.strip() for origin in v.split(",") if origin.strip()]
         return v
+
+    def get_origin_regex(self, environment: str = "development") -> str | None:
+        if self.allow_origin_regex is not None:
+            return self.allow_origin_regex
+        if environment != "production":
+            return LOCAL_ORIGIN_REGEX
+        return None
 
     model_config = SettingsConfigDict(
         env_file=(".env", ".env.local", "../.env", "../.env.local"),
