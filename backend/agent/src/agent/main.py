@@ -85,7 +85,7 @@ def prewarm(proc: JobProcess) -> None:
     proc.userdata["vad"] = silero.VAD.load()
 
 
-server = AgentServer(setup_fnc=prewarm, num_idle_processes=3)
+server = AgentServer(setup_fnc=prewarm, num_idle_processes=6)
 app = server
 
 
