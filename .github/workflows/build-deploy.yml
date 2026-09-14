@@ -159,7 +159,7 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
         run: |
-          set -x
+          set -e
           # Give OCI a few seconds to propagate security list rules
           sleep 5
 
@@ -195,7 +195,8 @@ jobs:
             echo \"SMTP_SMARTHOST=${{ secrets.SMTP_SMARTHOST }}\" >> .env &&
             echo \"SMTP_AUTH_USERNAME=${{ secrets.SMTP_AUTH_USERNAME }}\" >> .env &&
             echo \"SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}\" >> .env &&
-            echo \"ALERT_DESTINATION_EMAIL=${{ secrets.ALERT_DESTINATION_EMAIL }}\" >> .env
+            echo \"ALERT_DESTINATION_EMAIL=${{ secrets.ALERT_DESTINATION_EMAIL }}\" >> .env &&
+            chmod 600 .env
           "
 
           # Inject LLM secrets into remote backend/.env file on OCI VM
@@ -223,7 +224,16 @@ jobs:
             if [ -n \"${{ secrets.CARTESIA_API_KEY }}\" ]; then
               sed -i \"/^CARTESIA_API_KEY=/d\" .env
               echo \"CARTESIA_API_KEY=${{ secrets.CARTESIA_API_KEY }}\" >> .env
-            fi
+            fi &&
+            if [ -n \"${{ secrets.LIVEKIT_API_KEY }}\" ]; then
+              sed -i \"/^LIVEKIT_API_KEY=/d\" .env
+              echo \"LIVEKIT_API_KEY=${{ secrets.LIVEKIT_API_KEY }}\" >> .env
+            fi &&
+            if [ -n \"${{ secrets.LIVEKIT_API_SECRET }}\" ]; then
+              sed -i \"/^LIVEKIT_API_SECRET=/d\" .env
+              echo \"LIVEKIT_API_SECRET=${{ secrets.LIVEKIT_API_SECRET }}\" >> .env
+            fi &&
+            chmod 600 .env
           "
 
           # Clean up unused images and build cache before pulling to prevent disk-full failures

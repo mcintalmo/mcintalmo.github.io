@@ -17,6 +17,7 @@ if os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT"):
     except Exception as e:
         print(f"[OTel Diagnostic] Programmatic auto-instrumentation failed: {e}")
 
+import datetime
 import socket
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
@@ -30,19 +31,25 @@ from pydantic import BaseModel
 from common.config import AppSettings
 
 
+def get_settings() -> AppSettings:
+    return AppSettings()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
-    # Startup logic can go here
+    settings = get_settings()
+    settings.livekit.validate_security()
     yield
-    # Shutdown logic can go here
 
+
+settings = get_settings()
 
 app = FastAPI(lifespan=lifespan)
 
-# Allow CORS for local testing
+# Restrict CORS to authorized origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.cors.allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -52,11 +59,7 @@ app.add_middleware(
 class TokenResponse(BaseModel):
     token: str
     ws_url: str
-    local_ip: str
-
-
-def get_settings() -> AppSettings:
-    return AppSettings()
+    local_ip: str | None = None
 
 
 def get_local_ip() -> str:
@@ -119,12 +122,14 @@ async def get_token(
         .with_name(identity)
         .with_grants(grant)
         .with_room_config(room_config)
+        .with_ttl(datetime.timedelta(seconds=settings.token_ttl_seconds))
     )
 
     token = access_token.to_jwt()
 
     if settings.livekit.url.startswith("wss://"):
         client_ws_url = settings.livekit.url
+        local_ip = None
     else:
         # We replace 'livekit' docker hostname with 'localhost' or the client request's
         # host IP/domain if running the browser on the host.
@@ -135,8 +140,7 @@ async def get_token(
         client_ws_url = settings.livekit.url.replace("livekit", host).replace(
             "localhost", host
         )
-
-    local_ip = get_local_ip()
+        local_ip = get_local_ip()
 
     return TokenResponse(token=token, ws_url=client_ws_url, local_ip=local_ip)
 

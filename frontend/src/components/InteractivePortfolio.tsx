@@ -4,7 +4,7 @@ import { CustomChatWidget } from "./CustomChatWidget";
 import { TelemetryPopoffs, useTelemetry } from "./TelemetryPopoffs";
 import "@livekit/components-styles";
 
-import { fetchLiveKitToken } from "../lib/token";
+import { fetchLiveKitToken, generateSecureId } from "../lib/token";
 import type { ResumeRoot, SiteConfigRoot } from "../lib/types";
 import { AgentController } from "./AgentController";
 import { Home } from "./Home";
@@ -197,9 +197,7 @@ export function InteractivePortfolio({ resume, config }: Props) {
   const fetchToken = React.useCallback(() => {
     if (!roomNameRef.current) {
       const urlParams = new URLSearchParams(window.location.search);
-      roomNameRef.current =
-        urlParams.get("room") ||
-        `portfolio-${Math.random().toString(36).substring(2, 11)}`;
+      roomNameRef.current = urlParams.get("room") || generateSecureId("portfolio");
     }
     const roomName = roomNameRef.current;
     fetchLiveKitToken(roomName)
