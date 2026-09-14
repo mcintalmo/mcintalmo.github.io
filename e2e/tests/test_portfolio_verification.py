@@ -1,3 +1,5 @@
+import random
+
 from playwright.sync_api import Page, expect
 
 
@@ -72,7 +74,8 @@ def test_chat_widget_open_and_online_state(page: Page, app_url: str):
     console_logs = []
     page.on("console", lambda msg: console_logs.append(f"[{msg.type}] {msg.text}"))
 
-    page.goto(f"{app_url}/")
+    room_id = f"test-widget-{random.randint(1000, 9999)}"
+    page.goto(f"{app_url}/?room={room_id}")
 
     # Click floating action button
     fab = page.locator("#chat-fab")

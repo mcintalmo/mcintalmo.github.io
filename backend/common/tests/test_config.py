@@ -20,6 +20,20 @@ def test_cors_settings_csv_parsing() -> None:
     ]
 
 
+def test_cors_allowed_origins_environment_filtering() -> None:
+    cors = CorsSettings()
+    dev_origins = cors.get_allowed_origins("development")
+    assert "http://localhost:4321" in dev_origins
+    assert "https://www.alexandermcintosh.com" in dev_origins
+
+    prod_origins = cors.get_allowed_origins("production")
+    assert "https://www.alexandermcintosh.com" in prod_origins
+    assert "https://alexandermcintosh.com" in prod_origins
+    assert "https://mcintalmo.github.io" in prod_origins
+    assert "http://localhost:4321" not in prod_origins
+    assert "http://127.0.0.1:4321" not in prod_origins
+
+
 def test_app_settings_ttl_default() -> None:
     settings = AppSettings()
     assert settings.token_ttl_seconds == 900

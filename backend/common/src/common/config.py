@@ -14,6 +14,12 @@ DEFAULT_ALLOWED_ORIGINS: list[str] = [
     "http://127.0.0.1:3000",
 ]
 
+PRODUCTION_ALLOWED_ORIGINS: list[str] = [
+    "https://www.alexandermcintosh.com",
+    "https://alexandermcintosh.com",
+    "https://mcintalmo.github.io",
+]
+
 
 LOCAL_ORIGIN_REGEX: str = r"^https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+)(:\d+)?$"
 
@@ -28,6 +34,13 @@ class CorsSettings(BaseSettings):
         if isinstance(v, str):
             return [origin.strip() for origin in v.split(",") if origin.strip()]
         return v
+
+    def get_allowed_origins(self, environment: str = "development") -> list[str]:
+        if self.allowed_origins != DEFAULT_ALLOWED_ORIGINS:
+            return self.allowed_origins
+        if environment == "production":
+            return PRODUCTION_ALLOWED_ORIGINS
+        return self.allowed_origins
 
     def get_origin_regex(self, environment: str = "development") -> str | None:
         if self.allow_origin_regex is not None:

@@ -49,7 +49,7 @@ app = FastAPI(lifespan=lifespan)
 # Restrict CORS to authorized origins and local development network subnets
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors.allowed_origins,
+    allow_origins=settings.cors.get_allowed_origins(settings.environment),
     allow_origin_regex=settings.cors.get_origin_regex(settings.environment),
     allow_credentials=True,
     allow_methods=["*"],
