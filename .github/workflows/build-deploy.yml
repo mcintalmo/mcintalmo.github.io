@@ -159,7 +159,7 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{ secrets.VM_SSH_PRIVATE_KEY }}
         run: |
-          set -x
+          set -e
           # Give OCI a few seconds to propagate security list rules
           sleep 5
 
@@ -189,19 +189,24 @@ jobs:
           ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "
             cd /home/ubuntu/mcintalmo.github.io &&
             touch .env &&
+            sed -i \"/^ENVIRONMENT=/d\" .env &&
+            echo \"ENVIRONMENT=production\" >> .env &&
             for var in SMTP_SMARTHOST SMTP_AUTH_USERNAME SMTP_PASSWORD ALERT_DESTINATION_EMAIL; do
               sed -i \"/^\${var}=/d\" .env
             done &&
             echo \"SMTP_SMARTHOST=${{ secrets.SMTP_SMARTHOST }}\" >> .env &&
             echo \"SMTP_AUTH_USERNAME=${{ secrets.SMTP_AUTH_USERNAME }}\" >> .env &&
             echo \"SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}\" >> .env &&
-            echo \"ALERT_DESTINATION_EMAIL=${{ secrets.ALERT_DESTINATION_EMAIL }}\" >> .env
+            echo \"ALERT_DESTINATION_EMAIL=${{ secrets.ALERT_DESTINATION_EMAIL }}\" >> .env &&
+            chmod 600 .env
           "
 
           # Inject LLM secrets into remote backend/.env file on OCI VM
           ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "
             cd /home/ubuntu/mcintalmo.github.io/backend &&
             touch .env &&
+            sed -i \"/^ENVIRONMENT=/d\" .env &&
+            echo \"ENVIRONMENT=production\" >> .env &&
             sed -i \"/^OLLAMA_MODEL_NAME=/d\" .env &&
             echo \"OLLAMA_MODEL_NAME=${{ vars.OLLAMA_MODEL_NAME || 'qwen2.5:3b' }}\" >> .env &&
             if [ -n \"${{ secrets.CEREBRAS_API_KEY }}\" ]; then
@@ -223,14 +228,38 @@ jobs:
             if [ -n \"${{ secrets.CARTESIA_API_KEY }}\" ]; then
               sed -i \"/^CARTESIA_API_KEY=/d\" .env
               echo \"CARTESIA_API_KEY=${{ secrets.CARTESIA_API_KEY }}\" >> .env
-            fi
+            fi &&
+            if [ -n \"${{ secrets.LIVEKIT_API_KEY }}\" ]; then
+              sed -i \"/^LIVEKIT_API_KEY=/d\" .env
+              echo \"LIVEKIT_API_KEY=${{ secrets.LIVEKIT_API_KEY }}\" >> .env
+            fi &&
+            if [ -n \"${{ secrets.LIVEKIT_API_SECRET }}\" ]; then
+              sed -i \"/^LIVEKIT_API_SECRET=/d\" .env
+              echo \"LIVEKIT_API_SECRET=${{ secrets.LIVEKIT_API_SECRET }}\" >> .env
+            fi &&
+            if [ -n \"${{ secrets.LIVEKIT_API_KEY }}\" ] && [ -n \"${{ secrets.LIVEKIT_API_SECRET }}\" ]; then
+              sed -i \"/^LIVEKIT_KEYS=/d\" .env
+              echo \"LIVEKIT_KEYS=${{ secrets.LIVEKIT_API_KEY }}: ${{ secrets.LIVEKIT_API_SECRET }}\" >> .env
+            fi &&
+            chmod 600 .env
           "
 
           # Clean up unused images and build cache before pulling to prevent disk-full failures
           ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "docker image prune -af && docker builder prune -af"
 
           # Pull pre-compiled GHCR images and restart services
-          ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u ${{ github.actor }} --password-stdin && sed -i '/rtc:/a \  node_ip: ${{ env.VM_IP }}' /home/ubuntu/mcintalmo.github.io/infra/livekit.yaml && cd /home/ubuntu/mcintalmo.github.io/infra && docker compose --profile telemetry pull agent auth && docker compose --profile telemetry up -d && docker compose restart livekit"
+          ssh -i ~/.ssh/id_ed25519 ubuntu@${{ env.VM_IP }} "
+            echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u ${{ github.actor }} --password-stdin &&
+            sed -i '/rtc:/a \  node_ip: ${{ env.VM_IP }}' /home/ubuntu/mcintalmo.github.io/infra/livekit.yaml &&
+            if [ -n '${{ secrets.LIVEKIT_API_KEY }}' ] && [ -n '${{ secrets.LIVEKIT_API_SECRET }}' ]; then
+              sed -i '/keys:/ {n; d}' /home/ubuntu/mcintalmo.github.io/infra/livekit.yaml &&
+              sed -i '/keys:/a \  ${{ secrets.LIVEKIT_API_KEY }}: ${{ secrets.LIVEKIT_API_SECRET }}' /home/ubuntu/mcintalmo.github.io/infra/livekit.yaml
+            fi &&
+            cd /home/ubuntu/mcintalmo.github.io/infra &&
+            docker compose --profile telemetry pull agent auth &&
+            docker compose --profile telemetry up -d &&
+            docker compose restart livekit
+          "
 
       - name: Revoke Whitelist
         if: always()

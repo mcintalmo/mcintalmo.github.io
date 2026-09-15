@@ -3020,6 +3020,7 @@ version = "0.1.0"
 source = { editable = "tailor" }
 dependencies = [
     { name = "beautifulsoup4" },
+    { name = "common" },
     { name = "fastapi" },
     { name = "httpx" },
     { name = "langchain-core" },
@@ -3036,6 +3037,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.15.0" },
+    { name = "common", editable = "common" },
     { name = "fastapi", specifier = ">=0.138.2" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "langchain-core", specifier = ">=1.4.8" },

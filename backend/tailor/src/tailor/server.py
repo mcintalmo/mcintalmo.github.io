@@ -1,4 +1,5 @@
 import asyncio
+import os
 from pathlib import Path
 from typing import Any
 
@@ -9,7 +10,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
+from common.config import CorsSettings
+
 from .graph import create_graph
+
+cors_settings = CorsSettings()
+environment = os.getenv("ENVIRONMENT", "development")
 
 app = FastAPI(
     title="Resume Tailor API",
@@ -19,7 +25,8 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=cors_settings.get_allowed_origins(environment),
+    allow_origin_regex=cors_settings.get_origin_regex(environment),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -78,4 +85,4 @@ async def tailor_resume(req: TailorRequest) -> TailorResponse:
 
 
 def start() -> None:
-    uvicorn.run("tailor.server:app", host="0.0.0.0", port=8001, reload=True)
+    uvicorn.run("tailor.server:app", host="127.0.0.1", port=8001, reload=True)

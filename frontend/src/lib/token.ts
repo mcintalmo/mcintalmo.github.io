@@ -4,6 +4,13 @@ export interface TokenInfo {
   local_ip?: string;
 }
 
+export function generateSecureId(prefix = "user"): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
+  }
+  return `${prefix}-${Math.random().toString(36).substring(2, 10)}`;
+}
+
 export async function fetchLiveKitToken(
   roomName: string,
   identityPrefix = "user",
@@ -17,7 +24,7 @@ export async function fetchLiveKitToken(
     ? [...localCandidates, prodApiUrl]
     : [import.meta.env.PUBLIC_API_URL || prodApiUrl];
 
-  const identity = `${identityPrefix}-${Math.floor(Math.random() * 10000)}`;
+  const identity = generateSecureId(identityPrefix);
 
   let lastError: unknown = null;
   for (const baseUrl of candidateUrls) {

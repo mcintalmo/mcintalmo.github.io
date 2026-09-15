@@ -26,36 +26,75 @@ export const ChatAgent = ({ config }: { config?: SiteConfigRoot }) => {
     };
   }, [triggerTelemetry]);
 
-  React.useEffect(() => {
-    let isMounted = true;
-    let timeoutId: ReturnType<typeof setTimeout>;
+  const isMountedRef = React.useRef(true);
+  const timeoutIdRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const fetchToken = async () => {
-      const searchParams =
-        typeof window !== "undefined"
-          ? new URLSearchParams(window.location.search)
-          : null;
-      const roomName = searchParams?.get("room") || "alex-chat";
+  const fetchToken = React.useCallback(async () => {
+    const searchParams =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search)
+        : null;
+    const roomName = searchParams?.get("room") || "alex-chat";
 
-      try {
-        const data = await fetchLiveKitToken(roomName);
-        if (!isMounted) return;
-        setTokenInfo({ token: data.token, ws_url: data.ws_url });
-      } catch (err) {
-        console.warn("[ChatAgent] Token fetch pending/retrying...", err);
-        if (isMounted) {
-          timeoutId = setTimeout(fetchToken, 3000);
-        }
+    try {
+      const data = await fetchLiveKitToken(roomName);
+      if (!isMountedRef.current) return null;
+      setTokenInfo({ token: data.token, ws_url: data.ws_url });
+      return data;
+    } catch (err) {
+      console.warn("[ChatAgent] Token fetch pending/retrying...", err);
+      if (isMountedRef.current) {
+        timeoutIdRef.current = setTimeout(fetchToken, 3000);
       }
-    };
+      return null;
+    }
+  }, []);
 
+  const handleDisconnected = React.useCallback(() => {
+    fetchToken();
+  }, [fetchToken]);
+
+  const handleError = React.useCallback(
+    (error: Error) => {
+      console.error("[ChatAgent] LiveKit room error:", error);
+      const msg = error.message?.toLowerCase() || "";
+      if (
+        msg.includes("token") ||
+        msg.includes("unauthorized") ||
+        msg.includes("expired")
+      ) {
+        fetchToken();
+      }
+    },
+    [fetchToken],
+  );
+
+  React.useEffect(() => {
+    isMountedRef.current = true;
     fetchToken();
 
     return () => {
-      isMounted = false;
-      clearTimeout(timeoutId);
+      isMountedRef.current = false;
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current);
+      }
     };
-  }, []);
+  }, [fetchToken]);
+
+  const hasToken = Boolean(tokenInfo);
+  // Proactively refresh token every 12 minutes while active
+  React.useEffect(() => {
+    if (!hasToken) return;
+
+    const intervalId = setInterval(
+      () => {
+        fetchToken();
+      },
+      12 * 60 * 1000,
+    );
+
+    return () => clearInterval(intervalId);
+  }, [hasToken, fetchToken]);
 
   if (!tokenInfo) {
     return (
@@ -72,6 +111,8 @@ export const ChatAgent = ({ config }: { config?: SiteConfigRoot }) => {
       connect={true}
       audio={false}
       video={false}
+      onDisconnected={handleDisconnected}
+      onError={handleError}
       style={{ display: "contents" }}
     >
       <CustomChatWidget

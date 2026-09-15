@@ -1,5 +1,24 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fetchLiveKitToken } from "./token";
+import { fetchLiveKitToken, generateSecureId } from "./token";
+
+describe("generateSecureId", () => {
+  it("generates an id with the provided prefix", () => {
+    const id = generateSecureId("test");
+    expect(id.startsWith("test-")).toBe(true);
+    expect(id.length).toBeGreaterThan(6);
+  });
+
+  it("defaults to prefix 'user'", () => {
+    const id = generateSecureId();
+    expect(id.startsWith("user-")).toBe(true);
+  });
+
+  it("generates unique ids on consecutive calls", () => {
+    const id1 = generateSecureId("agent");
+    const id2 = generateSecureId("agent");
+    expect(id1).not.toBe(id2);
+  });
+});
 
 describe("fetchLiveKitToken", () => {
   beforeEach(() => {

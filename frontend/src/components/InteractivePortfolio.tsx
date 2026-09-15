@@ -4,7 +4,7 @@ import { CustomChatWidget } from "./CustomChatWidget";
 import { TelemetryPopoffs, useTelemetry } from "./TelemetryPopoffs";
 import "@livekit/components-styles";
 
-import { fetchLiveKitToken } from "../lib/token";
+import { fetchLiveKitToken, generateSecureId } from "../lib/token";
 import type { ResumeRoot, SiteConfigRoot } from "../lib/types";
 import { AgentController } from "./AgentController";
 import { Home } from "./Home";
@@ -194,26 +194,60 @@ export function InteractivePortfolio({ resume, config }: Props) {
 
   const roomNameRef = React.useRef<string | null>(null);
 
-  const fetchToken = React.useCallback(() => {
+  const fetchToken = React.useCallback(async () => {
     if (!roomNameRef.current) {
       const urlParams = new URLSearchParams(window.location.search);
-      roomNameRef.current =
-        urlParams.get("room") ||
-        `portfolio-${Math.random().toString(36).substring(2, 11)}`;
+      roomNameRef.current = urlParams.get("room") || generateSecureId("portfolio");
     }
     const roomName = roomNameRef.current;
-    fetchLiveKitToken(roomName)
-      .then((data) =>
-        setTokenInfo({
-          token: data.token,
-          ws_url: data.ws_url,
-          local_ip: data.local_ip,
-        }),
-      )
-      .catch((err) => {
-        console.error("Failed to fetch LiveKit token:", err);
+    try {
+      const data = await fetchLiveKitToken(roomName);
+      setTokenInfo({
+        token: data.token,
+        ws_url: data.ws_url,
+        local_ip: data.local_ip,
       });
+      return data;
+    } catch (err) {
+      console.error("Failed to fetch LiveKit token:", err);
+      return null;
+    }
   }, []);
+
+  const handleDisconnected = React.useCallback(() => {
+    // Refresh token so subsequent reconnect attempts use a valid, fresh JWT
+    fetchToken();
+  }, [fetchToken]);
+
+  const handleError = React.useCallback(
+    (error: Error) => {
+      console.error("LiveKit connection error:", error);
+      const msg = error.message?.toLowerCase() || "";
+      if (
+        msg.includes("token") ||
+        msg.includes("unauthorized") ||
+        msg.includes("expired")
+      ) {
+        fetchToken();
+      }
+    },
+    [fetchToken],
+  );
+
+  const hasToken = Boolean(tokenInfo);
+  // Proactively refresh token every 12 minutes while active (before 15-minute TTL expires)
+  React.useEffect(() => {
+    if (!shouldConnect || !hasToken) return;
+
+    const intervalId = setInterval(
+      () => {
+        fetchToken();
+      },
+      12 * 60 * 1000,
+    );
+
+    return () => clearInterval(intervalId);
+  }, [shouldConnect, hasToken, fetchToken]);
 
   const handleStartInteraction = React.useCallback(() => {
     setShouldConnect(true);
@@ -253,6 +287,8 @@ export function InteractivePortfolio({ resume, config }: Props) {
         connect={shouldConnect && !!tokenInfo?.token && !!tokenInfo?.ws_url}
         audio={false}
         video={false}
+        onDisconnected={handleDisconnected}
+        onError={handleError}
         style={{ display: "contents" }}
       >
         <AgentController />
