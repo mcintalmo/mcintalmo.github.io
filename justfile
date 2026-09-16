@@ -68,6 +68,10 @@ test-backend *args:
 test-backend-eval *args:
     uv run --directory backend pytest -m "eval" {{args}}
 
+# Run LiveKit conversational agent DeepEval evaluations
+test-agent-eval *args:
+    RUN_EVALS=true uv run --directory backend pytest agent/tests/evals -m "eval" -s {{args}}
+
 # Run JavaScript/TypeScript frontend tests
 test-frontend *args:
     pnpm --prefix frontend run test:run {{args}}
