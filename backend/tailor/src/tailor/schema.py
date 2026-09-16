@@ -1,7 +1,6 @@
-from typing import Any, NotRequired
+from typing import Any, NotRequired, TypedDict
 
 from pydantic import BaseModel, ConfigDict, Field
-from typing_extensions import TypedDict
 
 
 class Organization(BaseModel):

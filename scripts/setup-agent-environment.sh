@@ -51,5 +51,5 @@ echo "Local Environment Configuration Completed Successfully"
 echo "========================================================"
 echo "Recommended Shell Exports (for LiteLLM / Ollama routing):"
 echo '  export OPENAI_BASE_URL="http://localhost:4000/v1"'
-echo '  export OPENAI_API_KEY="local-key"'
+echo '  export OPENAI_API_KEY="local-key"'  # pragma: allowlist secret
 echo "========================================================"

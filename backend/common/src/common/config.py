@@ -70,7 +70,10 @@ class LiveKitSettings(BaseSettings):
                     "Insecure LiveKit API secret in production (wss://). "
                     "Please set LIVEKIT_API_SECRET to a strong secret."
                 )
-        if self.api_key == "devkey" and self.url.startswith("wss://"):
+        if (
+            self.api_key == "devkey"  # pragma: allowlist secret
+            and self.url.startswith("wss://")
+        ):
             logger.warning(
                 "Insecure LiveKit API key in production (wss://). "
                 "Please set LIVEKIT_API_KEY."

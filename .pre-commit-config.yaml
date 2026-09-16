@@ -54,3 +54,13 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
+
+  # 7. Frontend Dependency Vulnerability Audit
+  - repo: local
+    hooks:
+      - id: pnpm-audit
+        name: Frontend Vulnerability Audit
+        entry: pnpm --prefix frontend audit --audit-level=high
+        language: system
+        files: ^(frontend/package\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml)$
+        pass_filenames: false
