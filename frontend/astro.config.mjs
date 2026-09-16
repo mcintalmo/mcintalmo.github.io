@@ -3,6 +3,7 @@
 import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import sentry from "@sentry/astro";
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 
 // https://astro.build/config
@@ -11,6 +12,7 @@ export default defineConfig({
   site: "https://www.alexandermcintosh.com",
   integrations: [react(), sitemap(), sentry()],
   vite: {
+    plugins: [tailwindcss()],
     ssr: {
       noExternal: [
         "@copilotkit/react-core",

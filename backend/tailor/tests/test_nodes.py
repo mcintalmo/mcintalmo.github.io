@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -99,3 +100,33 @@ async def test_evaluate_resume() -> None:
     with patch("tailor.nodes.get_llm", return_value=mock_llm):
         result = await evaluate_resume(state)
         assert result["evaluation_score"] == 95
+
+
+@pytest.mark.asyncio
+async def test_ingest_job_description_file_disallowed_by_default(
+    tmp_path: Path,
+) -> None:
+    secret_file = tmp_path / "secret.env"
+    secret_file.write_text("SUPER_SECRET_KEY=12345", encoding="utf-8")
+
+    state: TailorState = {
+        "job_description_input": str(secret_file),
+    }
+    result = await ingest_job_description(state)
+    assert result["job_description_text"] == str(secret_file)
+    assert "SUPER_SECRET_KEY" not in (result["job_description_text"] or "")
+
+
+@pytest.mark.asyncio
+async def test_ingest_job_description_file_allowed_when_explicit(
+    tmp_path: Path,
+) -> None:
+    jd_file = tmp_path / "job.txt"
+    jd_file.write_text("Senior Software Engineer", encoding="utf-8")
+
+    state: TailorState = {
+        "job_description_input": str(jd_file),
+        "allow_file_read": True,
+    }
+    result = await ingest_job_description(state)
+    assert result["job_description_text"] == "Senior Software Engineer"

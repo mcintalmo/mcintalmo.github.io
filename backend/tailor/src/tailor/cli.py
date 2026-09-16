@@ -17,7 +17,11 @@ async def _run_pipeline(jd_input: str, resume_path: Path) -> None:
 
     base_resume = await asyncio.to_thread(read_yaml)
 
-    initial_state = {"job_description_input": jd_input, "base_resume": base_resume}
+    initial_state = {
+        "job_description_input": jd_input,
+        "base_resume": base_resume,
+        "allow_file_read": True,
+    }
 
     print("Initializing LangGraph pipeline...")
     app = create_graph()

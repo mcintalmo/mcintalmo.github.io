@@ -88,3 +88,4 @@ class TailorState(TypedDict):
     final_resume: NotRequired[dict[str, Any] | None]
     evaluation_score: NotRequired[int | None]
     output_dir: NotRequired[str | None]
+    allow_file_read: NotRequired[bool]
