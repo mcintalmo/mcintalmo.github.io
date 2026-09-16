@@ -67,13 +67,15 @@ services:
     volumes:
       - ./livekit.yaml:/livekit.yaml
     ports:
-      - "7880:7880"
+      - "127.0.0.1:7880:7880"
       - "7881:7881"
       - "7882:7882/udp"
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     restart: always
     env_file:
       - ../backend/.env
+    networks:
+      - internal-bridge
 
 
 
@@ -93,6 +95,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 45s
+    networks:
+      - internal-bridge
 
   kokoro:
     image: ghcr.io/remsky/kokoro-fastapi-cpu:latest
@@ -117,6 +121,8 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
+    networks:
+      - internal-bridge
 
   ollama:
     image: ollama/ollama:latest
@@ -131,6 +137,8 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+    networks:
+      - internal-bridge
 
   ollama-pull:
     image: curlimages/curl:latest
@@ -149,7 +157,7 @@ services:
     network_mode: host
     volumes:
       - ./litellm_config.yaml:/app/config.yaml
-    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    command: ["--config", "/app/config.yaml", "--host", "127.0.0.1", "--port", "4000"]
     restart: always
     env_file:
       - ../backend/.env
@@ -265,3 +273,7 @@ volumes:
   prometheus_data:
   ollama_data:
   phoenix_data:
+
+networks:
+  internal-bridge:
+    driver: bridge

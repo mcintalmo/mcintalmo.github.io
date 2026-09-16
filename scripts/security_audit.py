@@ -155,6 +155,68 @@ def check_dependabot_zero_alerts(repo: str) -> None:
         raise RuntimeError(f"Found {open_count} open Dependabot alerts! Must be 0.")
 
 
+def check_livekit_endpoint(livekit_host: str) -> None:
+    logger.info("Checking LiveKit endpoint at https://%s/...", livekit_host)
+    req = urllib.request.Request(
+        f"https://{livekit_host}/",
+        headers={"User-Agent": "SecurityAuditProbe/1.0"},
+    )
+    ssl_context = ssl.create_default_context()
+    ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
+    with urllib.request.urlopen(req, context=ssl_context, timeout=10) as response:
+        if response.getcode() != 200:
+            raise RuntimeError(
+                f"Unexpected status code {response.getcode()} from https://{livekit_host}"
+            )
+        body = response.read().decode("utf-8")
+        if "OK" not in body:
+            raise RuntimeError(f"Unexpected LiveKit response body: {body}")
+        logger.info("LiveKit HTTPS/WSS endpoint verified successfully.")
+
+
+def check_token_endpoint(api_host: str) -> None:
+    token_url = f"https://{api_host}/token?room_name=security-probe&identity=probe-bot"
+    logger.info("Checking token generation at %s...", token_url)
+    req = urllib.request.Request(
+        token_url,
+        headers={"User-Agent": "SecurityAuditProbe/1.0"},
+    )
+    ssl_context = ssl.create_default_context()
+    ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
+    with urllib.request.urlopen(req, context=ssl_context, timeout=10) as response:
+        if response.getcode() != 200:
+            raise RuntimeError(
+                f"Unexpected status code {response.getcode()} from {token_url}"
+            )
+        body = response.read().decode("utf-8")
+        data = json.loads(body)
+        if not data.get("token") or not data.get("ws_url"):
+            raise RuntimeError(f"Malformed token response: {body}")
+        logger.info("Token generation verified successfully.")
+
+
+def check_internal_ports_isolated(host: str, ports: list[int] | None = None) -> None:
+    if ports is None:
+        ports = [4000, 7880, 8000, 8080, 8880, 10300, 11434]
+
+    logger.info("Checking that internal ports are isolated on %s...", host)
+    open_ports: list[int] = []
+    for port in ports:
+        try:
+            with socket.create_connection((host, port), timeout=2):
+                open_ports.append(port)
+                logger.error("Port %d is accessible from the internet!", port)
+        except (TimeoutError, ConnectionRefusedError, OSError):
+            logger.info("Port %d is properly isolated (blocked).", port)
+
+    if open_ports:
+        raise RuntimeError(
+            f"CRITICAL SECURITY FAILURE: Internal ports {open_ports} are "
+            f"publicly accessible on {host}!"
+        )
+    logger.info("All internal ports verified isolated.")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Continuous security audit probe.")
     parser.add_argument(
@@ -163,8 +225,18 @@ def main() -> int:
         help="Frontend hostname for TLS check",
     )
     parser.add_argument(
+        "--api-host",
+        default="api.alexandermcintosh.com",
+        help="API hostname",
+    )
+    parser.add_argument(
+        "--livekit-host",
+        default="livekit.alexandermcintosh.com",
+        help="LiveKit hostname",
+    )
+    parser.add_argument(
         "--health-url",
-        default="http://api.alexandermcintosh.com/health",
+        default="https://api.alexandermcintosh.com/health",
         help="API healthcheck URL",
     )
     parser.add_argument(
@@ -177,14 +249,25 @@ def main() -> int:
         action="store_true",
         help="Query GitHub API to assert zero open Dependabot alerts",
     )
+    parser.add_argument(
+        "--check-ports",
+        action="store_true",
+        help="Assert that internal container ports are inaccessible from internet",
+    )
     args = parser.parse_args()
 
     try:
         check_tls_certificate(args.frontend_host)
+        check_tls_certificate(args.api_host)
+        check_tls_certificate(args.livekit_host)
         check_api_health(args.health_url)
+        check_livekit_endpoint(args.livekit_host)
+        check_token_endpoint(args.api_host)
         check_frontend_security(f"https://{args.frontend_host}")
         if args.check_dependabot:
             check_dependabot_zero_alerts(args.repo)
+        if args.check_ports:
+            check_internal_ports_isolated(args.api_host)
         logger.info("All security audit probes passed cleanly.")
         return 0
     except Exception as e:

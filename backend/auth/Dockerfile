@@ -20,4 +20,4 @@ RUN uv sync --package auth --frozen --no-dev && \
 
 USER appuser
 
-CMD ["uv", "run", "--package", "auth", "uvicorn", "auth.main:app", "--host", "0.0.0.0"]
+CMD ["uv", "run", "--package", "auth", "uvicorn", "auth.main:app", "--host", "127.0.0.1"]
