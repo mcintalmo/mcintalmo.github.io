@@ -13,3 +13,14 @@ onlyBuiltDependencies:
 minimumReleaseAge: 10080
 minimumReleaseAgeStrict: false
 blockExoticSubdeps: true
+overrides:
+  astro@<7.0.6: ^7.0.6
+  astro@<7.2.8: ^7.2.8
+  astro@<=7.2.3: ^7.2.4
+  astro@>=2.9.0 <=7.0.9: ^7.1.0
+  astro@>=3.10.0 <7.0.4: ^7.0.4
+  esbuild@>=0.27.3 <0.28.1: ^0.28.1
+  js-yaml@>=4.0.0 <4.3.2: ^4.3.2
+  sharp@<0.35.0: ^0.35.0
+  sharp@<0.35.4: ^0.35.4
+  svgo@>=4.0.0 <4.1.0: ^4.1.0

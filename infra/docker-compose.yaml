@@ -85,7 +85,7 @@ services:
     volumes:
       - ./models:/root/.cache/huggingface
     ports:
-      - "10300:8000"
+      - "127.0.0.1:10300:8000"
     restart: always
     healthcheck:
       test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
@@ -97,7 +97,7 @@ services:
   kokoro:
     image: ghcr.io/remsky/kokoro-fastapi-cpu:latest
     ports:
-      - "8880:8880"
+      - "127.0.0.1:8880:8880"
     volumes:
       - ./kokoro_cache:/app/cache
     environment:
@@ -121,7 +121,7 @@ services:
   ollama:
     image: ollama/ollama:latest
     ports:
-      - "11434:11434"
+      - "127.0.0.1:11434:11434"
     volumes:
       - ollama_data:/root/.ollama
     restart: always
@@ -186,16 +186,16 @@ services:
       - ./observability/otel/otel-collector.yaml:/etc/otel/config.yaml
     command: ["--config=/etc/otel/config.yaml"]
     ports:
-      - "4317:4317"   # gRPC
-      - "4318:4318"   # HTTP
+      - "127.0.0.1:4317:4317"   # gRPC
+      - "127.0.0.1:4318:4318"   # HTTP
 
   jaeger:
     image: jaegertracing/jaeger:latest
     profiles:
       - telemetry
     ports:
-      - "16686:16686" # UI
-      - "14250:14250" # gRPC from collector
+      - "127.0.0.1:16686:16686" # UI
+      - "127.0.0.1:14250:14250" # gRPC from collector
 
   prometheus:
     image: prom/prometheus:latest
@@ -208,15 +208,15 @@ services:
       - ./observability/prometheus:/etc/prometheus
       - prometheus_data:/prometheus
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
 
   phoenix:
     image: arizephoenix/phoenix:latest
     profiles:
       - telemetry
     ports:
-      - "6006:6006" # UI and OTLP HTTP
-      - "4319:4317" # OTLP gRPC
+      - "127.0.0.1:6006:6006" # UI and OTLP HTTP
+      - "127.0.0.1:4319:4317" # OTLP gRPC
     volumes:
       - phoenix_data:/root/.phoenix
     restart: always
@@ -236,7 +236,7 @@ services:
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     ports:
-      - "9100:9100"
+      - "127.0.0.1:9100:9100"
 
   alertmanager:
     image: prom/alertmanager:latest
@@ -245,7 +245,7 @@ services:
     container_name: infra-alertmanager
     restart: always
     ports:
-      - "9093:9093"
+      - "127.0.0.1:9093:9093"
     env_file:
       - ../.env
     volumes:

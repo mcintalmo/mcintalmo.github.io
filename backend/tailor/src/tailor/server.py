@@ -67,6 +67,7 @@ async def tailor_resume(req: TailorRequest) -> TailorResponse:
     initial_state = {
         "job_description_input": req.job_description,
         "base_resume": base_resume,
+        "allow_file_read": False,
     }
 
     workflow = create_graph()

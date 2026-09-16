@@ -145,6 +145,8 @@ def _parse_json_response(content: str) -> Any:
 
 async def ingest_job_description(state: TailorState) -> dict[str, Any]:
     input_value = state["job_description_input"]
+    allow_file_read = state.get("allow_file_read", False)
+
     if input_value.startswith("http://") or input_value.startswith("https://"):
         async with httpx.AsyncClient() as client:
             resp = await client.get(input_value)
@@ -153,13 +155,20 @@ async def ingest_job_description(state: TailorState) -> dict[str, Any]:
             for script in soup(["script", "style"]):
                 script.extract()
             job_description_text = soup.get_text(separator=" ", strip=True)
-    elif Path(input_value).is_file():
-        # use asyncio to read file asynchronously if desired, or just to_thread
-        def read_file(path: str) -> str:
-            with open(path, encoding="utf-8") as f:
-                return f.read()
+    elif allow_file_read:
+        try:
+            path = Path(input_value).resolve()
+            if path.is_file():
 
-        job_description_text = await asyncio.to_thread(read_file, input_value)
+                def read_file(file_path: Path) -> str:
+                    with open(file_path, encoding="utf-8") as f:
+                        return f.read()
+
+                job_description_text = await asyncio.to_thread(read_file, path)
+            else:
+                job_description_text = input_value
+        except (OSError, ValueError):
+            job_description_text = input_value
     else:
         job_description_text = input_value
 
