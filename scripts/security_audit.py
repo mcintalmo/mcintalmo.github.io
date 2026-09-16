@@ -26,6 +26,7 @@ logger = logging.getLogger("security_audit")
 def check_tls_certificate(hostname: str, min_days: int = 21) -> None:
     logger.info("Checking TLS certificate for %s...", hostname)
     context = ssl.create_default_context()
+    context.minimum_version = ssl.TLSVersion.TLSv1_2
     try:
         with socket.create_connection((hostname, 443), timeout=10) as sock:
             with context.wrap_socket(sock, server_hostname=hostname) as ssock:
@@ -64,7 +65,9 @@ def check_api_health(health_url: str) -> None:
         health_url,
         headers={"User-Agent": "SecurityAuditProbe/1.0"},
     )
-    with urllib.request.urlopen(req, timeout=10) as response:
+    ssl_context = ssl.create_default_context()
+    ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
+    with urllib.request.urlopen(req, context=ssl_context, timeout=10) as response:
         status_code = response.getcode()
         if status_code != 200:
             raise RuntimeError(
@@ -108,7 +111,9 @@ def check_frontend_security(frontend_url: str) -> None:
         frontend_url,
         headers={"User-Agent": "SecurityAuditProbe/1.0"},
     )
-    with urllib.request.urlopen(req, timeout=10) as response:
+    ssl_context = ssl.create_default_context()
+    ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
+    with urllib.request.urlopen(req, context=ssl_context, timeout=10) as response:
         if response.getcode() != 200:
             raise RuntimeError(
                 f"Unexpected status code {response.getcode()} from {frontend_url}"
