@@ -100,7 +100,7 @@
     "@testing-library/jest-dom": "^6.10.0",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.6",
-    "@typescript-eslint/eslint-plugin": "^8.67.0",
+    "@typescript-eslint/eslint-plugin": "^8.70.0",
     "@typescript-eslint/parser": "^8.67.0",
     "@vitejs/plugin-react": "^4.7.0",
     "@vitest/coverage-v8": "^4.1.11",
