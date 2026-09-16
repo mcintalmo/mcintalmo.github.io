@@ -53,7 +53,7 @@
     "@sentry/astro": "^10.70.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@tailwindcss/vite": "^4.3.3",
-    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/react": "^4.4.0",
     "@tsparticles/slim": "^3.9.1",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.18",
