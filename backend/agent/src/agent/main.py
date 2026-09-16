@@ -162,13 +162,19 @@ async def portfolio_agent(ctx: JobContext) -> None:
         ),
     )
 
+    followup_task: asyncio.Task[None] | None = None
+
     @session.on("close")
     def on_session_close() -> None:
+        nonlocal followup_task
+        if followup_task is not None and not followup_task.done():
+            followup_task.cancel()
         logger.debug("AgentSession closed, shutting down JobContext")
         ctx.shutdown(reason="session closed")
 
     @session.on("conversation_item_added")
     def on_conversation_item_added(ev: ConversationItemAddedEvent) -> None:
+        nonlocal followup_task
         item = ev.item
         if isinstance(item, ChatMessage) and item.role == "assistant":
             text = item.text_content
@@ -199,8 +205,14 @@ async def portfolio_agent(ctx: JobContext) -> None:
 
                 asyncio.create_task(send_chat())
 
+                if followup_task is not None and not followup_task.done():
+                    followup_task.cancel()
+
                 async def generate_and_send_followups() -> None:
                     try:
+                        # Brief debounce to coalesce rapid successive turns
+                        await asyncio.sleep(1.0)
+
                         # Construct a temporary ChatContext containing history
                         llm_ctx = llm.ChatContext.empty()
                         system_prompt = (
@@ -264,10 +276,13 @@ async def portfolio_agent(ctx: JobContext) -> None:
                                     topic="portfolio.followups",
                                 )
                                 logger.debug("Published followups: %s", clean_content)
+                    except asyncio.CancelledError:
+                        logger.debug("Followup generation task cancelled")
+                        return
                     except Exception as e:
                         logger.error(f"Failed to generate or send followups: {e}")
 
-                asyncio.create_task(generate_and_send_followups())
+                followup_task = asyncio.create_task(generate_and_send_followups())
 
     _recent_messages: set[str] = set()
 
