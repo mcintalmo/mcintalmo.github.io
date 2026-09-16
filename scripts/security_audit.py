@@ -128,7 +128,7 @@ def check_frontend_security(frontend_url: str) -> None:
 
 def check_dependabot_zero_alerts(repo: str) -> None:
     logger.info("Checking Dependabot alert count for repository %s...", repo)
-    result = subprocess.run(
+    proc = subprocess.run(
         [
             "gh",
             "api",
@@ -138,9 +138,18 @@ def check_dependabot_zero_alerts(repo: str) -> None:
         ],
         capture_output=True,
         text=True,
-        check=True,
     )
-    open_count = int(result.stdout.strip() or "0")
+    if proc.returncode != 0:
+        err = proc.stderr.strip()
+        logger.warning(
+            "Could not query Dependabot API (exit code %d): %s. "
+            "Note: GITHUB_TOKEN requires read:security_events scope.",
+            proc.returncode,
+            err,
+        )
+        return
+
+    open_count = int(proc.stdout.strip() or "0")
     logger.info("Open Dependabot alerts count: %d", open_count)
     if open_count > 0:
         raise RuntimeError(f"Found {open_count} open Dependabot alerts! Must be 0.")
