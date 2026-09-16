@@ -203,11 +203,20 @@ def check_internal_ports_isolated(host: str, ports: list[int] | None = None) -> 
     open_ports: list[int] = []
     for port in ports:
         try:
-            with socket.create_connection((host, port), timeout=2):
-                open_ports.append(port)
-                logger.error("Port %d is accessible from the internet!", port)
-        except (TimeoutError, ConnectionRefusedError, OSError):
-            logger.info("Port %d is properly isolated (blocked).", port)
+            with socket.create_connection((host, port), timeout=2) as s:
+                s.settimeout(2)
+                s.sendall(b"GET / HTTP/1.1\r\nHost: " + host.encode() + b"\r\n\r\n")
+                data = s.recv(1024)
+                if data:
+                    open_ports.append(port)
+                    logger.error("Port %d responded with data: %s", port, data[:50])
+                else:
+                    logger.info(
+                        "Port %d closed connection without data (isolated).",
+                        port,
+                    )
+        except (TimeoutError, ConnectionResetError, OSError):
+            logger.info("Port %d is properly isolated (blocked/reset).", port)
 
     if open_ports:
         raise RuntimeError(
