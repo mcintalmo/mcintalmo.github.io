@@ -132,15 +132,15 @@ stop-containers:
 
 # Run the backend authentication/token server (port 8000 or custom $PORT)
 start-auth:
-    PYTHONPATH=src uv run --directory backend/auth uvicorn auth.main:app --host 0.0.0.0 --port ${PORT:-8000} --reload
+    PYTHONPATH=src uv run --directory backend/auth uvicorn auth.main:app --host 127.0.0.1 --port ${PORT:-8000} --reload
 
 # Run backend auth on port 8002 (useful when port 8000 is occupied by another local service)
 start-auth-alt:
-    PYTHONPATH=src uv run --directory backend/auth uvicorn auth.main:app --host 0.0.0.0 --port 8002 --reload
+    PYTHONPATH=src uv run --directory backend/auth uvicorn auth.main:app --host 127.0.0.1 --port 8002 --reload
 
 # Run the resume tailoring server (port 8001)
 start-tailor:
-    PYTHONPATH=src uv run --directory backend/tailor uvicorn tailor.server:app --host 0.0.0.0 --port 8001 --reload
+    PYTHONPATH=src uv run --directory backend/tailor uvicorn tailor.server:app --host 127.0.0.1 --port 8001 --reload
 
 # Run the LiveKit voice agent in development mode
 start-agent:

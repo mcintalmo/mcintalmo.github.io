@@ -264,13 +264,17 @@ jobs:
               sed -i '/keys:/ {n; d}' /home/ubuntu/mcintalmo.github.io/infra/livekit.yaml &&
               sed -i '/keys:/a \  ${{ secrets.LIVEKIT_API_KEY }}: ${{ secrets.LIVEKIT_API_SECRET }}' /home/ubuntu/mcintalmo.github.io/infra/livekit.yaml
             fi &&
+            if [ ! -d /etc/letsencrypt/live/api.alexandermcintosh.com ]; then
+              sudo certbot --nginx -d api.alexandermcintosh.com -d livekit.alexandermcintosh.com --non-interactive --agree-tos -m mcintalmo@gmail.com || true
+            fi &&
             sudo cp /home/ubuntu/mcintalmo.github.io/infra/nginx/portfolio.conf /etc/nginx/sites-available/portfolio.conf &&
             sudo nginx -t &&
             sudo systemctl reload nginx &&
             cd /home/ubuntu/mcintalmo.github.io/infra &&
             docker compose --profile telemetry pull agent auth &&
             docker compose --profile telemetry up -d &&
-            docker compose restart livekit
+            docker compose restart livekit &&
+            curl -fsSL --retry 5 --retry-delay 2 https://api.alexandermcintosh.com/health
           "
 
       - name: Revoke Whitelist

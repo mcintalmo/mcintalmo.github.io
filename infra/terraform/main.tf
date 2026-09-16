@@ -81,12 +81,12 @@ resource "oci_core_security_list" "portfolio_sl" {
     }
   }
 
-  # Allow LiveKit signaling ports (7880, 7881)
+  # Allow LiveKit WebRTC TCP fallback port (7881)
   ingress_security_rules {
     protocol = "6"
     source   = "0.0.0.0/0"
     tcp_options {
-      min = 7880
+      min = 7881
       max = 7881
     }
   }

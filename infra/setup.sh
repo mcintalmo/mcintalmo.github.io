@@ -47,8 +47,7 @@ sudo ufw default allow outgoing
 sudo ufw allow ssh
 sudo ufw allow http
 sudo ufw allow https
-# LiveKit ports
-sudo ufw allow 7880/tcp
+# LiveKit WebRTC media ports
 sudo ufw allow 7881/tcp
 sudo ufw allow 7882/udp
 sudo ufw allow 50000:60000/udp
@@ -73,7 +72,7 @@ fi
 log "Setting up backend .env"
 if [ ! -f "$APP_DIR/backend/.env" ]; then
     cp "$APP_DIR/.env.example" "$APP_DIR/backend/.env"
-    echo "⚠️  Please edit $APP_DIR/backend/.env with your secrets (NVIDIA_API_KEY, LIVEKIT_API_KEY, LIVEKIT_API_SECRET) before running services."
+    echo "[WARNING] Please edit $APP_DIR/backend/.env with your secrets (NVIDIA_API_KEY, LIVEKIT_API_KEY, LIVEKIT_API_SECRET) before running services."
 else
     echo "backend .env already exists, skipping template copy"
 fi
