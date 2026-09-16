@@ -58,8 +58,8 @@ def test_nginx_ssl_configuration() -> None:
     assert "listen 443 ssl" in content, (
         "Nginx portfolio.conf must contain 'listen 443 ssl' server blocks"
     )
-    assert "api.alexandermcintosh.com" in content
-    assert "livekit.alexandermcintosh.com" in content
+    assert "server_name api.alexandermcintosh.com;" in content
+    assert "server_name livekit.alexandermcintosh.com;" in content
 
     # Verify HTTP-to-HTTPS redirects
     assert "return 301 https://$host$request_uri;" in content, (
