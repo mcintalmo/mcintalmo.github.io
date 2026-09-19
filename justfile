@@ -98,13 +98,11 @@ bootstrap:
 
 # Upgrade all frontend & backend dependencies, ensuring none are newer than 7 days old
 upgrade:
-    @rm -f frontend/.npmrc resume/convert/.npmrc
+    @rm -f frontend/.npmrc
     @echo "==> Upgrading frontend packages (limiting to >= 7 days old)..."
     @echo "minimum-release-age=10080" > frontend/.npmrc
-    @echo "minimum-release-age=10080" > resume/convert/.npmrc
     cd frontend && pnpm update --ignore-scripts && pnpm install --ignore-scripts
-    cd resume/convert && pnpm update --ignore-scripts && pnpm install --ignore-scripts
-    @rm -f frontend/.npmrc resume/convert/.npmrc
+    @rm -f frontend/.npmrc
     @echo "==> Upgrading backend Python packages (limiting to >= 7 days old)..."
     uv lock --directory backend --upgrade --exclude-newer "7 days"
     uv sync --directory backend

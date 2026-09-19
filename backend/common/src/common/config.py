@@ -12,7 +12,7 @@ from pydantic_settings import (
     SettingsConfigDict,
 )
 
-from common.paths import REPO_ROOT
+from common.paths import SITE_CONFIG_PATH
 
 logger = structlog.get_logger(__name__)
 
@@ -31,31 +31,8 @@ class YamlConfigSettingsSource(PydanticBaseSettingsSource):
 
     def __call__(self) -> dict[str, Any]:
         config_env = os.environ.get("CONFIG_FILE")
-        paths: list[Path] = []
-        if config_env:
-            paths.append(Path(config_env))
-        paths.extend(
-            [
-                REPO_ROOT / "config.yaml",
-                REPO_ROOT / "agent.yaml",
-                REPO_ROOT / "site-config.yaml",
-                REPO_ROOT / "backend" / "config.yaml",
-                REPO_ROOT / "backend" / "agent" / "config.yaml",
-                REPO_ROOT / "backend" / "tailor" / "config.yaml",
-                Path("config.yaml"),
-                Path("agent.yaml"),
-                Path("../config.yaml"),
-                Path("../agent.yaml"),
-            ]
-        )
-
-        yaml_path: Path | None = None
-        for p in paths:
-            if p.exists():
-                yaml_path = p
-                break
-
-        if not yaml_path:
+        yaml_path = Path(config_env) if config_env else SITE_CONFIG_PATH
+        if not yaml_path.exists():
             return {}
 
         try:

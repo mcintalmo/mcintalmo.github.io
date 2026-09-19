@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { Brain, Cloud, Code, Layers3, Wrench } from "lucide-react";
+import { useScrollAnimation } from "../hooks/useScrollAnimation";
 import type { ResumeSkill, SiteConfigRoot } from "../lib/types";
-import { useScrollAnimation } from "./hooks/useScrollAnimation";
 import { SectionAnchor } from "./SectionAnchor";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 

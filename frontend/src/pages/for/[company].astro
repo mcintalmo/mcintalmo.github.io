@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import { ChatAgent } from "../../components/ChatAgent";
+import { InteractiveChat } from "../../components/InteractiveChat";
 import { Home } from "../../components/Home";
 import PortfolioSections from "../../components/PortfolioSections";
 import Layout from "../../layouts/Layout.astro";
@@ -28,6 +28,6 @@ const { config } = loadAll();
       />
       <PortfolioSections client:visible resume={tailoredResume} config={config} />
     </div>
-    <ChatAgent client:only="react" config={config} />
+    <InteractiveChat client:only="react" config={config} />
   </div>
 </Layout>

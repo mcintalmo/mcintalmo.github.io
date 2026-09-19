@@ -1,7 +1,7 @@
-from pathlib import Path
-
 import yaml
 from fastmcp import FastMCP
+
+from common.paths import SOURCE_RESUME_YAML
 
 # Initialize FastMCP
 mcp = FastMCP("PortfolioTools")
@@ -35,12 +35,8 @@ def read_resume() -> str:
     Read Alexander's resume data to answer questions about his experience.
     Returns the parsed YAML content as a string.
     """
-    # Path resolution to resume/resume.yaml
-    # __file__ is backend/mcp/src/portfolio_mcp/main.py
-    base = Path(__file__).resolve().parents[4]
-    resume_path = base / "resume" / "resume.yaml"
     try:
-        with open(resume_path) as f:
+        with open(SOURCE_RESUME_YAML, encoding="utf-8") as f:
             data = yaml.safe_load(f)
             return str(yaml.dump(data))
     except Exception as e:
