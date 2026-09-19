@@ -1,7 +1,9 @@
 ---
 import { BackToTop } from "../components/BackToTop";
-import { InteractivePortfolio } from "../components/InteractivePortfolio";
+import { Home } from "../components/Home";
+import { InteractiveChat } from "../components/InteractiveChat";
 import { Navigation } from "../components/Navigation";
+import PortfolioSections from "../components/PortfolioSections";
 import { ThemeProvider } from "../components/ThemeProvider";
 import { VectorBackground } from "../components/VectorBackground";
 import { Toaster } from "../components/ui/sonner";
@@ -15,7 +17,15 @@ const { config, resume } = loadAll();
   <ThemeProvider client:only="react" defaultTheme="light" storageKey="portfolio-theme">
     <Navigation client:only="react" config={config} basics={resume.basics} />
     <div class="relative flex flex-col md:flex-row min-h-screen">
-      <InteractivePortfolio client:only="react" resume={resume} config={config} />
+      <div class="main-content-wrapper flex-1 min-w-0">
+        <Home
+          client:load
+          basics={resume.basics}
+          recommendedQuestions={config.agent?.["recommended-questions"]}
+        />
+        <PortfolioSections client:visible resume={resume} config={config} />
+      </div>
+      <InteractiveChat client:only="react" config={config} />
       <BackToTop client:only="react" />
     </div>
     <VectorBackground client:only="react" />

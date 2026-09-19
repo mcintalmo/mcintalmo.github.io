@@ -27,6 +27,7 @@ import logging
 import time
 from typing import Any
 
+import aiohttp
 import httpx
 from livekit import rtc
 from livekit.agents import (
@@ -45,6 +46,7 @@ from livekit.agents import (
 )
 from livekit.agents.types import APIConnectOptions
 from livekit.agents.voice.agent_session import SessionConnectOptions
+from livekit.agents.voice.turn import EndpointingOptions
 from livekit.plugins import cartesia, openai, silero
 from livekit.plugins.openai.tts import AUDIO_STREAM_MODELS
 
@@ -73,6 +75,55 @@ try:
 except Exception:
     pass
 
+# Patch livekit.agents utils.ConnectionPool and cartesia.TTS to prevent
+# stale/closed WebSocket reuse
+try:
+    from livekit.agents import utils as agent_utils
+    from livekit.plugins.cartesia.constants import API_AUTH_HEADER, USER_AGENT
+
+    _orig_pool_get = agent_utils.ConnectionPool.get
+
+    async def _safe_pool_get(self: Any, *, timeout: float) -> Any:
+        # Purge dead connections from the pool before acquiring
+        for conn in list(self._available):
+            if getattr(conn, "closed", False):
+                self.remove(conn)
+        conn = await _orig_pool_get(self, timeout=timeout)
+        if getattr(conn, "closed", False):
+            self.remove(conn)
+            conn = await _orig_pool_get(self, timeout=timeout)
+        return conn
+
+    agent_utils.ConnectionPool.get = _safe_pool_get  # type: ignore[method-assign]
+
+    _orig_cartesia_connect_ws = cartesia.TTS._connect_ws
+
+    async def _safe_cartesia_connect_ws(
+        self: Any, timeout: float
+    ) -> aiohttp.ClientWebSocketResponse:
+        session = self._ensure_session()
+        url = self._opts.get_ws_url(
+            f"/tts/websocket?cartesia_version={self._opts.api_version}"
+        )
+        try:
+            return await asyncio.wait_for(
+                session.ws_connect(
+                    url,
+                    headers={
+                        "User-Agent": USER_AGENT,
+                        API_AUTH_HEADER: self._opts.api_key,
+                    },
+                    heartbeat=15.0,
+                ),
+                timeout,
+            )
+        except Exception:
+            return await _orig_cartesia_connect_ws(self, timeout)
+
+    cartesia.TTS._connect_ws = _safe_cartesia_connect_ws  # type: ignore[method-assign]
+except Exception:
+    pass
+
 logger = logging.getLogger("agent")
 
 
@@ -82,7 +133,11 @@ class Assistant(Agent):
 
 
 def prewarm(proc: JobProcess) -> None:
-    proc.userdata["vad"] = silero.VAD.load()
+    proc.userdata["vad"] = silero.VAD.load(
+        min_speech_duration=0.1,
+        min_silence_duration=0.5,
+        activation_threshold=0.5,
+    )
 
 
 server = AgentServer(setup_fnc=prewarm, num_idle_processes=6)
@@ -116,6 +171,12 @@ async def portfolio_agent(ctx: JobContext) -> None:
         logger.info("Using self-hosted TTS (model=%s)", settings.tts.model)
 
     turn_handling = TurnHandlingOptions(
+        turn_detection="vad",
+        endpointing=EndpointingOptions(
+            mode="fixed",
+            min_delay=0.5,
+            max_delay=1.5,
+        ),
         preemptive_generation={
             "enabled": True,
             "preemptive_tts": True,
@@ -163,12 +224,16 @@ async def portfolio_agent(ctx: JobContext) -> None:
     )
 
     followup_task: asyncio.Task[None] | None = None
+    background_tasks: set[asyncio.Task[Any]] = set()
 
     @session.on("close")
     def on_session_close() -> None:
         nonlocal followup_task
         if followup_task is not None and not followup_task.done():
             followup_task.cancel()
+        for t in background_tasks:
+            if not t.done():
+                t.cancel()
         logger.debug("AgentSession closed, shutting down JobContext")
         ctx.shutdown(reason="session closed")
 
@@ -203,7 +268,9 @@ async def portfolio_agent(ctx: JobContext) -> None:
                     except Exception as e:
                         logger.error(f"Failed to send text to lk-chat-topic: {e}")
 
-                asyncio.create_task(send_chat())
+                send_task = asyncio.create_task(send_chat())
+                background_tasks.add(send_task)
+                send_task.add_done_callback(background_tasks.discard)
 
                 if followup_task is not None and not followup_task.done():
                     followup_task.cancel()

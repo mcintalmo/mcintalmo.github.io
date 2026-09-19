@@ -1,6 +1,5 @@
 import asyncio
 import json
-import os
 from pathlib import Path
 from typing import Any
 
@@ -10,65 +9,17 @@ from bs4 import BeautifulSoup
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_openai import ChatOpenAI
 from pydantic import Field, SecretStr
-from pydantic.fields import FieldInfo
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
     SettingsConfigDict,
 )
 
+from common.config import YamlConfigSettingsSource
+from common.paths import REPO_ROOT
+from resume.build import compile_rendercv_artifacts
+
 from .schema import JobPosting, TailorState
-
-
-class YamlConfigSettingsSource(PydanticBaseSettingsSource):
-    def __init__(self, settings_cls: type[BaseSettings], section: str = "llm"):
-        super().__init__(settings_cls)
-        self.section = section
-
-    def get_field_value(
-        self, field: FieldInfo, field_name: str
-    ) -> tuple[Any, str, bool]:
-        return None, field_name, False
-
-    def __call__(self) -> dict[str, Any]:
-        config_env = os.environ.get("CONFIG_FILE")
-        paths = []
-        if config_env:
-            paths.append(Path(config_env))
-        paths.extend(
-            [
-                Path("config.yaml"),
-                Path("agent.yaml"),
-                Path("../config.yaml"),
-                Path("../agent.yaml"),
-                Path("../../config.yaml"),
-                Path("backend/config.yaml"),
-                Path("backend/agent/config.yaml"),
-                Path("backend/tailor/config.yaml"),
-            ]
-        )
-
-        yaml_path = None
-        for p in paths:
-            if p.exists():
-                yaml_path = p
-                break
-
-        if not yaml_path:
-            return {}
-
-        try:
-            with open(yaml_path, encoding="utf-8") as f:
-                data = yaml.safe_load(f)
-                if isinstance(data, dict):
-                    if self.section in data and isinstance(data[self.section], dict):
-                        res: dict[str, Any] = data[self.section]
-                        return res
-                    res_all: dict[str, Any] = data
-                    return res_all
-        except Exception:
-            pass
-        return {}
 
 
 class TailorLlmSettings(BaseSettings):
@@ -420,7 +371,7 @@ def _blocking_generate_artifacts(
         if not company_name:
             company_name = "Tailored"
 
-    repo_root = Path(__file__).parents[4]
+    repo_root = REPO_ROOT
     tailored_dir = repo_root / "frontend" / "src" / "content" / "tailored"
     tailored_dir.mkdir(parents=True, exist_ok=True)
 
@@ -428,45 +379,14 @@ def _blocking_generate_artifacts(
     with open(yaml_path, "w", encoding="utf-8") as f:
         yaml.dump(final_resume, f, sort_keys=False)
 
-    import subprocess
-
-    from rendercv.renderer.pdf_png import (  # type: ignore[import-untyped]
-        generate_pdf as _gen_pdf,
+    output_dir = Path(__file__).resolve().parents[2] / "output" / company_name
+    compile_rendercv_artifacts(
+        resume_yaml_data_or_path=final_resume,
+        output_dir=output_dir,
+        pdf_filename=f"{company_name}_Resume.pdf",
+        markdown_filename=f"{company_name}_Resume.md",
+        generate_pdf=True,
     )
-    from rendercv.renderer.typst import generate_typst  # type: ignore[import-untyped]
-    from rendercv.schema.rendercv_model_builder import (  # type: ignore[import-untyped]
-        build_rendercv_dictionary_and_model,
-    )
-
-    resume_dir = repo_root / "resume"
-    converter_script = resume_dir / "convert" / "convert.mjs"
-    design_yaml = resume_dir / "themes" / "classic" / "design.yaml"
-
-    output_dir = Path(__file__).parents[2] / "output" / company_name
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    rendercv_yaml = output_dir / "rendercv.yaml"
-
-    subprocess.run(
-        ["node", str(converter_script), str(yaml_path), str(rendercv_yaml)],
-        check=True,
-    )
-
-    yaml_content = rendercv_yaml.read_text(encoding="utf-8")
-    _dict, model = build_rendercv_dictionary_and_model(
-        yaml_content,
-        input_file_path=rendercv_yaml,
-        design_yaml_file=design_yaml.read_text(encoding="utf-8"),
-        output_folder=output_dir,
-        pdf_path=output_dir / f"{company_name}_Resume.pdf",
-        markdown_path=output_dir / f"{company_name}_Resume.md",
-        dont_generate_html=True,
-        dont_generate_png=True,
-        dont_generate_pdf=False,
-    )
-
-    typst_path = generate_typst(model)
-    _gen_pdf(model, typst_path)
 
     return str(output_dir)
 

@@ -6,8 +6,5 @@
   },
   "devDependencies": {
     "husky": "^9.1.7"
-  },
-  "overrides": {
-    "vite": "^7.1.5"
   }
 }

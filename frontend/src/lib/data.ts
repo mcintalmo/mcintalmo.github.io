@@ -5,8 +5,6 @@ import addFormats from "ajv-formats";
 import YAML from "yaml";
 import type { ResumeRoot, SiteConfigRoot } from "./types";
 
-const contentDir = path.resolve(process.cwd(), "src", "content");
-
 export type ValidationIssue = { path: string; message: string };
 
 const ajv = new Ajv({ allErrors: true, strict: false });
@@ -21,16 +19,19 @@ const resumeSchemaPath = path.resolve(
 const resumeSchema = JSON.parse(fs.readFileSync(resumeSchemaPath, "utf-8"));
 const validateResume = ajv.compile(resumeSchema as Record<string, unknown>);
 
-function readYaml<T>(file: string): T {
-  const full = path.resolve(contentDir, file);
-  const text = fs.readFileSync(full, "utf-8");
-  // Using yaml for stricter parsing/line numbers
-  return YAML.parse(text) as T;
-}
-
 export function loadSiteConfig(): SiteConfigRoot {
-  const config = readYaml<SiteConfigRoot>("site.config.yaml");
-  return config ?? {};
+  const candidates = [
+    path.resolve(process.cwd(), "..", "site-config.yaml"),
+    path.resolve(process.cwd(), "site-config.yaml"),
+    path.resolve(process.cwd(), "src", "content", "site.config.yaml"),
+  ];
+  for (const p of candidates) {
+    if (fs.existsSync(p)) {
+      const text = fs.readFileSync(p, "utf-8");
+      return (YAML.parse(text) as SiteConfigRoot) ?? {};
+    }
+  }
+  return {};
 }
 
 export function loadResume(strictSchema = false): {
