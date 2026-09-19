@@ -1,5 +1,4 @@
 import re
-from pathlib import Path
 from typing import get_args
 
 from common.events import (
@@ -10,8 +9,7 @@ from common.events import (
     ToolCallCompletedEvent,
     ToolCallStartedEvent,
 )
-
-REPO_ROOT = Path(__file__).resolve().parents[3]
+from common.paths import REPO_ROOT
 
 
 def test_navigation_targets_synchronized() -> None:
