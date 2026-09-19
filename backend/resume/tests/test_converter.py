@@ -1,18 +1,15 @@
-from pathlib import Path
 from typing import Any
 
 import yaml
 
+from common.paths import SOURCE_RESUME_YAML
 from resume.converter import convert_json_resume_to_rendercv
-
-REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 def test_convert_resume_yaml() -> None:
-    source_path = REPO_ROOT / "resume" / "resume.yaml"
-    assert source_path.is_file(), f"Missing {source_path}"
+    assert SOURCE_RESUME_YAML.is_file(), f"Missing {SOURCE_RESUME_YAML}"
 
-    with open(source_path, encoding="utf-8") as f:
+    with open(SOURCE_RESUME_YAML, encoding="utf-8") as f:
         data: dict[str, Any] = yaml.safe_load(f)
 
     result = convert_json_resume_to_rendercv(data)

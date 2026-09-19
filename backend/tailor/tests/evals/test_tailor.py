@@ -12,6 +12,7 @@ from deepeval.evaluate import assert_test
 from deepeval.test_case import LLMTestCase
 from dotenv import load_dotenv
 
+from common.paths import SOURCE_RESUME_YAML
 from tailor.schema import TailorState
 
 from .metrics import get_metrics
@@ -84,13 +85,11 @@ def test_tailor_pipeline_eval(golden: Golden) -> None:
     graph = workflow.compile()
 
     # Load actual production resume dynamically
-    repo_root = Path(__file__).parents[4]
-    resume_path = repo_root / "resume" / "resume.yaml"
-    if not resume_path.exists():
-        pytest.fail(f"Production resume not found at {resume_path}")
+    if not SOURCE_RESUME_YAML.exists():
+        pytest.fail(f"Production resume not found at {SOURCE_RESUME_YAML}")
 
     def read_yaml() -> dict[str, Any]:
-        with open(resume_path, encoding="utf-8") as f:
+        with open(SOURCE_RESUME_YAML, encoding="utf-8") as f:
             res = yaml.safe_load(f)
             assert isinstance(res, dict)
             return cast(dict[str, Any], stringify_dates(res))
@@ -144,13 +143,11 @@ def test_tailor_pipeline_full(golden: Golden) -> None:
     graph = create_graph()
 
     # Load actual production resume dynamically
-    repo_root = Path(__file__).parents[4]
-    resume_path = repo_root / "resume" / "resume.yaml"
-    if not resume_path.exists():
-        pytest.fail(f"Production resume not found at {resume_path}")
+    if not SOURCE_RESUME_YAML.exists():
+        pytest.fail(f"Production resume not found at {SOURCE_RESUME_YAML}")
 
     def read_yaml() -> dict[str, Any]:
-        with open(resume_path, encoding="utf-8") as f:
+        with open(SOURCE_RESUME_YAML, encoding="utf-8") as f:
             res = yaml.safe_load(f)
             assert isinstance(res, dict)
             return cast(dict[str, Any], stringify_dates(res))

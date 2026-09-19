@@ -26,10 +26,10 @@ Evaluations verify agent behavior, alignment, and generation quality. Because th
 uv run pytest -m "eval"
 ```
 
-#### LiveKit Voice Agent Evals
-Tests in `backend/agent/tests/test_evals.py` simulate a real audio interaction using `livekit.agents.testing`.
-- **How it works**: It feeds a series of simulated inputs (representing audio transcription transcripts) into the agent and asserts that the textual response contains correct intents or replies.
-- **Verbosity**: Set `LIVEKIT_EVALS_VERBOSE=1` to print full conversational transcripts to stdout during the test run.
+#### LiveKit Voice Agent Evals (DeepEval)
+Tests in [`backend/agent/tests/evals/test_agent_evals.py`](file:///Users/mcint/projects/mcintalmo.github.io/backend/agent/tests/evals/test_agent_evals.py) evaluate the agent using the DeepEval framework and foundation model judges.
+- **How it works**: It exercises the conversational agent across five categories (navigation, detail retrieval, chitchat, persona adherence, and security guardrails) against [`backend/agent/tests/evals/golden_dataset.yaml`](file:///Users/mcint/projects/mcintalmo.github.io/backend/agent/tests/evals/golden_dataset.yaml).
+- **Execution**: Run `just test-agent-eval` or `RUN_EVALS=true uv run pytest agent/tests/evals -m "eval" -s`.
 
 #### LangGraph Tailoring Evals (DeepEval)
 The tailoring pipeline is evaluated using the DeepEval framework inside `backend/tailor/tests/evals/test_tailor.py`.

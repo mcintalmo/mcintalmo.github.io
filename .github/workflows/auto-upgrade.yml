@@ -56,9 +56,9 @@ jobs:
           echo '```' >> pytest_report.txt
 
           if [ $TEST_EXIT_CODE -ne 0 ]; then
-            echo -e "\n⚠️ **Warning**: One or more tests failed during dependency upgrade validation!" >> pytest_report.txt
+            echo -e "\n**Warning**: One or more tests failed during dependency upgrade validation!" >> pytest_report.txt
           else
-            echo -e "\n✅ All tests passed successfully!" >> pytest_report.txt
+            echo -e "\n**Success**: All tests passed successfully!" >> pytest_report.txt
           fi
 
       - name: Run Astro Build Verification

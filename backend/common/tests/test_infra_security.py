@@ -1,9 +1,8 @@
-from pathlib import Path
 from typing import Any
 
 import yaml
 
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+from common.paths import REPO_ROOT
 
 
 def test_docker_compose_port_isolation() -> None:
