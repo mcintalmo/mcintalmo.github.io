@@ -13,15 +13,5 @@ export default defineConfig({
   integrations: [react(), sitemap(), sentry()],
   vite: {
     plugins: [tailwindcss()],
-    ssr: {
-      noExternal: [
-        "@copilotkit/react-core",
-        "@copilotkit/react-ui",
-        "@copilotkit/shared",
-        "@copilotkitnext/react",
-        "@copilotkitnext/core",
-        "@ag-ui/client",
-      ],
-    },
   },
 });

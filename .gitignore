@@ -408,6 +408,13 @@ infra/models/
 frontend/.astro/
 dist/
 frontend/dist/
+report.html
+e2e/report.html
+test-results/
+e2e/test-results/
+agent_output.log
+frontend/env.development
+frontend/env.production
 
 
 ##########################################################

@@ -36,6 +36,7 @@ name = "agent"
 version = "0.1.0"
 source = { virtual = "agent" }
 dependencies = [
+    { name = "aiohttp" },
     { name = "common" },
     { name = "livekit-agents" },
     { name = "livekit-plugins-cartesia" },
@@ -60,6 +61,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "aiohttp", specifier = ">=3.11.0" },
     { name = "common", editable = "common" },
     { name = "livekit-agents", specifier = ">=1.6.4" },
     { name = "livekit-plugins-cartesia", specifier = ">=1.6.4" },
@@ -561,12 +563,14 @@ version = "0.1.0"
 source = { editable = "common" }
 dependencies = [
     { name = "pydantic-settings" },
+    { name = "pyyaml" },
     { name = "structlog" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "pydantic-settings", specifier = ">=2.14.2" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "structlog", specifier = ">=26.1.0" },
 ]
 

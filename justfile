@@ -19,7 +19,7 @@ validate-all: check-all test
 
 # Clean up build artifacts, cache directories, and virtual environments
 clean:
-    rm -rf backend/.venv/ e2e/.venv/ frontend/node_modules/ resume/convert/node_modules/ node_modules/ frontend/dist/ frontend/.astro/
+    rm -rf backend/.venv/ e2e/.venv/ frontend/node_modules/ node_modules/ frontend/dist/ frontend/.astro/
     find . -type d -name "__pycache__" -exec rm -rf {} +
     find . -type d -name ".pytest_cache" -exec rm -rf {} +
     find . -type d -name ".mypy_cache" -exec rm -rf {} +
@@ -33,12 +33,12 @@ clean:
 # Safely format all codebases (Python via uv/ruff, JS/TS via Biome)
 format:
     uv run --directory backend ruff format ..
-    cd frontend && npx biome format --write . ../resume/convert/
+    cd frontend && npx biome format --write .
 
 # Run strict linting checks and apply safe autofixes across the repo
 lint:
     uv run --directory backend ruff check .. --fix
-    cd frontend && npx biome check --write . ../resume/convert/
+    cd frontend && npx biome check --write .
 
 # Run static type checking for the Python backend
 type-check:
@@ -47,9 +47,6 @@ type-check:
 # Upgrade minimum version constraints and sort all pyproject.toml dependencies
 uv-bump:
     cd backend && uvx uv-bump -v
-    cd tools/rag_agent && uvx uv-bump -v
-    cd tools/tailor_resume && uvx uv-bump -v
-    cd tools/mcp_server && uvx uv-bump -v
     cd e2e && uvx uv-bump -v
     find . -name "pyproject.toml" -not -path "*/.venv/*" -exec uvx uv-sort {} +
 
@@ -114,12 +111,6 @@ upgrade:
     @echo "==> Upgrading e2e Python packages (limiting to >= 7 days old)..."
     uv lock --directory e2e --upgrade --exclude-newer "7 days"
     uv sync --directory e2e
-    @echo "==> Upgrading tools/rag_agent Python packages (limiting to >= 7 days old)..."
-    uv lock --directory tools/rag_agent --upgrade --exclude-newer "7 days"
-    @echo "==> Upgrading tools/tailor_resume Python packages (limiting to >= 7 days old)..."
-    uv lock --directory tools/tailor_resume --upgrade --exclude-newer "7 days"
-    @echo "==> Upgrading tools/mcp_server Python packages (limiting to >= 7 days old)..."
-    uv lock --directory tools/mcp_server --upgrade --exclude-newer "7 days"
     @echo "==> Upgrades complete!"
 
 # ==============================================================================
@@ -181,7 +172,7 @@ bootstrap-otel:
     uv run --directory backend --package auth opentelemetry-bootstrap --action=requirements | uv add --directory backend --package auth -r -
     uv run --directory backend --package agent opentelemetry-bootstrap --action=requirements | uv add --directory backend --package agent -r -
     uv run --directory backend --package common opentelemetry-bootstrap --action=requirements | uv add --directory backend --package common -r -
-    uv run --directory backend --package mcp opentelemetry-bootstrap --action=requirements | uv add --directory backend --package mcp -r -
+    uv run --directory backend --package portfolio-mcp opentelemetry-bootstrap --action=requirements | uv add --directory backend --package portfolio-mcp -r -
 
 
 # ==============================================================================
