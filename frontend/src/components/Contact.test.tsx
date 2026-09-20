@@ -33,6 +33,11 @@ describe("Contact Component", () => {
         description:
           "Ready to turn your data into intelligent solutions? Let's discuss your roadmap.",
         enabled: true,
+        "available-for": [
+          "AI Architecture",
+          "Voice & Agentic Systems",
+          "Data & ML Infrastructure",
+        ],
       },
     },
   };
@@ -64,37 +69,34 @@ describe("Contact Component", () => {
     expect(screen.queryByRole("link", { name: /call/i })).not.toBeInTheDocument();
   });
 
-  it("renders 3 commercial engagement pillars", () => {
+  it("renders focus area badges without wordy marketing copy", () => {
     render(<Contact basics={mockBasics} config={mockConfig} />);
-    expect(screen.getByText("AI Architecture & Strategy Advisory")).toBeInTheDocument();
-    expect(screen.getByText("Agentic Voice & Real-Time Systems")).toBeInTheDocument();
+    expect(screen.getByText("Focus Areas")).toBeInTheDocument();
+    expect(screen.getAllByText("AI Architecture").length).toBeGreaterThanOrEqual(1);
     expect(
-      screen.getByText("Data & Machine Learning Infrastructure"),
-    ).toBeInTheDocument();
+      screen.getAllByText("Voice & Agentic Systems").length,
+    ).toBeGreaterThanOrEqual(1);
+    expect(
+      screen.getAllByText("Data & ML Infrastructure").length,
+    ).toBeGreaterThanOrEqual(1);
   });
 
-  it("clicking an engagement card updates the subject input", () => {
+  it("renders topic buttons in Send a Message and clicking one updates the subject", () => {
     render(<Contact basics={mockBasics} config={mockConfig} />);
-    const subjectInput = screen.getByLabelText(/subject/i) as HTMLInputElement;
-    expect(subjectInput.value).toBe("");
-
-    const voiceCard = screen.getByRole("button", {
-      name: /agentic voice & real-time systems/i,
+    const voiceBtn = screen.getByRole("button", {
+      name: "Voice & Agentic Systems",
     });
-    fireEvent.click(voiceCard);
+    fireEvent.click(voiceBtn);
 
-    expect(subjectInput.value).toContain("Agentic Voice & Real-Time Systems");
+    const subjectInput = screen.getByLabelText(/subject/i) as HTMLInputElement;
+    expect(subjectInput.value).toBe("Project Inquiry: Voice & Agentic Systems");
   });
 
-  it("renders category selection pills and clicking one updates the subject", () => {
+  it("does not render a full-time opportunities button", () => {
     render(<Contact basics={mockBasics} config={mockConfig} />);
-    const fullTimePill = screen.getByRole("button", {
-      name: /full-time opportunities/i,
-    });
-    fireEvent.click(fullTimePill);
-
-    const subjectInput = screen.getByLabelText(/subject/i) as HTMLInputElement;
-    expect(subjectInput.value).toContain("Full-Time Opportunities");
+    expect(
+      screen.queryByRole("button", { name: /full-time/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("copies email to clipboard and provides visual feedback", async () => {

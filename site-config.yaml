@@ -104,25 +104,9 @@ sections:
     enabled: true
     booking-url: null
     available-for:
-      - AI Architecture & Strategy
-      - Real-Time Voice & Agentic Systems
+      - AI Architecture
+      - Voice & Agentic Systems
       - Data & ML Infrastructure
-    services:
-      - title: AI Architecture & Strategy Advisory
-        subtitle: Executive Advisory & Strategy
-        description: Technology stack evaluation, automated evaluation frameworks, model risk governance, and architectural roadmaps.
-        deliverables: Architecture blueprints, evaluation harness design, and risk audits.
-        icon: brain
-      - title: Agentic Voice & Real-Time Systems
-        subtitle: Sub-Second Streaming AI
-        description: Production deployment of WebRTC conversational voice agents, custom STT/TTS pipelines, and multi-turn tool calling.
-        deliverables: Real-time LiveKit voice services and deterministic tool execution.
-        icon: bot
-      - title: Data & Machine Learning Infrastructure
-        subtitle: Distributed Pipelines & MLOps
-        description: Distributed data platform engineering, medallion architectures, automated CI/CD for ML, and OpenTelemetry observability.
-        deliverables: Scalable lakehouse pipelines, MLOps automation, and telemetry tracing.
-        icon: layers3
 seo:
   title: Alex McIntosh • Data Science, AI/ML Portfolio
   description: Data scientist specializing in interpretable ML and observable agents

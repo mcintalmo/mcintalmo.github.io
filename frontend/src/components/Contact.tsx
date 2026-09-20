@@ -1,90 +1,37 @@
 import { motion } from "framer-motion";
-import {
-  Bot,
-  Brain,
-  Calendar,
-  Check,
-  Copy,
-  ExternalLink,
-  Layers3,
-  Mail,
-  MapPin,
-  Send,
-  Sparkles,
-} from "lucide-react";
+import { Calendar, Check, Copy, ExternalLink, Mail, MapPin, Send } from "lucide-react";
 import { useState } from "react";
-import type { CommercialService, ResumeBasics, SiteConfigRoot } from "../lib/types";
+import type { ResumeBasics, SiteConfigRoot } from "../lib/types";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Linkedin } from "./ui/icons";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 
-const DEFAULT_SERVICES: CommercialService[] = [
-  {
-    title: "AI Architecture & Strategy Advisory",
-    subtitle: "Executive Advisory & Strategy",
-    description:
-      "Technology stack evaluation, automated evaluation frameworks, model risk governance, and architectural roadmaps.",
-    deliverables:
-      "Architecture blueprints, evaluation harness design, and risk audits.",
-    icon: "brain",
-  },
-  {
-    title: "Agentic Voice & Real-Time Systems",
-    subtitle: "Sub-Second Streaming AI",
-    description:
-      "Production deployment of WebRTC conversational voice agents, custom STT/TTS pipelines, and multi-turn tool calling.",
-    deliverables: "Real-time LiveKit voice services and deterministic tool execution.",
-    icon: "bot",
-  },
-  {
-    title: "Data & Machine Learning Infrastructure",
-    subtitle: "Distributed Pipelines & MLOps",
-    description:
-      "Distributed data platform engineering, medallion architectures, automated CI/CD for ML, and OpenTelemetry observability.",
-    deliverables:
-      "Scalable lakehouse pipelines, MLOps automation, and telemetry tracing.",
-    icon: "layers3",
-  },
+const DEFAULT_AVAILABLE_FOR = [
+  "AI Architecture",
+  "Voice & Agentic Systems",
+  "Data & ML Infrastructure",
 ];
 
-const INQUIRY_CATEGORIES = [
+const INQUIRY_TOPICS = [
   {
-    label: "AI Architecture & Advisory",
-    subject: "Consulting Inquiry: AI Architecture & Strategy Advisory",
+    label: "AI Architecture",
+    subject: "Project Inquiry: AI Architecture",
   },
   {
-    label: "Agentic Voice & AI Systems",
-    subject: "Project Inquiry: Agentic Voice & Real-Time Systems",
+    label: "Voice & Agentic Systems",
+    subject: "Project Inquiry: Voice & Agentic Systems",
   },
   {
     label: "Data & ML Infrastructure",
-    subject: "Project Inquiry: Data & Machine Learning Infrastructure",
-  },
-  {
-    label: "Full-Time Opportunities",
-    subject: "Career Inquiry: Full-Time Opportunities",
+    subject: "Project Inquiry: Data & ML Infrastructure",
   },
   {
     label: "General Inquiry",
     subject: "General Inquiry",
   },
 ];
-
-function renderServiceIcon(iconName?: string) {
-  switch (iconName) {
-    case "brain":
-      return <Brain className="w-5 h-5 text-accent-indigo" />;
-    case "bot":
-      return <Bot className="w-5 h-5 text-accent-cyan" />;
-    case "layers3":
-    case "layers":
-      return <Layers3 className="w-5 h-5 text-emerald-400" />;
-    default:
-      return <Sparkles className="w-5 h-5 text-primary" />;
-  }
-}
 
 export function Contact({
   basics,
@@ -101,12 +48,12 @@ export function Contact({
     (contactConfig?.["booking-url"] as string | undefined) ??
     (contactConfig?.bookingUrl as string | undefined);
 
-  const rawServices = contactConfig?.services;
-  const services: CommercialService[] = Array.isArray(rawServices)
-    ? (rawServices as CommercialService[])
-    : DEFAULT_SERVICES;
+  const rawAvailableFor =
+    contactConfig?.["available-for"] ?? contactConfig?.availableFor;
+  const availableFor: string[] = Array.isArray(rawAvailableFor)
+    ? (rawAvailableFor as unknown[]).map((s) => String(s).trim()).filter(Boolean)
+    : DEFAULT_AVAILABLE_FOR;
 
-  const [selectedService, setSelectedService] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   const [form, setForm] = useState({
@@ -120,29 +67,14 @@ export function Contact({
     setForm((f) => ({ ...f, [key]: value }));
   }
 
-  function handleSelectService(service: CommercialService) {
-    setSelectedService(service.title);
-    const newSubject = `Consulting Inquiry: ${service.title}`;
+  function handleSelectTopic(topic: { label: string; subject: string }) {
     setForm((prev) => ({
       ...prev,
-      subject: newSubject,
+      subject: topic.subject,
       message:
         prev.message.trim() === "" ||
         prev.message.startsWith("Hi Alex, I would like to discuss")
-          ? `Hi Alex, I would like to discuss an initiative involving ${service.title}. Here are details on our scope and goals:\n`
-          : prev.message,
-    }));
-  }
-
-  function handleSelectCategory(cat: { label: string; subject: string }) {
-    setSelectedService(null);
-    setForm((prev) => ({
-      ...prev,
-      subject: cat.subject,
-      message:
-        prev.message.trim() === "" ||
-        prev.message.startsWith("Hi Alex, I would like to discuss")
-          ? `Hi Alex, I would like to discuss ${cat.label.toLowerCase()}.\n`
+          ? `Hi Alex, I would like to discuss ${topic.label.toLowerCase()}.\n`
           : prev.message,
     }));
   }
@@ -209,16 +141,16 @@ export function Contact({
           )}
         </motion.div>
 
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 max-w-6xl mx-auto items-start">
-          {/* Left Column: Commercial Engagement Models & Direct Coordinates (7 cols) */}
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 max-w-5xl mx-auto items-start">
+          {/* Left Column: Coordinates & Focus Areas (5 cols) */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true, margin: "100px 0px" }}
-            className="lg:col-span-7 space-y-6"
+            className="lg:col-span-5 space-y-6"
           >
-            {/* Direct Connect Actions Card */}
+            {/* Direct Connect Card */}
             <Card className="border-border/60 bg-card/60 backdrop-blur-md">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg font-semibold tracking-tight">
@@ -226,12 +158,12 @@ export function Contact({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col gap-3">
                   {/* Primary Mail Action */}
                   {targetEmail && (
                     <a
                       href={`mailto:${targetEmail}`}
-                      className="flex-1 flex items-center gap-3 p-3 rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-all group min-h-[52px]"
+                      className="flex items-center gap-3 p-3 rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-all group min-h-[52px]"
                       aria-label={`Send email to ${targetEmail}`}
                     >
                       <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0 text-primary">
@@ -254,7 +186,7 @@ export function Contact({
                       type="button"
                       variant="outline"
                       onClick={handleCopyEmail}
-                      className="h-[52px] px-4 rounded-xl border-border/80 hover:bg-muted/80 flex items-center gap-2 cursor-pointer"
+                      className="h-11 rounded-xl border-border/80 hover:bg-muted/80 flex items-center justify-center gap-2 cursor-pointer w-full"
                       aria-label="Copy Email"
                     >
                       {copied ? (
@@ -279,7 +211,7 @@ export function Contact({
                   <Button
                     variant="outline"
                     asChild
-                    className="w-full h-12 rounded-xl border-accent-cyan/30 hover:border-accent-cyan hover:bg-accent-cyan/10 font-medium transition-all"
+                    className="w-full h-11 rounded-xl border-accent-cyan/30 hover:border-accent-cyan hover:bg-accent-cyan/10 font-medium transition-all"
                   >
                     <a
                       href={bookingUrl}
@@ -296,7 +228,7 @@ export function Contact({
                 )}
 
                 {/* Location & LinkedIn Row */}
-                <div className="pt-2 border-t border-border/40 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div className="pt-3 border-t border-border/40 space-y-2.5 text-sm">
                   {(basics?.location?.city || basics?.location?.region) && (
                     <div className="flex items-center gap-3 text-muted-foreground py-1">
                       <MapPin className="w-4 h-4 text-primary shrink-0" />
@@ -327,77 +259,36 @@ export function Contact({
                     </a>
                   )}
                 </div>
+
+                {/* Available for Focus Areas */}
+                {availableFor.length > 0 && (
+                  <div className="pt-3 border-t border-border/40">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2.5">
+                      Focus Areas
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {availableFor.map((item) => (
+                        <span
+                          key={item}
+                          className="text-xs px-3 py-1.5 rounded-lg bg-muted/60 border border-border/60 text-foreground font-medium"
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
-
-            {/* Commercial Engagement Formats */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between px-1">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Consulting & Project Engagement Models
-                </p>
-                <span className="text-[11px] text-muted-foreground/70">
-                  Select a model to populate inquiry
-                </span>
-              </div>
-
-              <div className="space-y-3">
-                {services.map((service) => {
-                  const isSelected = selectedService === service.title;
-                  return (
-                    <button
-                      key={service.title}
-                      type="button"
-                      onClick={() => handleSelectService(service)}
-                      className={`w-full text-left p-4 rounded-xl border transition-all duration-200 cursor-pointer ${
-                        isSelected
-                          ? "bg-primary/10 border-primary shadow-md shadow-primary/10"
-                          : "bg-card/40 border-border/60 hover:bg-muted/40 hover:border-border"
-                      }`}
-                      aria-pressed={isSelected}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-background border border-border/50 shrink-0 mt-0.5">
-                          {renderServiceIcon(service.icon)}
-                        </div>
-                        <div className="space-y-1 min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center justify-between gap-2">
-                            <h3 className="font-medium text-foreground text-sm sm:text-base">
-                              {service.title}
-                            </h3>
-                            {service.subtitle && (
-                              <span className="text-[11px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-mono font-medium">
-                                {service.subtitle}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                            {service.description}
-                          </p>
-                          {service.deliverables && (
-                            <p className="text-xs text-muted-foreground/90 pt-1 font-mono">
-                              <span className="text-primary font-semibold">
-                                Key Deliverables:
-                              </span>{" "}
-                              {service.deliverables}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
           </motion.div>
 
-          {/* Right Column: Interactive Inquiry Form (5 cols) */}
+          {/* Right Column: Send a Message Form (7 cols) */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true, margin: "100px 0px" }}
-            className="lg:col-span-5"
+            className="lg:col-span-7"
           >
             <Card className="border-border/80 bg-card/70 backdrop-blur-md">
               <CardHeader className="pb-3">
@@ -405,26 +296,26 @@ export function Contact({
                   Send a Message
                 </CardTitle>
                 <p className="text-xs text-muted-foreground">
-                  Choose a topic below or customize your message directly.
+                  Select a topic below or customize your message directly.
                 </p>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Category Selection Pills */}
-                <div className="flex flex-wrap gap-1.5 pb-2">
-                  {INQUIRY_CATEGORIES.map((cat) => {
-                    const isSelected = form.subject === cat.subject;
+                {/* Topic Selection Buttons */}
+                <div className="flex flex-wrap gap-2 pb-1">
+                  {INQUIRY_TOPICS.map((topic) => {
+                    const isSelected = form.subject === topic.subject;
                     return (
                       <button
-                        key={cat.label}
+                        key={topic.label}
                         type="button"
-                        onClick={() => handleSelectCategory(cat)}
-                        className={`text-xs px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
+                        onClick={() => handleSelectTopic(topic)}
+                        className={`text-xs px-3 py-1.5 rounded-lg border transition-all cursor-pointer font-medium ${
                           isSelected
-                            ? "bg-primary text-primary-foreground border-primary font-medium"
-                            : "bg-muted/40 hover:bg-muted text-muted-foreground border-border/50"
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground border-border/60"
                         }`}
                       >
-                        {cat.label}
+                        {topic.label}
                       </button>
                     );
                   })}
