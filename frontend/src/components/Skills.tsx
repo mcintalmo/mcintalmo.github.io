@@ -226,24 +226,17 @@ function CategoryCard({
         />
 
         <CardHeader className="pb-3 border-b border-border/40 relative z-10">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <category.icon className={`w-5 h-5 shrink-0 ${style.iconColor}`} />
-              <CardTitle className="text-base sm:text-lg font-semibold tracking-tight truncate">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-2.5 min-w-0">
+              <category.icon className={`w-5 h-5 shrink-0 mt-0.5 ${style.iconColor}`} />
+              <CardTitle className="text-base sm:text-lg font-semibold tracking-tight leading-snug">
                 {category.title}
               </CardTitle>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
-              {category.featured && (
-                <span className="hidden sm:inline-flex items-center px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider font-semibold rounded-full border bg-accent-cyan/15 text-accent-cyan border-accent-cyan/30">
-                  Flagship
-                </span>
-              )}
-              <span className="text-xs font-mono text-muted-foreground font-normal px-2 py-0.5 rounded-full bg-muted/60">
-                {category.skills.length}
-              </span>
-            </div>
+            <span className="text-xs font-mono text-muted-foreground font-normal px-2 py-0.5 rounded-full bg-muted/60 shrink-0 mt-0.5">
+              {category.skills.length}
+            </span>
           </div>
 
           {category.subtitle && (

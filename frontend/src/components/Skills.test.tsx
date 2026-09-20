@@ -42,7 +42,7 @@ describe("Skills Component (Bento Grid)", () => {
     },
   };
 
-  it("renders category titles, subtitles, and flagship badge", () => {
+  it("renders category titles and subtitles", () => {
     const configWithFeatured: SiteConfigRoot = {
       sections: {
         skills: {
@@ -50,10 +50,9 @@ describe("Skills Component (Bento Grid)", () => {
           categories: [
             {
               key: "llm-agents",
-              title: "Agentic & Generative AI Systems",
+              title: "Agentic & Generative AI",
               icon: "bot",
               subtitle: "Autonomous multi-agent workflows",
-              featured: true,
               keywords: ["LLM & Agents"],
             },
           ],
@@ -62,10 +61,9 @@ describe("Skills Component (Bento Grid)", () => {
     };
     render(<Skills skills={mockSkills} config={configWithFeatured} />);
     expect(
-      screen.getAllByText("Agentic & Generative AI Systems").length,
+      screen.getAllByText("Agentic & Generative AI").length,
     ).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("Autonomous multi-agent workflows")).toBeInTheDocument();
-    expect(screen.getByText("Flagship")).toBeInTheDocument();
   });
 
   it("renders filter buttons allowing category selection", () => {
