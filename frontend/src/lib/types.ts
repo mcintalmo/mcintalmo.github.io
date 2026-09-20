@@ -106,6 +106,8 @@ export interface SkillCategory {
   title: string;
   icon: string;
   keywords: string[];
+  subtitle?: string;
+  featured?: boolean;
 }
 
 export interface SectionConfig {

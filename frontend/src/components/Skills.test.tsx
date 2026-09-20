@@ -42,10 +42,38 @@ describe("Skills Component (Bento Grid)", () => {
     },
   };
 
-  it("renders category titles", () => {
+  it("renders category titles, subtitles, and flagship badge", () => {
+    const configWithFeatured: SiteConfigRoot = {
+      sections: {
+        skills: {
+          title: "Skills & Technologies",
+          categories: [
+            {
+              key: "llm-agents",
+              title: "Agentic & Generative AI Systems",
+              icon: "bot",
+              subtitle: "Autonomous multi-agent workflows",
+              featured: true,
+              keywords: ["LLM & Agents"],
+            },
+          ],
+        },
+      },
+    };
+    render(<Skills skills={mockSkills} config={configWithFeatured} />);
+    expect(
+      screen.getAllByText("Agentic & Generative AI Systems").length,
+    ).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("Autonomous multi-agent workflows")).toBeInTheDocument();
+    expect(screen.getByText("Flagship")).toBeInTheDocument();
+  });
+
+  it("renders filter buttons allowing category selection", () => {
     render(<Skills skills={mockSkills} config={mockConfig} />);
-    expect(screen.getByText("Agentic & Generative AI")).toBeInTheDocument();
-    expect(screen.getByText("Machine Learning & AI")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /all systems/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /agentic & generative ai/i }),
+    ).toBeInTheDocument();
   });
 
   it("renders skill items as chips without 5-bar battery rating slots", () => {

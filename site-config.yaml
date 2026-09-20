@@ -61,34 +61,32 @@ sections:
     navigation-label: Skills
     enabled: true
     categories:
+      - key: "llm-agents"
+        title: "Agentic & Generative AI Systems"
+        icon: "bot"
+        subtitle: "Autonomous multi-agent workflows, streaming voice pipelines, and tool execution protocols."
+        keywords: [ "LLM & Agents", "Agentic & Generative AI Systems", "Agentic & Generative AI" ]
+        featured: true
       - key: "languages-frameworks"
-        title: "Languages & Frameworks"
+        title: "Languages & Core Runtimes"
         icon: "code"
+        subtitle: "High-performance data computing, manipulation, and full-stack integration."
         keywords: [ "Languages & Frameworks" ]
       - key: "machine-learning-ai"
-        title: "Machine Learning & AI"
+        title: "Machine Learning & Statistical Modeling"
         icon: "brain"
+        subtitle: "Statistical inference, deep learning architectures, and predictive modeling."
         keywords: [ "Machine Learning & AI" ]
-      - key: "llm-agents"
-        title: "Agentic & Generative AI"
-        icon: "brain"
-        keywords: [ "LLM & Agents" ]
       - key: "data-engineering-analytics"
-        title: "Data Engineering & Analytics"
+        title: "Data Engineering & Lakehouse Platforms"
         icon: "layers3"
+        subtitle: "Distributed lakehouse architectures, ETL orchestration, and vector indexing."
         keywords: [ "Data Engineering & Analytics" ]
-      - key: "cloud-infrastructure"
-        title: "Cloud & Infrastructure"
-        icon: "cloud"
-        keywords: [ "Cloud & Infrastructure" ]
-      - key: "mlops-observability"
-        title: "MLOps & Observability"
+      - key: "production-mlops"
+        title: "Production Infrastructure & MLOps"
         icon: "wrench"
-        keywords: [ "MLOps & Observability" ]
-      - key: "analytics-bi"
-        title: "Analytics & BI"
-        icon: "layers3"
-        keywords: [ "Analytics & BI" ]
+        subtitle: "Containerized microservices, distributed telemetry, and cloud deployments."
+        keywords: [ "Production Infrastructure & MLOps", "Cloud & Infrastructure", "MLOps & Observability" ]
   awards:
     title: Awards
     navigation-label: Awards

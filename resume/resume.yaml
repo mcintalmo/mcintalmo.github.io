@@ -6,7 +6,7 @@ basics:
   url: https://www.alexandermcintosh.com
   summary: >
     Operationalizing **interpretable machine learning**, **explainable AI**, and
-    **observable LLM networks** reliably at scale.
+    **observable agentic networks** reliably at scale.
   location:
     city: Minneapolis
     countryCode: US
@@ -321,14 +321,17 @@ skills:
   - name: Python
     level: Expert
     keywords: [Languages & Frameworks]
-  - name: PySpark
-    level: Advanced
-    keywords: [Languages & Frameworks]
   - name: SQL
     level: Expert
     keywords: [Languages & Frameworks]
   - name: R
     level: Advanced
+    keywords: [Languages & Frameworks]
+  - name: PySpark
+    level: Advanced
+    keywords: [Languages & Frameworks]
+  - name: TypeScript
+    level: Intermediate
     keywords: [Languages & Frameworks]
   - name: PyTorch
     level: Advanced
@@ -357,8 +360,20 @@ skills:
   - name: MLFlow
     level: Advanced
     keywords: [Machine Learning & AI]
+  - name: LangGraph
+    level: Expert
+    keywords: [LLM & Agents]
   - name: Model Context Protocol (MCP)
     level: Advanced
+    keywords: [LLM & Agents]
+  - name: LiveKit
+    level: Advanced
+    keywords: [LLM & Agents]
+  - name: Retrieval-Augmented Generation (RAG)
+    level: Expert
+    keywords: [LLM & Agents]
+  - name: Semantic Kernel
+    level: Intermediate
     keywords: [LLM & Agents]
   - name: Agent Development Kit (ADK)
     level: Advanced
@@ -366,21 +381,12 @@ skills:
   - name: Agent-to-Agent (A2A) Protocol
     level: Advanced
     keywords: [LLM & Agents]
-  - name: Semantic Kernel
-    level: Intermediate
-    keywords: [LLM & Agents]
-  - name: Retrieval-Augmented Generation (RAG)
-    level: Expert
-    keywords: [LLM & Agents]
-  - name: LiveKit
+  - name: LiteLLM
     level: Advanced
     keywords: [LLM & Agents]
-  - name: Data Visualization
+  - name: DeepEval
     level: Advanced
-    keywords: [Data Engineering & Analytics]
-  - name: Data Engineering
-    level: Expert
-    keywords: [Data Engineering & Analytics]
+    keywords: [LLM & Agents]
   - name: Microsoft Fabric
     level: Expert
     keywords: [Data Engineering & Analytics]
@@ -396,18 +402,27 @@ skills:
   - name: ChromaDB
     level: Advanced
     keywords: [Data Engineering & Analytics]
-  - name: Git
+  - name: Data Engineering
+    level: Expert
+    keywords: [Data Engineering & Analytics]
+  - name: Data Visualization
     level: Advanced
-    keywords: [Cloud & Infrastructure]
+    keywords: [Data Engineering & Analytics]
   - name: Docker
     level: Expert
-    keywords: [Cloud & Infrastructure]
-  - name: Microsoft Azure
-    level: Intermediate
-    keywords: [Cloud & Infrastructure]
-  - name: Google Cloud Platform
-    level: Intermediate
-    keywords: [Cloud & Infrastructure]
+    keywords: [Production Infrastructure & MLOps]
   - name: OpenTelemetry
     level: Advanced
-    keywords: [MLOps & Observability]
+    keywords: [Production Infrastructure & MLOps]
+  - name: FastAPI
+    level: Advanced
+    keywords: [Production Infrastructure & MLOps]
+  - name: Microsoft Azure
+    level: Intermediate
+    keywords: [Production Infrastructure & MLOps]
+  - name: Google Cloud Platform
+    level: Intermediate
+    keywords: [Production Infrastructure & MLOps]
+  - name: Git
+    level: Advanced
+    keywords: [Production Infrastructure & MLOps]
