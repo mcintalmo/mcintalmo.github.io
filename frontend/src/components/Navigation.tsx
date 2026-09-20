@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import { Github, Linkedin, Mail, Menu, Moon, Sun } from "lucide-react";
+import { Mail, Menu, Moon, Sun } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { ResumeBasics, SiteConfigRoot } from "../lib/types";
 import { useTheme } from "./ThemeProvider";
 import { Button } from "./ui/button";
+import { Github, Linkedin } from "./ui/icons";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 
 function buildNav(config?: SiteConfigRoot) {
