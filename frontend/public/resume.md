@@ -8,7 +8,7 @@
 
 
 # Summary
-Operationalizing **interpretable machine learning**, **explainable AI**, and **observable LLM networks** reliably at scale.
+Operationalizing **interpretable machine learning**, **explainable AI**, and **observable agentic networks** reliably at scale.
 
 
 # Experience
@@ -36,7 +36,7 @@ Designing custom AI architectures and developing conversational analytics to dri
 
 ## **Optum**, AI/ML Engineer Associate
 
-Eden Prarie, MN
+Eden Prairie, MN
 
 Aug 2025 – June 2026
 
@@ -129,6 +129,9 @@ May 2021
 #text(size: 8.0pt)[Minored in Music & Mathematics • Phi Beta Kappa • Men's Chorus President]
 
 
+
+# Production Infrastructure Mlops
+**Production Infrastructure & MLOps:** Docker, OpenTelemetry, FastAPI, GitHub Actions (CI/CD), Microsoft Azure, Google Cloud Platform, Git
 
 # Skills
 **Datascience and ML:** Python, SQL, R, PyTorch, TensorFlow, Scikit-learn, PySpark, MLFlow, Statistics and Probability

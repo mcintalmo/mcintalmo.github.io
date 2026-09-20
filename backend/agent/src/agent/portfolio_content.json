@@ -1,7 +1,7 @@
 {
   "name": "Alex McIntosh",
   "label": "Data Scientist & AI/ML Engineer",
-  "summary": "Operationalizing **interpretable machine learning**, **explainable AI**, and **observable LLM networks** reliably at scale.\n",
+  "summary": "Operationalizing **interpretable machine learning**, **explainable AI**, and **observable agentic networks** reliably at scale.\n",
   "contact": {
     "email": "mcintalmo@gmail.com",
     "url": "https://www.alexandermcintosh.com",
@@ -42,7 +42,7 @@
     {
       "company": "Optum",
       "position": "AI/ML Engineer Associate",
-      "location": "Eden Prarie, MN",
+      "location": "Eden Prairie, MN",
       "start_date": "2025-08",
       "end_date": "2026-06",
       "summary": "Architected and built enterprise-scale agentic voice AI systems with end-to-end observability, delivering AI tools to 400K+ employees.",
@@ -213,46 +213,57 @@
   "skills": {
     "Languages & Frameworks": [
       "Python",
-      "PySpark",
       "SQL",
-      "R"
+      "R",
+      "PySpark",
+      "TypeScript"
+    ],
+    "LLM & Agents": [
+      "LangGraph",
+      "Model Context Protocol (MCP)",
+      "LiveKit",
+      "WebRTC & Voice AI",
+      "Retrieval-Augmented Generation (RAG)",
+      "Semantic Kernel",
+      "Agent Development Kit (ADK)",
+      "Agent-to-Agent (A2A) Protocol",
+      "LiteLLM",
+      "Ollama",
+      "DeepEval"
     ],
     "Machine Learning & AI": [
       "PyTorch",
-      "TensorFlow",
       "Scikit-learn",
+      "Explainable AI (SHAP / LIME)",
+      "Anomaly Detection",
+      "Time-Series Forecasting",
       "Statistics and Probability",
       "Data Science and Predictive Analytics",
       "Natural Language Processing (NLP)",
       "Simulation",
+      "TensorFlow",
       "Google Vertex AI",
       "MLFlow"
     ],
-    "LLM & Agents": [
-      "Model Context Protocol (MCP)",
-      "Agent Development Kit (ADK)",
-      "Agent-to-Agent (A2A) Protocol",
-      "Semantic Kernel",
-      "Retrieval-Augmented Generation (RAG)",
-      "LiveKit"
-    ],
     "Data Engineering & Analytics": [
-      "Data Visualization",
-      "Data Engineering",
       "Microsoft Fabric",
       "Databricks",
       "Delta Lake",
+      "Medallion Architecture",
+      "Vector Search & Indexing",
       "AirFlow",
-      "ChromaDB"
+      "ChromaDB",
+      "Data Engineering",
+      "Data Visualization"
     ],
-    "Cloud & Infrastructure": [
-      "Git",
+    "Production Infrastructure & MLOps": [
       "Docker",
+      "OpenTelemetry",
+      "FastAPI",
+      "GitHub Actions (CI/CD)",
       "Microsoft Azure",
-      "Google Cloud Platform"
-    ],
-    "MLOps & Observability": [
-      "OpenTelemetry"
+      "Google Cloud Platform",
+      "Git"
     ]
   },
   "projects": [

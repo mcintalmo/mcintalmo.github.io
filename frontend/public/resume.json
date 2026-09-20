@@ -5,7 +5,7 @@
     "image": "/assets/profile.png",
     "email": "mcintalmo@gmail.com",
     "url": "https://www.alexandermcintosh.com",
-    "summary": "Operationalizing **interpretable machine learning**, **explainable AI**, and **observable LLM networks** reliably at scale.\n",
+    "summary": "Operationalizing **interpretable machine learning**, **explainable AI**, and **observable agentic networks** reliably at scale.\n",
     "location": {
       "city": "Minneapolis",
       "countryCode": "US",
@@ -46,7 +46,7 @@
     },
     {
       "name": "Optum",
-      "location": "Eden Prarie, MN",
+      "location": "Eden Prairie, MN",
       "position": "AI/ML Engineer Associate",
       "startDate": "2025-08",
       "endDate": "2026-06",
@@ -378,13 +378,6 @@
       ]
     },
     {
-      "name": "PySpark",
-      "level": "Advanced",
-      "keywords": [
-        "Languages & Frameworks"
-      ]
-    },
-    {
       "name": "SQL",
       "level": "Expert",
       "keywords": [
@@ -399,6 +392,97 @@
       ]
     },
     {
+      "name": "PySpark",
+      "level": "Advanced",
+      "keywords": [
+        "Languages & Frameworks"
+      ]
+    },
+    {
+      "name": "TypeScript",
+      "level": "Intermediate",
+      "keywords": [
+        "Languages & Frameworks"
+      ]
+    },
+    {
+      "name": "LangGraph",
+      "level": "Expert",
+      "keywords": [
+        "LLM & Agents"
+      ]
+    },
+    {
+      "name": "Model Context Protocol (MCP)",
+      "level": "Advanced",
+      "keywords": [
+        "LLM & Agents"
+      ]
+    },
+    {
+      "name": "LiveKit",
+      "level": "Advanced",
+      "keywords": [
+        "LLM & Agents"
+      ]
+    },
+    {
+      "name": "WebRTC & Voice AI",
+      "level": "Advanced",
+      "keywords": [
+        "LLM & Agents"
+      ]
+    },
+    {
+      "name": "Retrieval-Augmented Generation (RAG)",
+      "level": "Expert",
+      "keywords": [
+        "LLM & Agents"
+      ]
+    },
+    {
+      "name": "Semantic Kernel",
+      "level": "Intermediate",
+      "keywords": [
+        "LLM & Agents"
+      ]
+    },
+    {
+      "name": "Agent Development Kit (ADK)",
+      "level": "Advanced",
+      "keywords": [
+        "LLM & Agents"
+      ]
+    },
+    {
+      "name": "Agent-to-Agent (A2A) Protocol",
+      "level": "Advanced",
+      "keywords": [
+        "LLM & Agents"
+      ]
+    },
+    {
+      "name": "LiteLLM",
+      "level": "Advanced",
+      "keywords": [
+        "LLM & Agents"
+      ]
+    },
+    {
+      "name": "Ollama",
+      "level": "Advanced",
+      "keywords": [
+        "LLM & Agents"
+      ]
+    },
+    {
+      "name": "DeepEval",
+      "level": "Advanced",
+      "keywords": [
+        "LLM & Agents"
+      ]
+    },
+    {
       "name": "PyTorch",
       "level": "Advanced",
       "keywords": [
@@ -406,15 +490,29 @@
       ]
     },
     {
-      "name": "TensorFlow",
-      "level": "Intermediate",
+      "name": "Scikit-learn",
+      "level": "Expert",
       "keywords": [
         "Machine Learning & AI"
       ]
     },
     {
-      "name": "Scikit-learn",
-      "level": "Expert",
+      "name": "Explainable AI (SHAP / LIME)",
+      "level": "Advanced",
+      "keywords": [
+        "Machine Learning & AI"
+      ]
+    },
+    {
+      "name": "Anomaly Detection",
+      "level": "Advanced",
+      "keywords": [
+        "Machine Learning & AI"
+      ]
+    },
+    {
+      "name": "Time-Series Forecasting",
+      "level": "Advanced",
       "keywords": [
         "Machine Learning & AI"
       ]
@@ -448,6 +546,13 @@
       ]
     },
     {
+      "name": "TensorFlow",
+      "level": "Intermediate",
+      "keywords": [
+        "Machine Learning & AI"
+      ]
+    },
+    {
       "name": "Google Vertex AI",
       "level": "Intermediate",
       "keywords": [
@@ -459,62 +564,6 @@
       "level": "Advanced",
       "keywords": [
         "Machine Learning & AI"
-      ]
-    },
-    {
-      "name": "Model Context Protocol (MCP)",
-      "level": "Advanced",
-      "keywords": [
-        "LLM & Agents"
-      ]
-    },
-    {
-      "name": "Agent Development Kit (ADK)",
-      "level": "Advanced",
-      "keywords": [
-        "LLM & Agents"
-      ]
-    },
-    {
-      "name": "Agent-to-Agent (A2A) Protocol",
-      "level": "Advanced",
-      "keywords": [
-        "LLM & Agents"
-      ]
-    },
-    {
-      "name": "Semantic Kernel",
-      "level": "Intermediate",
-      "keywords": [
-        "LLM & Agents"
-      ]
-    },
-    {
-      "name": "Retrieval-Augmented Generation (RAG)",
-      "level": "Expert",
-      "keywords": [
-        "LLM & Agents"
-      ]
-    },
-    {
-      "name": "LiveKit",
-      "level": "Advanced",
-      "keywords": [
-        "LLM & Agents"
-      ]
-    },
-    {
-      "name": "Data Visualization",
-      "level": "Advanced",
-      "keywords": [
-        "Data Engineering & Analytics"
-      ]
-    },
-    {
-      "name": "Data Engineering",
-      "level": "Expert",
-      "keywords": [
-        "Data Engineering & Analytics"
       ]
     },
     {
@@ -539,6 +588,20 @@
       ]
     },
     {
+      "name": "Medallion Architecture",
+      "level": "Advanced",
+      "keywords": [
+        "Data Engineering & Analytics"
+      ]
+    },
+    {
+      "name": "Vector Search & Indexing",
+      "level": "Advanced",
+      "keywords": [
+        "Data Engineering & Analytics"
+      ]
+    },
+    {
       "name": "AirFlow",
       "level": "Advanced",
       "keywords": [
@@ -553,38 +616,66 @@
       ]
     },
     {
-      "name": "Git",
+      "name": "Data Engineering",
+      "level": "Expert",
+      "keywords": [
+        "Data Engineering & Analytics"
+      ]
+    },
+    {
+      "name": "Data Visualization",
       "level": "Advanced",
       "keywords": [
-        "Cloud & Infrastructure"
+        "Data Engineering & Analytics"
       ]
     },
     {
       "name": "Docker",
       "level": "Expert",
       "keywords": [
-        "Cloud & Infrastructure"
-      ]
-    },
-    {
-      "name": "Microsoft Azure",
-      "level": "Intermediate",
-      "keywords": [
-        "Cloud & Infrastructure"
-      ]
-    },
-    {
-      "name": "Google Cloud Platform",
-      "level": "Intermediate",
-      "keywords": [
-        "Cloud & Infrastructure"
+        "Production Infrastructure & MLOps"
       ]
     },
     {
       "name": "OpenTelemetry",
       "level": "Advanced",
       "keywords": [
-        "MLOps & Observability"
+        "Production Infrastructure & MLOps"
+      ]
+    },
+    {
+      "name": "FastAPI",
+      "level": "Advanced",
+      "keywords": [
+        "Production Infrastructure & MLOps"
+      ]
+    },
+    {
+      "name": "GitHub Actions (CI/CD)",
+      "level": "Advanced",
+      "keywords": [
+        "Production Infrastructure & MLOps"
+      ]
+    },
+    {
+      "name": "Microsoft Azure",
+      "level": "Intermediate",
+      "keywords": [
+        "Production Infrastructure & MLOps"
+      ]
+    },
+    {
+      "name": "Google Cloud Platform",
+      "level": "Intermediate",
+      "keywords": [
+        "Production Infrastructure & MLOps"
+      ]
+    },
+    {
+      "name": "Git",
+      "level": "Advanced",
+      "keywords": [
+        "Production Infrastructure & MLOps"
       ]
     }
   ]
