@@ -550,10 +550,27 @@ export function CustomChatWidget({
 
   const handleSuggestedQuestionClick = React.useCallback(
     async (question: string) => {
-      if (isSending || isConnecting || !isAgentOnline) return;
       stopDictation();
       setFollowups([]);
-      await send(question);
+      if (isAgentOnline && send) {
+        if (isSending || isConnecting) return;
+        await send(question);
+      } else {
+        const now = Date.now();
+        const userMsg: UnifiedMessage = {
+          id: `user-${now}`,
+          sender: "user",
+          text: question,
+          timestamp: now,
+        };
+        const assistantMsg: UnifiedMessage = {
+          id: `assistant-${now + 1}`,
+          sender: "assistant",
+          text: "The real-time conversational agent daemon is currently on standby. Alex specializes in multi-agent architectures, streaming voice pipelines, and MLOps platforms. You can reach out directly via the [Contact Form](#contact) or email [mcintalmo@gmail.com](mailto:mcintalmo@gmail.com) to discuss your project.",
+          timestamp: now + 1,
+        };
+        setUnifiedMessages((prev) => [...prev, userMsg, assistantMsg]);
+      }
     },
     [send, isSending, isConnecting, isAgentOnline, stopDictation],
   );
@@ -567,17 +584,52 @@ export function CustomChatWidget({
       const text = inputEl.value.trim();
       inputEl.value = "";
       setFollowups([]);
-      await send(text);
+      if (isAgentOnline && send) {
+        await send(text);
+      } else {
+        const now = Date.now();
+        const userMsg: UnifiedMessage = {
+          id: `user-${now}`,
+          sender: "user",
+          text,
+          timestamp: now,
+        };
+        const assistantMsg: UnifiedMessage = {
+          id: `assistant-${now + 1}`,
+          sender: "assistant",
+          text: "The real-time conversational agent daemon is currently on standby. Alex is available for AI engineering and consulting contracts. Reach out directly at [mcintalmo@gmail.com](mailto:mcintalmo@gmail.com) or submit a message below.",
+          timestamp: now + 1,
+        };
+        setUnifiedMessages((prev) => [...prev, userMsg, assistantMsg]);
+      }
       inputEl.focus();
     }
   };
 
   React.useEffect(() => {
-    if (isOpen && pendingMessage && isAgentOnline && send) {
-      send(pendingMessage).catch(console.error);
-      setPendingMessage(null);
+    if (isOpen && pendingMessage) {
+      if (isAgentOnline && send) {
+        send(pendingMessage).catch(console.error);
+        setPendingMessage(null);
+      } else if (!isConnecting && !isAgentOnline) {
+        const now = Date.now();
+        const userMsg: UnifiedMessage = {
+          id: `user-${now}`,
+          sender: "user",
+          text: pendingMessage,
+          timestamp: now,
+        };
+        const assistantMsg: UnifiedMessage = {
+          id: `assistant-${now + 1}`,
+          sender: "assistant",
+          text: "The real-time conversational agent daemon is currently on standby. Alex specializes in multi-agent architectures, streaming voice AI, and MLOps. To discuss your project or request a proposal, reach out at [mcintalmo@gmail.com](mailto:mcintalmo@gmail.com) or scroll to the [Contact Section](#contact).",
+          timestamp: now + 1,
+        };
+        setUnifiedMessages((prev) => [...prev, userMsg, assistantMsg]);
+        setPendingMessage(null);
+      }
     }
-  }, [isOpen, pendingMessage, isAgentOnline, send]);
+  }, [isOpen, pendingMessage, isAgentOnline, isConnecting, send]);
 
   const openChat = React.useCallback(() => {
     setIsOpen(true);
@@ -773,7 +825,7 @@ export function CustomChatWidget({
                             key={q.prompt}
                             type="button"
                             onClick={() => handleSuggestedQuestionClick(q.prompt)}
-                            disabled={isSending || isConnecting || !isAgentOnline}
+                            disabled={isSending || isConnecting}
                             className="w-full text-left p-3 text-xs rounded-xl border border-border/40 bg-card/50 hover:bg-accent-indigo/5 hover:border-accent-indigo/20 transition-all duration-200 text-foreground/80 hover:text-foreground font-medium flex items-center justify-between group cursor-pointer shadow-xs disabled:opacity-50 disabled:pointer-events-none font-sans"
                           >
                             <span className="truncate">{q.title}</span>
@@ -857,10 +909,10 @@ export function CustomChatWidget({
                       isConnecting
                         ? "Connecting to agent..."
                         : !isAgentOnline
-                          ? "Agent offline. Click FAB to connect."
+                          ? "Agent standby. Send a message..."
                           : "Type a message..."
                     }
-                    disabled={isSending || isConnecting || !isAgentOnline}
+                    disabled={isSending || isConnecting}
                     className="lk-chat-form-input w-full pr-10 rounded-md border border-input bg-background px-3 py-2 h-12 sm:h-9 text-base sm:text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     onInput={(ev) => ev.stopPropagation()}
                     onKeyDown={(ev) => ev.stopPropagation()}
@@ -869,7 +921,7 @@ export function CustomChatWidget({
                   <button
                     type="button"
                     onClick={toggleDictation}
-                    disabled={isSending || isConnecting || !isAgentOnline}
+                    disabled={isSending || isConnecting}
                     className={`absolute right-1 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-8 sm:h-8 flex items-center justify-center rounded-full hover:bg-muted transition-colors ${
                       isDictating
                         ? "text-red-500 animate-pulse bg-red-500/10"
@@ -884,7 +936,7 @@ export function CustomChatWidget({
                 <Button
                   type="submit"
                   className="shrink-0 px-3.5 sm:px-4 h-12 sm:h-9 min-h-[48px] sm:min-h-0 text-base sm:text-sm"
-                  disabled={isSending || isConnecting || !isAgentOnline}
+                  disabled={isSending || isConnecting}
                 >
                   {isConnecting ? "Connecting" : "Send"}
                 </Button>

@@ -18,65 +18,95 @@ const description =
   config?.seo?.description ||
   (resume?.basics?.summary ? String(resume.basics.summary).slice(0, 160) : "");
 // Derive site URL: prefer build-time SITE (astro --site) or fallback to production domain
-const siteUrl = (import.meta.env.SITE || "https://www.alexandermcintosh.com").replace(
-  /\/$/,
-  "",
-);
+const siteUrl = (
+  import.meta.env.SITE || "https://www.alexandermcintosh.com"
+).replace(/\/$/, "");
 const imageUrl = siteUrl + "/assets/profile.png";
 ---
+
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-		<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; connect-src 'self' https://api.alexandermcintosh.com wss://livekit.alexandermcintosh.com http://localhost:8000 http://localhost:8002 ws://localhost:7880 https://fonts.googleapis.com https://fonts.gstatic.com; object-src 'none'; base-uri 'self';" />
-		<meta http-equiv="X-Content-Type-Options" content="nosniff" />
-		<meta name="referrer" content="strict-origin-when-cross-origin" />
-		<meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)" />
-		<meta name="theme-color" content="#f8f9fa" media="(prefers-color-scheme: light)" />
-		<meta name="apple-mobile-web-app-capable" content="yes" />
-		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-		{description && <meta name="description" content={description} />}
-		<meta property="og:title" content={title} />
-		{description && <meta property="og:description" content={description} />}
-		<meta property="og:type" content="website" />
-		<meta property="og:url" content={siteUrl} />
-		<meta property="og:image" content={imageUrl} />
-		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:title" content={title} />
-		{description && <meta name="twitter:description" content={description} />}
-		<meta name="twitter:image" content={imageUrl} />
-		<script is:inline type="application/ld+json">{JSON.stringify({
-			'@context': 'https://schema.org',
-			'@type': 'Person',
-			name: basicsName,
-			url: siteUrl,
-			image: imageUrl,
-			sameAs: (resume?.basics?.profiles || []).map((p: any) => p.url).filter(Boolean),
-			jobTitle: resume?.basics?.label
-		})}</script>
-		<script is:inline type="application/ld+json">{JSON.stringify({
-			'@context': 'https://schema.org',
-			'@type': 'WebSite',
-			url: siteUrl,
-			name: title,
-			description: description
-		})}</script>
-	</head>
-	<body>
-		<slot />
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; connect-src 'self' https://api.alexandermcintosh.com wss://livekit.alexandermcintosh.com http://localhost:8000 http://localhost:8002 ws://localhost:7880 https://fonts.googleapis.com https://fonts.gstatic.com; object-src 'none'; base-uri 'self';"
+    />
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta
+      name="theme-color"
+      content="#0b0f19"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta
+      name="theme-color"
+      content="#f8f9fa"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+    <meta property="og:image" content={imageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
+    <meta name="twitter:image" content={imageUrl} />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: basicsName,
+        url: siteUrl,
+        image: imageUrl,
+        sameAs: (resume?.basics?.profiles || [])
+          .map((p: any) => p.url)
+          .filter(Boolean),
+        jobTitle: resume?.basics?.label,
+      })}
+    />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        url: siteUrl,
+        name: title,
+        description: description,
+      })}
+    />
+  </head>
+  <body>
+    <slot />
+  </body>
 </html>
 
 <style>
-	html,
-	body {
-		margin: 0;
-	}
+  html,
+  body {
+    margin: 0;
+  }
 </style>

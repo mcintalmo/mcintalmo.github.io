@@ -16,7 +16,11 @@ const title = resume.basics?.label || "Data Scientist & AI/ML Engineer";
   title={`${name} | Digital Business Card & QR Code`}
   description={`Digital business card for ${name}, ${title}. Scan QR code to connect, save contact details, or talk with AI voice assistant.`}
 >
-  <ThemeProvider client:only="react" defaultTheme="light" storageKey="portfolio-theme">
+  <ThemeProvider
+    client:only="react"
+    defaultTheme="light"
+    storageKey="portfolio-theme"
+  >
     <BusinessCard
       client:only="react"
       basics={resume.basics}

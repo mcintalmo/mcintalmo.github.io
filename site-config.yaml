@@ -26,15 +26,15 @@ sections:
     title: Home
     enabled: true
     call-to-action:
-      text: Explore my work
-      url: "#work"
+      text: Discuss a Project
+      url: "#contact"
   work:
     title: Professional Experience
     description: My journey in transforming data into intelligent solutions across
       various industries.
     navigation-label: Work
     enabled: true
-  history-visible-years: 2
+  history-visible-years: 10
   education:
     title: Education & Certifications
     description: Strong academic foundation and continuous learning in data science and AI
@@ -61,34 +61,31 @@ sections:
     navigation-label: Skills
     enabled: true
     categories:
+      - key: "llm-agents"
+        title: "Agentic & Generative AI"
+        icon: "bot"
+        subtitle: "Autonomous multi-agent workflows, streaming voice pipelines, and tool execution protocols."
+        keywords: [ "LLM & Agents", "Agentic & Generative AI Systems", "Agentic & Generative AI" ]
       - key: "languages-frameworks"
         title: "Languages & Frameworks"
         icon: "code"
+        subtitle: "High-performance data computing, manipulation, and full-stack integration."
         keywords: [ "Languages & Frameworks" ]
       - key: "machine-learning-ai"
-        title: "Machine Learning & AI"
+        title: "Machine Learning & Modeling"
         icon: "brain"
+        subtitle: "Statistical inference, deep learning architectures, and predictive modeling."
         keywords: [ "Machine Learning & AI" ]
-      - key: "llm-agents"
-        title: "LLM & Agents"
-        icon: "brain"
-        keywords: [ "LLM & Agents" ]
       - key: "data-engineering-analytics"
-        title: "Data Engineering & Analytics"
+        title: "Data Engineering & Pipelines"
         icon: "layers3"
+        subtitle: "Distributed lakehouse architectures, ETL orchestration, and vector indexing."
         keywords: [ "Data Engineering & Analytics" ]
-      - key: "cloud-infrastructure"
-        title: "Cloud & Infrastructure"
-        icon: "cloud"
-        keywords: [ "Cloud & Infrastructure" ]
-      - key: "mlops-observability"
-        title: "MLOps & Observability"
+      - key: "production-mlops"
+        title: "Infrastructure & MLOps"
         icon: "wrench"
-        keywords: [ "MLOps & Observability" ]
-      - key: "analytics-bi"
-        title: "Analytics & BI"
-        icon: "layers3"
-        keywords: [ "Analytics & BI" ]
+        subtitle: "Containerized microservices, distributed telemetry, and cloud deployments."
+        keywords: [ "Production Infrastructure & MLOps", "Cloud & Infrastructure", "MLOps & Observability" ]
   awards:
     title: Awards
     navigation-label: Awards

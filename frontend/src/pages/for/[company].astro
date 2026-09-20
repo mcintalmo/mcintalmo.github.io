@@ -18,6 +18,7 @@ export async function getStaticPaths() {
 const { tailoredResume } = Astro.props;
 const { config } = loadAll();
 ---
+
 <Layout config={config} resume={tailoredResume}>
   <div class="flex flex-col md:flex-row min-h-screen">
     <div class="flex-1 min-w-0 transition-all duration-300">
@@ -26,7 +27,11 @@ const { config } = loadAll();
         basics={tailoredResume.basics}
         recommendedQuestions={config.agent?.["recommended-questions"]}
       />
-      <PortfolioSections client:visible resume={tailoredResume} config={config} />
+      <PortfolioSections
+        client:visible
+        resume={tailoredResume}
+        config={config}
+      />
     </div>
     <InteractiveChat client:only="react" config={config} />
   </div>

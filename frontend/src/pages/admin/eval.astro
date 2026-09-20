@@ -23,7 +23,11 @@ if (fs.existsSync(resumeRootPath)) {
 ---
 
 <Layout config={config} resume={resume}>
-  <ThemeProvider client:only="react" defaultTheme="light" storageKey="portfolio-theme">
+  <ThemeProvider
+    client:only="react"
+    defaultTheme="light"
+    storageKey="portfolio-theme"
+  >
     <Navigation client:only="react" config={config} basics={resume.basics} />
     <div class="relative z-10 min-h-screen pt-24 bg-background">
       <EvalDashboard client:only="react" baseResumeYaml={baseResumeYaml} />

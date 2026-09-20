@@ -1,5 +1,4 @@
 ---
-import { BackToTop } from "../components/BackToTop";
 import { Home } from "../components/Home";
 import { InteractiveChat } from "../components/InteractiveChat";
 import { Navigation } from "../components/Navigation";
@@ -13,8 +12,13 @@ import "../styles/globals.css";
 
 const { config, resume } = loadAll();
 ---
+
 <Layout config={config} resume={resume}>
-  <ThemeProvider client:only="react" defaultTheme="light" storageKey="portfolio-theme">
+  <ThemeProvider
+    client:only="react"
+    defaultTheme="light"
+    storageKey="portfolio-theme"
+  >
     <Navigation client:only="react" config={config} basics={resume.basics} />
     <div class="relative flex flex-col md:flex-row min-h-screen">
       <div class="main-content-wrapper flex-1 min-w-0">
@@ -26,7 +30,6 @@ const { config, resume } = loadAll();
         <PortfolioSections client:visible resume={resume} config={config} />
       </div>
       <InteractiveChat client:only="react" config={config} />
-      <BackToTop client:only="react" />
     </div>
     <VectorBackground client:only="react" />
     <Toaster client:only="react" />

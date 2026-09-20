@@ -1,8 +1,9 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Download, MessageSquare } from "lucide-react";
 import profileImg from "../assets/profile.png";
 import type { ResumeBasics, SuggestedQuestion } from "../lib/types";
 import { HeroPrompt } from "./HeroPrompt";
 import { Markdown } from "./Markdown";
+import { Button } from "./ui/button";
 
 export interface Props {
   basics?: ResumeBasics;
@@ -65,7 +66,11 @@ export function Home({ basics, recommendedQuestions }: Props) {
                 </span>
               </h1>
             )}
-            {label && <h2 className="mb-4 text-muted-foreground font-sans">{label}</h2>}
+            {label && (
+              <h2 className="mb-4 text-muted-foreground font-sans text-lg sm:text-xl">
+                {label}
+              </h2>
+            )}
 
             {/* Summary tagline */}
             {summary && (
@@ -77,6 +82,33 @@ export function Home({ basics, recommendedQuestions }: Props) {
               </div>
             )}
 
+            {/* Direct Conversion CTAs */}
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
+              <Button
+                asChild
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-6 py-2.5 h-11 rounded-xl shadow-lg shadow-primary/20 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              >
+                <a href="#contact" className="inline-flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4" />
+                  Discuss a Project
+                </a>
+              </Button>
+              <Button
+                variant="outline"
+                asChild
+                className="border-border hover:bg-muted font-medium px-5 py-2.5 h-11 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              >
+                <a
+                  href="/resume.pdf"
+                  download
+                  className="inline-flex items-center gap-2"
+                >
+                  <Download className="h-4 w-4" />
+                  Download Resume (PDF)
+                </a>
+              </Button>
+            </div>
+
             {/* Command Prompt Hero */}
             <HeroPrompt recommendedQuestions={recommendedQuestions} />
           </div>
@@ -85,7 +117,7 @@ export function Home({ basics, recommendedQuestions }: Props) {
 
       {/* Scroll indicator */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 scroll-indicator">
-        <a href="#work" aria-label="Scroll to see more">
+        <a href="#experience" aria-label="Scroll to see more">
           <ChevronDown
             className="w-6 h-6 text-muted-foreground animate-bounce"
             strokeWidth={2}
