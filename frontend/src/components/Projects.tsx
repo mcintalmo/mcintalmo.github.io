@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { useState } from "react";
 import type { ResumeProject, SiteConfigRoot } from "../lib/types";
 import Markdown from "./Markdown";
@@ -7,6 +7,7 @@ import { SectionAnchor } from "./SectionAnchor";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Github } from "./ui/icons";
 
 export function Projects({
   projects,

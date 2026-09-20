@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import { Linkedin, Mail, MapPin, Phone, Send } from "lucide-react";
+import { Mail, MapPin, Phone, Send } from "lucide-react";
 import { useState } from "react";
 import type { ResumeBasics, SiteConfigRoot } from "../lib/types";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Linkedin } from "./ui/icons";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 

@@ -7,9 +7,7 @@ import {
   Copy,
   Download,
   FileText,
-  Github,
   Globe,
-  Linkedin,
   Mail,
   MapPin,
   QrCode,
@@ -22,6 +20,7 @@ import type { ResumeBasics, ResumeWork, SiteConfigRoot } from "../lib/types";
 import { downloadVCard, generateVCard } from "../lib/vcard";
 import { QRCodeDisplay } from "./QRCodeDisplay";
 import { Button } from "./ui/button";
+import { Github, Linkedin } from "./ui/icons";
 
 interface BusinessCardProps {
   basics?: ResumeBasics;
