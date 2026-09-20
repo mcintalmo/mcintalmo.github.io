@@ -3,6 +3,7 @@ name = "agent"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
+    "aiohttp>=3.11.0",
     "common",
     "livekit-agents>=1.6.4",
     "livekit-plugins-cartesia>=1.6.4",

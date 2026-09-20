@@ -1,8 +1,56 @@
+import os
+from pathlib import Path
+from typing import Any
+
 import structlog
+import yaml
 from pydantic import SecretStr, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic.fields import FieldInfo
+from pydantic_settings import (
+    BaseSettings,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+)
+
+from common.paths import SITE_CONFIG_PATH
 
 logger = structlog.get_logger(__name__)
+
+
+class YamlConfigSettingsSource(PydanticBaseSettingsSource):
+    """Pydantic settings source that loads configuration from YAML files."""
+
+    def __init__(self, settings_cls: type[BaseSettings], section: str = "llm") -> None:
+        super().__init__(settings_cls)
+        self.section = section
+
+    def get_field_value(
+        self, field: FieldInfo, field_name: str
+    ) -> tuple[Any, str, bool]:
+        return None, field_name, False
+
+    def __call__(self) -> dict[str, Any]:
+        config_env = os.environ.get("CONFIG_FILE")
+        yaml_path = Path(config_env) if config_env else SITE_CONFIG_PATH
+        if not yaml_path.exists():
+            return {}
+
+        try:
+            with open(yaml_path, encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+                if isinstance(data, dict):
+                    if (
+                        self.section
+                        and self.section in data
+                        and isinstance(data[self.section], dict)
+                    ):
+                        return data[self.section]
+                    return data
+        except Exception:
+            pass
+
+        return {}
+
 
 DEFAULT_ALLOWED_ORIGINS: list[str] = [
     "https://www.alexandermcintosh.com",

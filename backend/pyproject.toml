@@ -20,7 +20,7 @@ dev-dependencies = [
 [tool.ruff]
 line-length = 88
 target-version = "py313"
-src = ["agent/src", "auth/src", "mcp/src", "common/src", "tailor/src"]
+src = ["agent/src", "auth/src", "mcp/src", "common/src", "tailor/src", "resume/src"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
@@ -37,8 +37,8 @@ extra-paths = [
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-testpaths = ["agent/tests", "auth/tests", "mcp/tests", "common/tests", "tailor/tests"]
-pythonpath = [".", "agent/src", "auth/src", "mcp/src", "common/src", "tailor/src", "tailor/tests"]
+testpaths = ["agent/tests", "auth/tests", "mcp/tests", "common/tests", "tailor/tests", "resume/tests"]
+pythonpath = [".", "agent/src", "auth/src", "mcp/src", "common/src", "tailor/src", "resume/src", "tailor/tests"]
 markers = [
     "eval: marks tests as evaluations (select with '-m eval')",
 ]

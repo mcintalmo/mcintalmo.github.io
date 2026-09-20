@@ -1,9 +1,7 @@
 packages:
   - frontend
-  - resume/convert
 allowBuilds:
   '@sentry/cli': set this to true or false
-  '@tsparticles/engine': set this to true or false
   esbuild: set this to true or false
   sharp: set this to true or false
 onlyBuiltDependencies:
@@ -24,3 +22,5 @@ overrides:
   sharp@<0.35.0: ^0.35.0
   sharp@<0.35.4: ^0.35.4
   svgo@>=4.0.0 <4.1.0: ^4.1.0
+minimumReleaseAgeExclude:
+  - '@astrojs/react@6.0.6'

@@ -30,15 +30,19 @@ uv run pytest agent/tests
 
 We use evaluation frameworks (LLM-as-a-judge) to ensure AI agents and pipelines respond correctly and logically. Since these are costly and slow, they are marked with `@pytest.mark.eval`.
 
-### A. LiveKit Voice Agent Evals
+### A. LiveKit Voice Agent Evals (DeepEval)
 
-We use the native `livekit.agents.testing` framework. This simulates a user speaking to the agent and evaluates the agent's textual response against an intent.
+We use the DeepEval framework with foundation model judges to evaluate conversational agent intent, persona adherence, tool correctness, and prompt security guardrails.
 
 ```bash
-uv run pytest agent/tests/test_evals.py -m eval -v
+# Via just runner from repo root:
+just test-agent-eval
+
+# Or directly via uv:
+RUN_EVALS=true uv run pytest agent/tests/evals -m "eval" -s
 ```
 
-*Note: You can set `LIVEKIT_EVALS_VERBOSE=1` to see the full transcripts of the simulation.*
+*Note: Test cases and guardrails are defined in [`agent/tests/evals/golden_dataset.yaml`](file:///Users/mcint/projects/mcintalmo.github.io/backend/agent/tests/evals/golden_dataset.yaml).*
 
 ### B. LangGraph Pipeline Evals (DeepEval)
 

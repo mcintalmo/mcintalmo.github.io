@@ -5,6 +5,8 @@ from typing import Any
 
 import yaml
 
+from common.paths import SOURCE_RESUME_YAML
+
 from .graph import create_graph
 
 
@@ -47,16 +49,12 @@ def main() -> None:
     parser.add_argument(
         "--resume",
         type=str,
-        default="../../resume/resume.yaml",
+        default=str(SOURCE_RESUME_YAML),
         help="Path to the Golden Resume JSON/YAML file.",
     )
 
     args = parser.parse_args()
-
-    repo_root = Path(__file__).parents[4]
-    resume_path = repo_root / "resume" / "resume.yaml"
-    if args.resume != "../../resume/resume.yaml":
-        resume_path = Path(args.resume)
+    resume_path = Path(args.resume)
 
     asyncio.run(_run_pipeline(args.jd, resume_path))
 

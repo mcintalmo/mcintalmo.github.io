@@ -1,8 +1,6 @@
 ---
-import fs from "node:fs";
-import path from "node:path";
-import YAML from "yaml";
-import { ChatAgent } from "../../components/ChatAgent";
+import { getCollection } from "astro:content";
+import { InteractiveChat } from "../../components/InteractiveChat";
 import { Home } from "../../components/Home";
 import PortfolioSections from "../../components/PortfolioSections";
 import Layout from "../../layouts/Layout.astro";
@@ -10,22 +8,11 @@ import { loadAll } from "../../lib/data";
 import "../../styles/globals.css";
 
 export async function getStaticPaths() {
-  const tailoredDir = path.join(process.cwd(), "src/content/tailored");
-  if (!fs.existsSync(tailoredDir)) {
-    return [];
-  }
-
-  const files = fs.readdirSync(tailoredDir).filter((f) => f.endsWith(".yaml"));
-
-  return files.map((file) => {
-    const company = file.replace(".yaml", "");
-    const content = fs.readFileSync(path.join(tailoredDir, file), "utf-8");
-    const tailoredResume = YAML.parse(content);
-    return {
-      params: { company },
-      props: { tailoredResume },
-    };
-  });
+  const tailoredEntries = await getCollection("tailored");
+  return tailoredEntries.map((entry) => ({
+    params: { company: entry.id.replace(/\.ya?ml$/, "") },
+    props: { tailoredResume: entry.data },
+  }));
 }
 
 const { tailoredResume } = Astro.props;
@@ -41,6 +28,6 @@ const { config } = loadAll();
       />
       <PortfolioSections client:visible resume={tailoredResume} config={config} />
     </div>
-    <ChatAgent client:only="react" config={config} />
+    <InteractiveChat client:only="react" config={config} />
   </div>
 </Layout>

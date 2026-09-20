@@ -74,7 +74,7 @@ mcintalmo.github.io/
 
 ### 2. Frontend React Islands & Chat UI
 
-- `frontend/src/components/ChatAgent.tsx`:
+- `frontend/src/components/InteractiveChat.tsx` & `frontend/src/hooks/useLiveKitSession.ts`:
   - Fetches room JWTs from local auth (`http://localhost:8000`) with automatic production fallback (`https://api.alexandermcintosh.com`) if local auth is unreachable.
 - `frontend/src/components/CustomChatWidget.tsx`:
   - Renders unified chronological timeline combining user/agent messages and real-time tool call indicators (running spinners, completion checkmarks, and human-readable action labels).

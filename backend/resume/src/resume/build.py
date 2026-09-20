@@ -1,23 +1,22 @@
-"""
-Resume build script.
+"""Resume build script.
 
-Single source of truth: resume/resume.yaml  (JSON Resume schema in YAML notation)
+Single source of truth: resume/resume.yaml (JSON Resume schema in YAML notation)
 
 Pipeline:
-  1. Convert JSON Resume → RenderCV YAML  (via Node.js converter)
-  2. Render PDF + Markdown via RenderCV    (Typst backend)
-  3. Copy source resume.yaml verbatim      (for download)
-  4. Emit resume.json                      (JSON Resume, from source)
+  1. Convert JSON Resume -> RenderCV YAML (pure Python via resume.converter)
+  2. Render PDF + Markdown via RenderCV (Typst backend)
+  3. Copy source resume.yaml verbatim (for download)
+  4. Emit resume.json (JSON Resume, from source)
   5. Copy all four to frontend/public/
-  6. Build agent context JSON              (for voice agent)
+  6. Build agent context JSON (for voice agent)
 
 All build outputs land in:
-  resume/output/         — intermediate artefacts
-  frontend/public/       — static assets served at /resume.*
+  resume/output/   - intermediate artefacts
+  frontend/public/ - static assets served at /resume.*
 
 Usage:
-  # From repo root via Makefile:
-  make build-resume
+  # From repo root via just:
+  just build-resume
 
   # Directly (from backend/ directory):
   uv run --package resume python -m resume.build
@@ -29,45 +28,43 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import copy
+import datetime
 import json
 import shutil
-import subprocess
 import sys
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
 import yaml
 
-# ── Path constants ─────────────────────────────────────────────────────────────
+from common.paths import (
+    DESIGN_YAML,
+    PDF_CONFIG_PATH,
+    PUBLIC_DIR,
+    REPO_ROOT,
+    RESUME_DIR,
+    SITE_CONFIG_PATH,
+    SOURCE_RESUME_YAML,
+)
+from resume.converter import convert_json_resume_to_rendercv
 
-# build.py → resume/ → src/ → resume(pkg)/ → backend/ → repo root
-REPO_ROOT = Path(__file__).parents[4]
-RESUME_DIR = REPO_ROOT / "resume"
-
-# Input files
-SOURCE_JSON_RESUME = RESUME_DIR / "resume.yaml"  # JSON Resume schema (YAML)
-DESIGN_YAML = RESUME_DIR / "themes" / "classic" / "design.yaml"
-CONVERTER_SCRIPT = RESUME_DIR / "convert" / "convert.mjs"
-
-# Intermediate
-RENDERCV_YAML = RESUME_DIR / "rendercv" / "resume.yaml"  # RenderCV-format YAML
-
-# Outputs
-OUTPUT_DIR = RESUME_DIR / "output"
-PUBLIC_DIR = REPO_ROOT / "frontend" / "public"
-AGENT_CONTEXT = (
+# Intermediate and outputs
+OUTPUT_DIR: Path = RESUME_DIR / "output"
+RENDERCV_YAML: Path = RESUME_DIR / "rendercv" / "resume.yaml"
+AGENT_CONTEXT: Path = (
     REPO_ROOT / "backend" / "agent" / "src" / "agent" / "portfolio_content.json"
 )
 
 
-# ── Helpers ────────────────────────────────────────────────────────────────────
-
-
 def log(msg: str) -> None:
-    print(f"  → {msg}", flush=True)
+    """Print an indented progress message."""
+    print(f"  -> {msg}", flush=True)
 
 
 def copy_to_public(src: Path, filename: str) -> None:
+    """Copy a generated file to the frontend public directory."""
     PUBLIC_DIR.mkdir(parents=True, exist_ok=True)
     dest = PUBLIC_DIR / filename
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -75,149 +72,10 @@ def copy_to_public(src: Path, filename: str) -> None:
     log(f"Copied {filename} to {dest.relative_to(REPO_ROOT)}")
 
 
-# ── Step 1: JSON Resume → RenderCV YAML ───────────────────────────────────────
-
-
-def convert_to_rendercv(input_yaml: Path) -> Path:
-    """
-    Run the Node.js converter to produce a RenderCV-format YAML file.
-    The design: block is intentionally excluded — injected via design_yaml_file.
-    """
-    RENDERCV_YAML.parent.mkdir(parents=True, exist_ok=True)
-
-    result = subprocess.run(
-        ["node", str(CONVERTER_SCRIPT), str(input_yaml), str(RENDERCV_YAML)],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        print("Converter stderr:", result.stderr, file=sys.stderr)
-        raise RuntimeError(
-            f"JSON Resume → RenderCV conversion failed (exit {result.returncode})"
-        )
-
-    log(f"Converted to {RENDERCV_YAML.relative_to(REPO_ROOT)}")
-    return RENDERCV_YAML
-
-
-# ── Step 2: RenderCV render (PDF + Markdown) ───────────────────────────────────
-
-
-def render_pdf_and_markdown(generate_pdf: bool) -> tuple[Path | None, Path | None]:
-    """
-    Parse the RenderCV YAML and render via the Python API.
-
-    Uses build_rendercv_dictionary_and_model() with design_yaml_file to inject
-    the design: block separately from the cv: content.
-
-    Returns (pdf_path, md_path).
-    """
-    # Lazy import so the module can be loaded without rendercv installed
-    from rendercv.renderer.markdown import (  # type: ignore[import-untyped]
-        generate_markdown,
-    )
-    from rendercv.renderer.pdf_png import (  # type: ignore[import-untyped]
-        generate_pdf as _gen_pdf,
-    )
-    from rendercv.renderer.typst import generate_typst  # type: ignore[import-untyped]
-    from rendercv.schema.rendercv_model_builder import (  # type: ignore[import-untyped]
-        build_rendercv_dictionary_and_model,
-    )
-
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-    yaml_content = RENDERCV_YAML.read_text(encoding="utf-8")
-
-    _dict, model = build_rendercv_dictionary_and_model(
-        yaml_content,
-        input_file_path=RENDERCV_YAML,
-        design_yaml_file=DESIGN_YAML.read_text(encoding="utf-8"),
-        output_folder=OUTPUT_DIR,
-        pdf_path=OUTPUT_DIR / "resume.pdf",
-        markdown_path=OUTPUT_DIR / "resume.md",
-        dont_generate_html=True,
-        dont_generate_png=True,
-        dont_generate_pdf=not generate_pdf,
-    )
-
-    # Markdown is always generated (fast, no Typst)
-    md_path = generate_markdown(model)
-    log(f"Markdown: {md_path.relative_to(REPO_ROOT) if md_path else 'skipped'}")
-
-    pdf_path: Path | None = None
-    if generate_pdf:
-        typst_path = generate_typst(model)
-        pdf_path = _gen_pdf(model, typst_path)
-        log(f"PDF:      {pdf_path.relative_to(REPO_ROOT) if pdf_path else 'skipped'}")
-    else:
-        log("PDF:      skipped (--no-pdf)")
-
-    return pdf_path, md_path
-
-
-# ── Step 3: YAML copy ──────────────────────────────────────────────────────────
-
-
-def build_yaml_copy() -> Path:
-    """Copy the source resume.yaml (JSON Resume format) verbatim to output."""
-    dest = OUTPUT_DIR / "resume.yaml"
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    shutil.copy(SOURCE_JSON_RESUME, dest)
-    log(f"YAML:     {dest.relative_to(REPO_ROOT)}")
-    return dest
-
-
-# ── Step 4: JSON Resume output ─────────────────────────────────────────────────
-
-
-def build_json() -> Path:
-    """
-    Load resume.yaml (JSON Resume in YAML notation) and write resume.json.
-    No conversion needed — just parse YAML, serialize as JSON.
-    """
-    import datetime
-
-    resume_data = yaml.safe_load(SOURCE_JSON_RESUME.read_text(encoding="utf-8"))
-
-    def _json_default(obj: object) -> str:
-        if isinstance(obj, datetime.date | datetime.datetime):
-            return str(obj)
-        raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
-
-    dest = OUTPUT_DIR / "resume.json"
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    dest.write_text(
-        json.dumps(resume_data, indent=2, ensure_ascii=False, default=_json_default),
-        encoding="utf-8",
-    )
-    log(f"JSON:     {dest.relative_to(REPO_ROOT)}")
-    return dest
-
-
-# ── Step 5 / 6: Agent context ──────────────────────────────────────────────────
-
-
-def build_agent_context_file(
-    resume_data: dict[str, Any], site_config: dict[str, Any]
-) -> Path:
-    """Build structured agent context and write to portfolio_content.json."""
-    from .agent_context import build_agent_context
-
-    context = build_agent_context(resume_data, site_config)
-    AGENT_CONTEXT.parent.mkdir(parents=True, exist_ok=True)
-    AGENT_CONTEXT.write_text(
-        json.dumps(context, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
-    log(f"Agent context: {AGENT_CONTEXT.relative_to(REPO_ROOT)}")
-    return AGENT_CONTEXT
-
-
 def filter_resume_for_pdf(
     resume_data: dict[str, Any], config: dict[str, Any]
 ) -> dict[str, Any]:
     """Filter and format the JSON Resume data for the concise 1-page PDF."""
-    import copy
-
     res = copy.deepcopy(resume_data)
 
     # 1. Exclude sections
@@ -250,7 +108,6 @@ def filter_resume_for_pdf(
 
             inst_name = edu.get("institution", "")
             if inst_name in horizontal_insts:
-                # Combine achievements (and courses if they still exist) horizontally
                 achievements = edu.get("achievements", [])
                 courses = edu.get("courses", []) if not exclude_courses else []
                 items = achievements + courses
@@ -262,22 +119,25 @@ def filter_resume_for_pdf(
     return res
 
 
-def post_process_rendercv_yaml(
-    rendercv_yaml_path: Path, resume_data: dict[str, Any], config: dict[str, Any]
-) -> None:
-    """Post-process the generated RenderCV YAML to format skills horizontally."""
+def post_process_rendercv_data(
+    rendercv_data: dict[str, Any],
+    resume_data: dict[str, Any],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    """Post-process RenderCV dictionary to format skills and education horizontally."""
     skills_conf = config.get("skills", {})
     if not skills_conf:
-        return
+        return rendercv_data
 
-    # Load RenderCV YAML
-    content = yaml.safe_load(rendercv_yaml_path.read_text(encoding="utf-8"))
-    if not content or "cv" not in content or "sections" not in content["cv"]:
-        return
+    if (
+        not rendercv_data
+        or "cv" not in rendercv_data
+        or "sections" not in rendercv_data["cv"]
+    ):
+        return rendercv_data
 
-    sections = content["cv"]["sections"]
+    sections = rendercv_data["cv"]["sections"]
 
-    # Explicitly pop the known categories from convert.mjs
     known_categories = [
         "languages_frameworks",
         "machine_learning_ai",
@@ -293,12 +153,11 @@ def post_process_rendercv_yaml(
 
     section_title = skills_conf.get("section_title", "skills").lower().replace(" ", "_")
 
-    # 3. Post-process education entries to map highlights to a smaller summary field
+    # Post-process education entries to map highlights to a smaller summary field
     if "education" in sections and isinstance(sections["education"], list):
         for edu in sections["education"]:
             if "highlights" in edu and isinstance(edu["highlights"], list):
                 joined = " • ".join(edu["highlights"])
-                # Shorten strings to fit on a single line
                 joined = joined.replace(" and ", " & ").replace(
                     " Honor Society Member", ""
                 )
@@ -307,32 +166,136 @@ def post_process_rendercv_yaml(
 
     grouped_conf = skills_conf.get("grouped")
     if grouped_conf and isinstance(grouped_conf, dict):
-        # 1. Process grouped skills into list of OneLineEntry
-        skills_entries = []
+        skills_entries: list[dict[str, str]] = []
         for label, skills_list in grouped_conf.items():
             if isinstance(skills_list, list):
                 skills_entries.append(
                     {"label": label, "details": ", ".join(str(s) for s in skills_list)}
                 )
         sections[section_title] = skills_entries
-        log("Post-processed RenderCV YAML to group skills into logical categories.")
+        log("Post-processed RenderCV dictionary to group skills.")
     elif skills_conf.get("single_list", False):
-        # 2. Process all skills into a single text entry
         all_skills = [s["name"] for s in resume_data.get("skills", []) if "name" in s]
         if all_skills:
             skills_text = ", ".join(all_skills)
             sections[section_title] = [skills_text]
             log("Merged skills into a single horizontal list.")
 
-    # Write back to RENDERCV_YAML
-    updated_yaml = yaml.dump(content, sort_keys=False, width=120)
-    rendercv_yaml_path.write_text(updated_yaml, encoding="utf-8")
+    return rendercv_data
 
 
-# ── Entry point ────────────────────────────────────────────────────────────────
+def compile_rendercv_artifacts(
+    resume_yaml_data_or_path: dict[str, Any] | Path,
+    output_dir: Path,
+    pdf_filename: str = "resume.pdf",
+    markdown_filename: str = "resume.md",
+    generate_pdf: bool = True,
+    design_yaml_path: Path | None = None,
+    post_processor: Callable[[dict[str, Any]], dict[str, Any]] | None = None,
+) -> tuple[Path | None, Path | None]:
+    """Compile JSON Resume data or file into RenderCV PDF and Markdown artifacts.
+
+    Pure Python: uses converter.convert_json_resume_to_rendercv without Node.js.
+    """
+    from rendercv.renderer.markdown import (
+        generate_markdown,  # type: ignore[import-untyped]
+    )
+    from rendercv.renderer.pdf_png import (
+        generate_pdf as _gen_pdf,  # type: ignore[import-untyped]
+    )
+    from rendercv.renderer.typst import generate_typst  # type: ignore[import-untyped]
+    from rendercv.schema.rendercv_model_builder import (  # type: ignore[import-untyped]
+        build_rendercv_dictionary_and_model,
+    )
+
+    if isinstance(resume_yaml_data_or_path, Path):
+        resume_data: dict[str, Any] = yaml.safe_load(
+            resume_yaml_data_or_path.read_text(encoding="utf-8")
+        )
+    else:
+        resume_data = resume_yaml_data_or_path
+
+    rendercv_dict = convert_json_resume_to_rendercv(resume_data)
+    if post_processor is not None:
+        rendercv_dict = post_processor(rendercv_dict)
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+    rendercv_yaml_path = output_dir / "rendercv.yaml"
+    rendercv_yaml_text = yaml.dump(rendercv_dict, sort_keys=False, width=120)
+    rendercv_yaml_path.write_text(rendercv_yaml_text, encoding="utf-8")
+
+    active_design_yaml = design_yaml_path or DESIGN_YAML
+    design_content = active_design_yaml.read_text(encoding="utf-8")
+
+    pdf_target_path = output_dir / pdf_filename
+    md_target_path = output_dir / markdown_filename
+
+    _dict, model = build_rendercv_dictionary_and_model(
+        rendercv_yaml_text,
+        input_file_path=rendercv_yaml_path,
+        design_yaml_file=design_content,
+        output_folder=output_dir,
+        pdf_path=pdf_target_path,
+        markdown_path=md_target_path,
+        dont_generate_html=True,
+        dont_generate_png=True,
+        dont_generate_pdf=not generate_pdf,
+    )
+
+    md_path: Path | None = generate_markdown(model)
+    pdf_path: Path | None = None
+    if generate_pdf:
+        typst_path = generate_typst(model)
+        pdf_path = _gen_pdf(model, typst_path)
+
+    return pdf_path, md_path
+
+
+def build_yaml_copy() -> Path:
+    """Copy the source resume.yaml (JSON Resume format) verbatim to output."""
+    dest = OUTPUT_DIR / "resume.yaml"
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    shutil.copy(SOURCE_RESUME_YAML, dest)
+    log(f"YAML:     {dest.relative_to(REPO_ROOT)}")
+    return dest
+
+
+def build_json() -> Path:
+    """Load resume.yaml (JSON Resume in YAML notation) and write resume.json."""
+    resume_data = yaml.safe_load(SOURCE_RESUME_YAML.read_text(encoding="utf-8"))
+
+    def _json_default(obj: object) -> str:
+        if isinstance(obj, datetime.date | datetime.datetime):
+            return str(obj)
+        raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
+
+    dest = OUTPUT_DIR / "resume.json"
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    dest.write_text(
+        json.dumps(resume_data, indent=2, ensure_ascii=False, default=_json_default),
+        encoding="utf-8",
+    )
+    log(f"JSON:     {dest.relative_to(REPO_ROOT)}")
+    return dest
+
+
+def build_agent_context_file(
+    resume_data: dict[str, Any], site_config: dict[str, Any]
+) -> Path:
+    """Build structured agent context and write to portfolio_content.json."""
+    from .agent_context import build_agent_context
+
+    context = build_agent_context(resume_data, site_config)
+    AGENT_CONTEXT.parent.mkdir(parents=True, exist_ok=True)
+    AGENT_CONTEXT.write_text(
+        json.dumps(context, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+    log(f"Agent context: {AGENT_CONTEXT.relative_to(REPO_ROOT)}")
+    return AGENT_CONTEXT
 
 
 def main() -> None:
+    """Main resume build CLI entrypoint."""
     parser = argparse.ArgumentParser(
         description="Build resume artifacts from resume/resume.yaml."
     )
@@ -344,71 +307,67 @@ def main() -> None:
     args = parser.parse_args()
     generate_pdf = not args.no_pdf
 
-    for required in (SOURCE_JSON_RESUME, DESIGN_YAML, CONVERTER_SCRIPT):
+    for required in (SOURCE_RESUME_YAML, DESIGN_YAML):
         if not required.exists():
             print(f"Error: required file not found: {required}", file=sys.stderr)
             sys.exit(1)
 
     print("Building resume artifacts...")
-    print(f"  Source: {SOURCE_JSON_RESUME.relative_to(REPO_ROOT)}")
+    print(f"  Source: {SOURCE_RESUME_YAML.relative_to(REPO_ROOT)}")
 
     # Load pdf-config.yaml
-    pdf_config_path = RESUME_DIR / "pdf-config.yaml"
-    pdf_config = {}
-    if pdf_config_path.exists():
+    pdf_config: dict[str, Any] = {}
+    if PDF_CONFIG_PATH.exists():
         try:
             pdf_config = (
-                yaml.safe_load(pdf_config_path.read_text(encoding="utf-8")) or {}
+                yaml.safe_load(PDF_CONFIG_PATH.read_text(encoding="utf-8")) or {}
             )
-            print(f"  Loaded PDF config: {pdf_config_path.relative_to(REPO_ROOT)}")
+            print(f"  Loaded PDF config: {PDF_CONFIG_PATH.relative_to(REPO_ROOT)}")
         except Exception as exc:
-            print(f"  ⚠ Failed to load pdf-config.yaml: {exc}", file=sys.stderr)
+            print(f"  Warning: Failed to load pdf-config.yaml: {exc}", file=sys.stderr)
 
     # 1. Prepare concise resume for PDF/MD rendering
     print("\n[1/5] Preparing concise JSON Resume data")
-    resume_data_full = yaml.safe_load(SOURCE_JSON_RESUME.read_text(encoding="utf-8"))
+    resume_data_full = yaml.safe_load(SOURCE_RESUME_YAML.read_text(encoding="utf-8"))
 
     if pdf_config:
         resume_data_concise = filter_resume_for_pdf(resume_data_full, pdf_config)
     else:
         resume_data_concise = resume_data_full
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    temp_concise_yaml = OUTPUT_DIR / "resume_concise.yaml"
-    temp_concise_yaml.write_text(
-        yaml.dump(resume_data_concise, sort_keys=False, width=120),
-        encoding="utf-8",
-    )
-    print(
-        "  Generated temporary concise YAML: "
-        f"{temp_concise_yaml.relative_to(REPO_ROOT)}"
+    # 2. Render PDF + Markdown via pure Python
+    print("\n[2/5] Rendering via RenderCV (pure Python)")
+    post_processor = (
+        (lambda d: post_process_rendercv_data(d, resume_data_full, pdf_config))
+        if pdf_config
+        else None
     )
 
-    # 2. Convert concise JSON Resume → RenderCV YAML
-    print("\n[2/5] Converting JSON Resume → RenderCV YAML")
-    convert_to_rendercv(temp_concise_yaml)
+    pdf_path, md_path = compile_rendercv_artifacts(
+        resume_yaml_data_or_path=resume_data_concise,
+        output_dir=OUTPUT_DIR,
+        pdf_filename="resume.pdf",
+        markdown_filename="resume.md",
+        generate_pdf=generate_pdf,
+        design_yaml_path=DESIGN_YAML,
+        post_processor=post_processor,
+    )
 
-    if pdf_config:
-        post_process_rendercv_yaml(RENDERCV_YAML, resume_data_full, pdf_config)
+    # Save canonical rendercv yaml for inspection
+    RENDERCV_YAML.parent.mkdir(parents=True, exist_ok=True)
+    if (OUTPUT_DIR / "rendercv.yaml").exists():
+        shutil.copy(OUTPUT_DIR / "rendercv.yaml", RENDERCV_YAML)
 
-    # Clean up temp file
-    if temp_concise_yaml.exists():
-        temp_concise_yaml.unlink()
-
-    # 3. Render PDF + Markdown
-    print("\n[3/5] Rendering via RenderCV (Typst)")
-    pdf_path, md_path = render_pdf_and_markdown(generate_pdf=generate_pdf)
-
-    # 4. Copy source YAML
-    print("\n[4/5] Copying source YAML")
+    # 3. Copy source YAML
+    print("\n[3/5] Copying source YAML")
     yaml_path = build_yaml_copy()
 
-    # 5. Emit JSON Resume
-    print("\n[5/5] Writing JSON Resume")
+    # 4. Emit JSON Resume
+    print("\n[4/5] Writing JSON Resume")
     json_path = build_json()
 
-    # 6. Copy all to frontend/public/
-    print("\n[6/6] Copying artefacts to frontend/public/")
+    # 5. Copy all to frontend/public/
+    print("\n[5/6] Copying artefacts to frontend/public/")
     if pdf_path and pdf_path.exists():
         copy_to_public(pdf_path, "resume.pdf")
         copy_to_public(pdf_path, "downloads/McIntosh_Alexander_Resume.pdf")
@@ -419,18 +378,17 @@ def main() -> None:
     if json_path.exists():
         copy_to_public(json_path, "resume.json")
 
-    # 7. Agent context (best-effort — don't fail the whole build)
-    print("\n[7/7] Building agent context")
-    site_config_path = REPO_ROOT / "site-config.yaml"
+    # 6. Agent context (best-effort)
+    print("\n[6/6] Building agent context")
     site_config = (
-        yaml.safe_load(site_config_path.read_text(encoding="utf-8"))
-        if site_config_path.exists()
+        yaml.safe_load(SITE_CONFIG_PATH.read_text(encoding="utf-8"))
+        if SITE_CONFIG_PATH.exists()
         else {}
     )
     try:
         build_agent_context_file(resume_data_full, site_config)
     except Exception as exc:
-        print(f"  ⚠ agent context failed (non-fatal): {exc}", file=sys.stderr)
+        print(f"  Warning: Agent context failed (non-fatal): {exc}", file=sys.stderr)
 
     print("\nDone.")
     print(f"  Output dir: {OUTPUT_DIR.relative_to(REPO_ROOT)}/")

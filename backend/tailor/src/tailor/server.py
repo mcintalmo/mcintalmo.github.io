@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from common.config import CorsSettings
+from common.paths import SOURCE_RESUME_YAML
 
 from .graph import create_graph
 
@@ -50,14 +51,11 @@ class TailorResponse(BaseModel):
 
 @app.post("/api/tailor", response_model=TailorResponse)
 async def tailor_resume(req: TailorRequest) -> TailorResponse:
-    repo_root = Path(__file__).parents[4]
-    resume_path = repo_root / "resume" / "resume.yaml"
-
-    if not resume_path.exists():
+    if not SOURCE_RESUME_YAML.exists():
         raise HTTPException(status_code=500, detail="Golden resume not found.")
 
     def read_yaml() -> dict[str, Any]:
-        with open(resume_path, encoding="utf-8") as f:
+        with open(SOURCE_RESUME_YAML, encoding="utf-8") as f:
             data = yaml.safe_load(f)
             assert isinstance(data, dict)
             return data

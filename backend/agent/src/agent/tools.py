@@ -98,7 +98,8 @@ def track_tool_call(f: Callable[..., Any]) -> Callable[..., Any]:
     return wrapper
 
 
-def _load_portfolio() -> dict:
+@functools.lru_cache(maxsize=1)
+def _load_portfolio() -> dict[str, Any]:
     portfolio_path = Path(__file__).parent / "portfolio_content.json"
     if portfolio_path.exists():
         try:
