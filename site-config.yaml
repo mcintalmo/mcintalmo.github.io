@@ -26,15 +26,15 @@ sections:
     title: Home
     enabled: true
     call-to-action:
-      text: Explore my work
-      url: "#work"
+      text: Discuss a Project
+      url: "#contact"
   work:
     title: Professional Experience
     description: My journey in transforming data into intelligent solutions across
       various industries.
     navigation-label: Work
     enabled: true
-  history-visible-years: 2
+  history-visible-years: 10
   education:
     title: Education & Certifications
     description: Strong academic foundation and continuous learning in data science and AI
@@ -70,7 +70,7 @@ sections:
         icon: "brain"
         keywords: [ "Machine Learning & AI" ]
       - key: "llm-agents"
-        title: "LLM & Agents"
+        title: "Agentic & Generative AI"
         icon: "brain"
         keywords: [ "LLM & Agents" ]
       - key: "data-engineering-analytics"

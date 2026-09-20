@@ -6,48 +6,6 @@ import type { ResumeSkill, SiteConfigRoot } from "../lib/types";
 import { SectionAnchor } from "./SectionAnchor";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
-// Mapping of (normalized) level -> filled slot count
-const skillLevels: Record<string, number> = {
-  expert: 5,
-  advanced: 4,
-  intermediate: 3,
-  proficient: 3,
-  beginner: 2,
-  novice: 1,
-};
-
-const _MAX_SLOTS = 5;
-
-function normalizeLevel(level?: string): number | null {
-  if (!level) return null;
-  const key = level.trim().toLowerCase();
-  return skillLevels[key] ?? null;
-}
-
-function SkillSlots({ level }: { level?: string }) {
-  const filled = normalizeLevel(level) ?? 0;
-  return (
-    <div className="flex gap-1">
-      {level && <span className="sr-only">Level: {level}</span>}
-      <div
-        className={`h-1.5 w-3 sm:w-4 rounded-full transition-colors ${0 < filled ? "bg-primary" : "bg-muted"}`}
-      />
-      <div
-        className={`h-1.5 w-3 sm:w-4 rounded-full transition-colors ${1 < filled ? "bg-primary" : "bg-muted"}`}
-      />
-      <div
-        className={`h-1.5 w-3 sm:w-4 rounded-full transition-colors ${2 < filled ? "bg-primary" : "bg-muted"}`}
-      />
-      <div
-        className={`h-1.5 w-3 sm:w-4 rounded-full transition-colors ${3 < filled ? "bg-primary" : "bg-muted"}`}
-      />
-      <div
-        className={`h-1.5 w-3 sm:w-4 rounded-full transition-colors ${4 < filled ? "bg-primary" : "bg-muted"}`}
-      />
-    </div>
-  );
-}
-
 interface SkillCategory {
   key: string;
   title: string;
@@ -84,11 +42,9 @@ function buildCategories(
   const configCategories = config.sections?.skills?.categories;
 
   if (configCategories && Array.isArray(configCategories)) {
-    // Use configured categories
     const categoryMap: Record<string, SkillCategory> = {};
     const order: string[] = [];
 
-    // Initialize categories from config
     for (const configCat of configCategories) {
       const category: SkillCategory = {
         key: configCat.key,
@@ -100,12 +56,10 @@ function buildCategories(
       order.push(configCat.key);
     }
 
-    // Assign skills to categories based on keywords
     for (const skill of skills) {
       const skillKeywords = skill.keywords || [];
       let assigned = false;
 
-      // Find matching category by checking if skill keywords match any config category keywords
       for (const configCat of configCategories) {
         const categoryKeywords = configCat.keywords || [];
         if (skillKeywords.some((sk) => categoryKeywords.includes(sk))) {
@@ -115,13 +69,12 @@ function buildCategories(
         }
       }
 
-      // If no match found, assign to first "Other" category or create one
       if (!assigned) {
         const otherKey = "other";
         if (!categoryMap[otherKey]) {
           categoryMap[otherKey] = {
             key: otherKey,
-            title: "Other",
+            title: "Other Technologies",
             icon: chooseIcon("Other"),
             skills: [],
           };
@@ -134,7 +87,6 @@ function buildCategories(
     return order.map((k) => categoryMap[k]).filter((cat) => cat.skills.length > 0);
   }
 
-  // Fallback to original keyword-based grouping
   const order: string[] = [];
   const map: Record<string, SkillCategory> = {};
   for (const skill of skills) {
@@ -163,56 +115,43 @@ function CategoryCard({ category, index }: { category: SkillCategory; index: num
           opacity: 1,
           y: 0,
           transition: {
-            duration: 0.6,
-            delay: index * 0.1,
+            duration: 0.5,
+            delay: index * 0.08,
             ease: [0.25, 0.46, 0.45, 0.94],
           },
         },
       }}
+      className="h-full"
     >
-      {/* Remove h-full so cards shrink to content; grid will no longer stretch items */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3">
-            <category.icon className="w-6 h-6 text-primary" />
-            {category.title}
+      <Card className="h-full flex flex-col glass-panel hover:border-primary/30 transition-colors duration-300">
+        <CardHeader className="pb-3 border-b border-border/40">
+          <CardTitle className="flex items-center justify-between text-base sm:text-lg font-semibold tracking-tight">
+            <span className="flex items-center gap-2.5">
+              <category.icon className="w-5 h-5 text-primary" />
+              {category.title}
+            </span>
+            <span className="text-xs font-mono text-muted-foreground font-normal px-2 py-0.5 rounded-full bg-muted/60">
+              {category.skills.length}
+            </span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {category.skills.map((skill, skillIndex) => (
-            <motion.div
-              // biome-ignore lint/suspicious/noArrayIndexKey: fallback to index is required if skill name is missing
-              key={(skill.name || "skill") + skillIndex}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{
-                duration: 0.5,
-                delay: index * 0.15 + skillIndex * 0.08,
-              }}
-              viewport={{ once: true }}
-            >
-              <div className="flex items-center gap-2 sm:gap-3 py-0.5">
-                <span
-                  className="text-sm font-medium flex-1 truncate"
-                  title={skill.name}
-                >
-                  {skill.name}
-                </span>
-                <div className="flex-shrink-0 flex items-center gap-2">
-                  <div className="flex justify-start">
-                    <SkillSlots level={skill.level} />
-                  </div>
-                  {skill.level ? (
-                    <span className="hidden sm:inline-block w-16 text-[10px] font-medium tracking-wide text-muted-foreground whitespace-nowrap capitalize text-right">
-                      {skill.level}
-                    </span>
-                  ) : (
-                    <span className="hidden sm:inline-block w-16" />
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          ))}
+        <CardContent className="pt-4 flex-1">
+          <div className="flex flex-wrap gap-2">
+            {category.skills.map((skill, skillIndex) => (
+              <motion.span
+                // biome-ignore lint/suspicious/noArrayIndexKey: fallback to index is required if skill name is missing
+                key={(skill.name || "skill") + skillIndex}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: skillIndex * 0.03 }}
+                className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 bg-background/50 hover:bg-primary/5 hover:border-primary/30 transition-all duration-200 text-xs sm:text-sm font-medium text-foreground/90 shadow-2xs"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-accent-cyan/70 group-hover:bg-primary transition-colors" />
+                <span>{skill.name}</span>
+              </motion.span>
+            ))}
+          </div>
         </CardContent>
       </Card>
     </motion.div>
@@ -237,23 +176,23 @@ export function Skills({
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true, margin: "100px 0px" }}
-          className="text-center mb-12 group glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6"
+          className="text-center mb-12 group glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6 max-w-4xl mx-auto"
         >
           <h2 className="mb-4 inline-flex items-center gap-2">
             {config.sections?.skills?.title || "Skills & Technologies"}
             <SectionAnchor sectionId="skills" />
           </h2>
           {config.sections?.skills?.description && (
-            <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
+            <p className="text-muted-foreground max-w-2xl mx-auto">
               {config.sections.skills.description}
             </p>
           )}
         </motion.div>
 
-        {/* Category Grid (constrained width) */}
-        <div className="mx-auto max-w-5xl columns-1 md:columns-2 gap-8 mb-16 [column-fill:balance]">
+        {/* Bento Grid layout */}
+        <div className="mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6">
           {categories.map((cat, i) => (
-            <div key={cat.key} className="mb-8 break-inside-avoid">
+            <div key={cat.key}>
               <CategoryCard category={cat} index={i} />
             </div>
           ))}
