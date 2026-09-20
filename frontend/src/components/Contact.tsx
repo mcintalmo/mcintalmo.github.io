@@ -1,12 +1,90 @@
 import { motion } from "framer-motion";
-import { Mail, MapPin, Phone, Send } from "lucide-react";
+import {
+  Bot,
+  Brain,
+  Calendar,
+  Check,
+  Copy,
+  ExternalLink,
+  Layers3,
+  Mail,
+  MapPin,
+  Send,
+  Sparkles,
+} from "lucide-react";
 import { useState } from "react";
-import type { ResumeBasics, SiteConfigRoot } from "../lib/types";
+import type { CommercialService, ResumeBasics, SiteConfigRoot } from "../lib/types";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Linkedin } from "./ui/icons";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
+
+const DEFAULT_SERVICES: CommercialService[] = [
+  {
+    title: "AI Architecture & Strategy Advisory",
+    subtitle: "Executive Advisory & Strategy",
+    description:
+      "Technology stack evaluation, automated evaluation frameworks, model risk governance, and architectural roadmaps.",
+    deliverables:
+      "Architecture blueprints, evaluation harness design, and risk audits.",
+    icon: "brain",
+  },
+  {
+    title: "Agentic Voice & Real-Time Systems",
+    subtitle: "Sub-Second Streaming AI",
+    description:
+      "Production deployment of WebRTC conversational voice agents, custom STT/TTS pipelines, and multi-turn tool calling.",
+    deliverables: "Real-time LiveKit voice services and deterministic tool execution.",
+    icon: "bot",
+  },
+  {
+    title: "Data & Machine Learning Infrastructure",
+    subtitle: "Distributed Pipelines & MLOps",
+    description:
+      "Distributed data platform engineering, medallion architectures, automated CI/CD for ML, and OpenTelemetry observability.",
+    deliverables:
+      "Scalable lakehouse pipelines, MLOps automation, and telemetry tracing.",
+    icon: "layers3",
+  },
+];
+
+const INQUIRY_CATEGORIES = [
+  {
+    label: "AI Architecture & Advisory",
+    subject: "Consulting Inquiry: AI Architecture & Strategy Advisory",
+  },
+  {
+    label: "Agentic Voice & AI Systems",
+    subject: "Project Inquiry: Agentic Voice & Real-Time Systems",
+  },
+  {
+    label: "Data & ML Infrastructure",
+    subject: "Project Inquiry: Data & Machine Learning Infrastructure",
+  },
+  {
+    label: "Full-Time Opportunities",
+    subject: "Career Inquiry: Full-Time Opportunities",
+  },
+  {
+    label: "General Inquiry",
+    subject: "General Inquiry",
+  },
+];
+
+function renderServiceIcon(iconName?: string) {
+  switch (iconName) {
+    case "brain":
+      return <Brain className="w-5 h-5 text-accent-indigo" />;
+    case "bot":
+      return <Bot className="w-5 h-5 text-accent-cyan" />;
+    case "layers3":
+    case "layers":
+      return <Layers3 className="w-5 h-5 text-emerald-400" />;
+    default:
+      return <Sparkles className="w-5 h-5 text-primary" />;
+  }
+}
 
 export function Contact({
   basics,
@@ -15,15 +93,21 @@ export function Contact({
   basics?: ResumeBasics;
   config: SiteConfigRoot;
 }) {
-  // Extract available-for data strictly from config (no fallback defaults)
   const contactConfig = config.sections?.contact as Record<string, unknown> | undefined;
-  const availableForRaw =
-    contactConfig?.["available-for"] ?? contactConfig?.availableFor;
-  const availableFor: string[] | undefined = Array.isArray(availableForRaw)
-    ? (availableForRaw as unknown[]).map((s) => String(s).trim()).filter(Boolean)
-    : undefined;
 
-  const targetEmail = basics?.email; // could be extended to pull from config
+  const targetEmail = basics?.email;
+
+  const bookingUrl =
+    (contactConfig?.["booking-url"] as string | undefined) ??
+    (contactConfig?.bookingUrl as string | undefined);
+
+  const rawServices = contactConfig?.services;
+  const services: CommercialService[] = Array.isArray(rawServices)
+    ? (rawServices as CommercialService[])
+    : DEFAULT_SERVICES;
+
+  const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -34,6 +118,53 @@ export function Contact({
 
   function update<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  function handleSelectService(service: CommercialService) {
+    setSelectedService(service.title);
+    const newSubject = `Consulting Inquiry: ${service.title}`;
+    setForm((prev) => ({
+      ...prev,
+      subject: newSubject,
+      message:
+        prev.message.trim() === "" ||
+        prev.message.startsWith("Hi Alex, I would like to discuss")
+          ? `Hi Alex, I would like to discuss an initiative involving ${service.title}. Here are details on our scope and goals:\n`
+          : prev.message,
+    }));
+  }
+
+  function handleSelectCategory(cat: { label: string; subject: string }) {
+    setSelectedService(null);
+    setForm((prev) => ({
+      ...prev,
+      subject: cat.subject,
+      message:
+        prev.message.trim() === "" ||
+        prev.message.startsWith("Hi Alex, I would like to discuss")
+          ? `Hi Alex, I would like to discuss ${cat.label.toLowerCase()}.\n`
+          : prev.message,
+    }));
+  }
+
+  async function handleCopyEmail() {
+    if (!targetEmail) return;
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(targetEmail);
+      } else if (typeof document !== "undefined") {
+        const textArea = document.createElement("textarea");
+        textArea.value = targetEmail;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      // Fallback: noop
+    }
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -53,197 +184,255 @@ export function Contact({
     window.location.href = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
   }
 
+  const linkedinProfile = basics?.profiles?.find((p) =>
+    /linkedin/i.test(p.network || ""),
+  );
+
   return (
     <section id="contact" className="py-20">
       <div className="container mx-auto px-4 sm:px-6">
+        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true, margin: "100px 0px" }}
-          className="text-center mb-16 glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6"
+          className="text-center mb-16 glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6 max-w-4xl mx-auto"
         >
-          <h2 className="mb-4">{config.sections?.contact?.title || "Contact"}</h2>
+          <h2 className="mb-4">
+            {config.sections?.contact?.title || "Let's Work Together"}
+          </h2>
           {config.sections?.contact?.description && (
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-muted-foreground max-w-2xl mx-auto text-base sm:text-lg">
               {config.sections.contact.description}
             </p>
           )}
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
-          {/* Left Column: Contact details + Available For */}
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 max-w-6xl mx-auto items-start">
+          {/* Left Column: Commercial Engagement Models & Direct Coordinates (7 cols) */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true, margin: "100px 0px" }}
-            className="space-y-6"
+            className="lg:col-span-7 space-y-6"
           >
-            <Card>
-              <CardHeader>
-                <CardTitle>Get in Touch</CardTitle>
+            {/* Direct Connect Actions Card */}
+            <Card className="border-border/60 bg-card/60 backdrop-blur-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg font-semibold tracking-tight">
+                  Direct Inquiries & Coordinates
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {basics?.email && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: 0.1 }}
-                      viewport={{ once: true }}
+              <CardContent className="space-y-4">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {/* Primary Mail Action */}
+                  {targetEmail && (
+                    <a
+                      href={`mailto:${targetEmail}`}
+                      className="flex-1 flex items-center gap-3 p-3 rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-all group min-h-[52px]"
+                      aria-label={`Send email to ${targetEmail}`}
                     >
-                      <a
-                        href={`mailto:${basics.email}`}
-                        className="flex items-center gap-4 group p-2 -m-2 rounded-lg hover:bg-muted/50 transition-colors min-h-[48px]"
-                        aria-label={`Send email to ${basics.email}`}
-                      >
-                        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                          <Mail className="w-6 h-6 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Email</p>
-                          <span className="underline group-hover:text-primary transition-colors break-all">
-                            {basics.email}
-                          </span>
-                        </div>
-                      </a>
-                    </motion.div>
-                  )}
-
-                  {basics?.phone && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: 0.2 }}
-                      viewport={{ once: true }}
-                    >
-                      <a
-                        href={`tel:${basics.phone}`}
-                        className="flex items-center gap-4 group p-2 -m-2 rounded-lg hover:bg-muted/50 transition-colors min-h-[48px]"
-                        aria-label={`Call ${basics.phone}`}
-                      >
-                        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                          <Phone className="w-6 h-6 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Phone</p>
-                          <span className="underline group-hover:text-primary transition-colors">
-                            {basics.phone}
-                          </span>
-                        </div>
-                      </a>
-                    </motion.div>
-                  )}
-
-                  {(basics?.location?.city || basics?.location?.region) && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: 0.3 }}
-                      viewport={{ once: true }}
-                      className="flex items-center gap-4 p-2 -m-2 min-h-[48px]"
-                    >
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <MapPin className="w-6 h-6 text-primary" />
+                      <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0 text-primary">
+                        <Mail className="w-5 h-5" />
                       </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Location</p>
-                        <p>
-                          {[basics?.location?.city, basics?.location?.region]
-                            .filter(Boolean)
-                            .join(", ")}
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                          Email
+                        </p>
+                        <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">
+                          {targetEmail}
                         </p>
                       </div>
-                    </motion.div>
+                    </a>
                   )}
 
-                  {basics?.profiles?.find((p) => /linkedin/i.test(p.network || "")) && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: 0.35 }}
-                      viewport={{ once: true }}
+                  {/* Copy Email Button */}
+                  {targetEmail && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleCopyEmail}
+                      className="h-[52px] px-4 rounded-xl border-border/80 hover:bg-muted/80 flex items-center gap-2 cursor-pointer"
+                      aria-label="Copy Email"
                     >
-                      {(() => {
-                        const profile = basics.profiles?.find((p) =>
-                          /linkedin/i.test(p.network || ""),
-                        );
-                        if (!profile) return null;
-                        const label =
-                          profile.username || profile.url?.replace(/^https?:\/\//, "");
-                        return (
-                          <a
-                            href={
-                              profile.url ||
-                              `https://www.linkedin.com/in/${profile.username}`
-                            }
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-4 group p-2 -m-2 rounded-lg hover:bg-muted/50 transition-colors min-h-[48px]"
-                            aria-label="LinkedIn profile"
-                          >
-                            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                              <Linkedin className="w-6 h-6 text-primary" />
-                            </div>
-                            <div className="flex flex-col">
-                              <p className="text-sm text-muted-foreground">LinkedIn</p>
-                              <span className="underline break-all group-hover:text-primary transition-colors">
-                                {label}
-                              </span>
-                            </div>
-                          </a>
-                        );
-                      })()}
-                    </motion.div>
+                      {copied ? (
+                        <>
+                          <Check className="w-4 h-4 text-emerald-400" />
+                          <span className="text-sm font-medium text-emerald-400">
+                            Copied!
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm font-medium">Copy Email</span>
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+
+                {/* Optional Calendar Booking Link */}
+                {bookingUrl && (
+                  <Button
+                    variant="outline"
+                    asChild
+                    className="w-full h-12 rounded-xl border-accent-cyan/30 hover:border-accent-cyan hover:bg-accent-cyan/10 font-medium transition-all"
+                  >
+                    <a
+                      href={bookingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 text-foreground"
+                      aria-label="Schedule an Intro Call"
+                    >
+                      <Calendar className="w-4 h-4 text-accent-cyan" />
+                      <span>Schedule an Intro Call</span>
+                      <ExternalLink className="w-3.5 h-3.5 text-muted-foreground ml-1" />
+                    </a>
+                  </Button>
+                )}
+
+                {/* Location & LinkedIn Row */}
+                <div className="pt-2 border-t border-border/40 grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  {(basics?.location?.city || basics?.location?.region) && (
+                    <div className="flex items-center gap-3 text-muted-foreground py-1">
+                      <MapPin className="w-4 h-4 text-primary shrink-0" />
+                      <span>
+                        {[basics?.location?.city, basics?.location?.region]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </span>
+                    </div>
+                  )}
+
+                  {linkedinProfile && (
+                    <a
+                      href={
+                        linkedinProfile.url ||
+                        `https://www.linkedin.com/in/${linkedinProfile.username}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2.5 text-muted-foreground hover:text-primary transition-colors py-1 group"
+                      aria-label="LinkedIn profile"
+                    >
+                      <Linkedin className="w-4 h-4 text-primary shrink-0" />
+                      <span className="font-medium group-hover:underline">
+                        LinkedIn Profile
+                      </span>
+                      <ExternalLink className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 transition-opacity ml-auto" />
+                    </a>
                   )}
                 </div>
               </CardContent>
             </Card>
 
-            {availableFor && availableFor.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                viewport={{ once: true }}
-              >
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Available for:</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      {availableFor.map((item) => (
-                        <li key={item}>• {item}</li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
+            {/* Commercial Engagement Formats */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between px-1">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Consulting & Project Engagement Models
+                </p>
+                <span className="text-[11px] text-muted-foreground/70">
+                  Select a model to populate inquiry
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {services.map((service) => {
+                  const isSelected = selectedService === service.title;
+                  return (
+                    <button
+                      key={service.title}
+                      type="button"
+                      onClick={() => handleSelectService(service)}
+                      className={`w-full text-left p-4 rounded-xl border transition-all duration-200 cursor-pointer ${
+                        isSelected
+                          ? "bg-primary/10 border-primary shadow-md shadow-primary/10"
+                          : "bg-card/40 border-border/60 hover:bg-muted/40 hover:border-border"
+                      }`}
+                      aria-pressed={isSelected}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 rounded-lg bg-background border border-border/50 shrink-0 mt-0.5">
+                          {renderServiceIcon(service.icon)}
+                        </div>
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center justify-between gap-2">
+                            <h3 className="font-medium text-foreground text-sm sm:text-base">
+                              {service.title}
+                            </h3>
+                            {service.subtitle && (
+                              <span className="text-[11px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-mono font-medium">
+                                {service.subtitle}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                            {service.description}
+                          </p>
+                          {service.deliverables && (
+                            <p className="text-xs text-muted-foreground/90 pt-1 font-mono">
+                              <span className="text-primary font-semibold">
+                                Key Deliverables:
+                              </span>{" "}
+                              {service.deliverables}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </motion.div>
 
-          {/* Right Column: Contact Form */}
+          {/* Right Column: Interactive Inquiry Form (5 cols) */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true, margin: "100px 0px" }}
+            className="lg:col-span-5"
           >
-            <Card>
-              <CardHeader>
-                <CardTitle>Send Message</CardTitle>
+            <Card className="border-border/80 bg-card/70 backdrop-blur-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg font-semibold tracking-tight">
+                  Send a Message
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  Choose a topic below or customize your message directly.
+                </p>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                {/* Category Selection Pills */}
+                <div className="flex flex-wrap gap-1.5 pb-2">
+                  {INQUIRY_CATEGORIES.map((cat) => {
+                    const isSelected = form.subject === cat.subject;
+                    return (
+                      <button
+                        key={cat.label}
+                        type="button"
+                        onClick={() => handleSelectCategory(cat)}
+                        className={`text-xs px-2.5 py-1 rounded-lg border transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-primary text-primary-foreground border-primary font-medium"
+                            : "bg-muted/40 hover:bg-muted text-muted-foreground border-border/50"
+                        }`}
+                      >
+                        {cat.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
                 <form className="space-y-4" onSubmit={handleSubmit}>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
-                    viewport={{ once: true }}
-                    className="relative"
-                  >
+                  {/* Name Input */}
+                  <div className="relative">
                     <Input
                       id="contact-name"
                       name="name"
@@ -258,14 +447,10 @@ export function Contact({
                     >
                       Your Name
                     </label>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    viewport={{ once: true }}
-                    className="relative"
-                  >
+                  </div>
+
+                  {/* Email Input */}
+                  <div className="relative">
                     <Input
                       id="contact-email"
                       name="email"
@@ -282,14 +467,10 @@ export function Contact({
                     >
                       Your Email *
                     </label>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                    viewport={{ once: true }}
-                    className="relative"
-                  >
+                  </div>
+
+                  {/* Subject Input */}
+                  <div className="relative">
                     <Input
                       id="contact-subject"
                       name="subject"
@@ -304,19 +485,15 @@ export function Contact({
                     >
                       Subject
                     </label>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    viewport={{ once: true }}
-                    className="relative"
-                  >
+                  </div>
+
+                  {/* Message Textarea */}
+                  <div className="relative">
                     <Textarea
                       id="contact-message"
                       name="message"
                       placeholder="Your message..."
-                      className="peer pt-6 pb-2 placeholder:text-transparent min-h-[120px]"
+                      className="peer pt-6 pb-2 placeholder:text-transparent min-h-[140px]"
                       value={form.message}
                       onChange={(e) => update("message", e.target.value)}
                       required
@@ -327,22 +504,17 @@ export function Contact({
                     >
                       Your message *
                     </label>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.5 }}
-                    viewport={{ once: true }}
+                  </div>
+
+                  {/* Submit Button */}
+                  <Button
+                    className="w-full h-12 rounded-xl text-sm sm:text-base font-medium shadow-md transition-all cursor-pointer"
+                    type="submit"
+                    disabled={!targetEmail || !form.email || !form.message}
                   >
-                    <Button
-                      className="w-full h-12 sm:h-10 min-h-[48px] sm:min-h-0 text-base sm:text-sm"
-                      type="submit"
-                      disabled={!targetEmail || !form.email || !form.message}
-                    >
-                      <Send className="w-4 h-4 mr-2" />
-                      {targetEmail ? "Send Message" : "Email Unavailable"}
-                    </Button>
-                  </motion.div>
+                    <Send className="w-4 h-4 mr-2" />
+                    {targetEmail ? "Send Message" : "Email Unavailable"}
+                  </Button>
                 </form>
               </CardContent>
             </Card>

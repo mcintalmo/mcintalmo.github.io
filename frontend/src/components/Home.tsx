@@ -30,17 +30,23 @@ export function Home({ basics, recommendedQuestions }: Props) {
         >
           {/* Professional Headshot */}
           <div className="mb-6 sm:mb-8">
-            <div className="relative mx-auto w-32 h-32 sm:w-48 sm:h-48">
-              {/* Pulse ring */}
+            <div className="relative mx-auto w-32 h-32 sm:w-48 sm:h-48 group">
+              {/* Subtle ambient backlight glow */}
               <div
                 aria-hidden="true"
-                className="absolute inset-0 rounded-full border-2 border-accent-cyan/40 pulse-ring"
-                style={{ animation: "pulseRing 4s ease-out infinite" }}
-              ></div>
+                className="absolute -inset-1.5 rounded-full bg-gradient-to-tr from-accent-indigo/40 via-accent-cyan/30 to-emerald-400/20 blur-xl opacity-60 group-hover:opacity-90 transition-opacity duration-700 pointer-events-none"
+              />
 
-              {/* Profile image */}
-              <div className="absolute inset-3 sm:inset-4 rounded-full overflow-hidden border-4 border-background shadow-2xl">
-                <div className="w-full h-full image-hover transition-transform duration-300 hover:scale-105">
+              {/* Outer decorative ring */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 rounded-full border border-accent-cyan/30 shadow-[0_0_25px_rgba(6,182,212,0.2)] pulse-ring"
+                style={{ animation: "pulseRing 4s ease-out infinite" }}
+              />
+
+              {/* Profile image with precision glass border */}
+              <div className="absolute inset-2.5 sm:inset-3 rounded-full overflow-hidden border-2 border-background/90 shadow-2xl ring-1 ring-white/15 bg-background/50">
+                <div className="w-full h-full image-hover transition-transform duration-500 hover:scale-105">
                   <img
                     src={useYamlDirect ? yamlImage : profileImg.src}
                     width={192}

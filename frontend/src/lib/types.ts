@@ -124,6 +124,20 @@ export interface SectionConfig {
   "projects-visible-count"?: number;
   /** Skill categories configuration for the skills section. */
   categories?: SkillCategory[];
+  /** Available for tags for the contact section. */
+  "available-for"?: string[];
+  /** Optional self-service calendar booking URL (e.g. Google Calendar / Cal.com). */
+  "booking-url"?: string | null;
+  /** Commercial consulting engagement services. */
+  services?: CommercialService[];
+}
+
+export interface CommercialService {
+  title: string;
+  subtitle?: string;
+  description: string;
+  deliverables?: string;
+  icon?: string;
 }
 
 export interface SiteSectionsConfig {
