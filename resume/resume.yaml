@@ -333,33 +333,6 @@ skills:
   - name: TypeScript
     level: Intermediate
     keywords: [Languages & Frameworks]
-  - name: PyTorch
-    level: Advanced
-    keywords: [Machine Learning & AI]
-  - name: TensorFlow
-    level: Intermediate
-    keywords: [Machine Learning & AI]
-  - name: Scikit-learn
-    level: Expert
-    keywords: [Machine Learning & AI]
-  - name: Statistics and Probability
-    level: Expert
-    keywords: [Machine Learning & AI]
-  - name: Data Science and Predictive Analytics
-    level: Expert
-    keywords: [Machine Learning & AI]
-  - name: Natural Language Processing (NLP)
-    level: Advanced
-    keywords: [Machine Learning & AI]
-  - name: Simulation
-    level: Advanced
-    keywords: [Machine Learning & AI]
-  - name: Google Vertex AI
-    level: Intermediate
-    keywords: [Machine Learning & AI]
-  - name: MLFlow
-    level: Advanced
-    keywords: [Machine Learning & AI]
   - name: LangGraph
     level: Expert
     keywords: [LLM & Agents]
@@ -367,6 +340,9 @@ skills:
     level: Advanced
     keywords: [LLM & Agents]
   - name: LiveKit
+    level: Advanced
+    keywords: [LLM & Agents]
+  - name: WebRTC & Voice AI
     level: Advanced
     keywords: [LLM & Agents]
   - name: Retrieval-Augmented Generation (RAG)
@@ -384,9 +360,48 @@ skills:
   - name: LiteLLM
     level: Advanced
     keywords: [LLM & Agents]
+  - name: Ollama
+    level: Advanced
+    keywords: [LLM & Agents]
   - name: DeepEval
     level: Advanced
     keywords: [LLM & Agents]
+  - name: PyTorch
+    level: Advanced
+    keywords: [Machine Learning & AI]
+  - name: Scikit-learn
+    level: Expert
+    keywords: [Machine Learning & AI]
+  - name: Explainable AI (SHAP / LIME)
+    level: Advanced
+    keywords: [Machine Learning & AI]
+  - name: Anomaly Detection
+    level: Advanced
+    keywords: [Machine Learning & AI]
+  - name: Time-Series Forecasting
+    level: Advanced
+    keywords: [Machine Learning & AI]
+  - name: Statistics and Probability
+    level: Expert
+    keywords: [Machine Learning & AI]
+  - name: Data Science and Predictive Analytics
+    level: Expert
+    keywords: [Machine Learning & AI]
+  - name: Natural Language Processing (NLP)
+    level: Advanced
+    keywords: [Machine Learning & AI]
+  - name: Simulation
+    level: Advanced
+    keywords: [Machine Learning & AI]
+  - name: TensorFlow
+    level: Intermediate
+    keywords: [Machine Learning & AI]
+  - name: Google Vertex AI
+    level: Intermediate
+    keywords: [Machine Learning & AI]
+  - name: MLFlow
+    level: Advanced
+    keywords: [Machine Learning & AI]
   - name: Microsoft Fabric
     level: Expert
     keywords: [Data Engineering & Analytics]
@@ -395,6 +410,12 @@ skills:
     keywords: [Data Engineering & Analytics]
   - name: Delta Lake
     level: Expert
+    keywords: [Data Engineering & Analytics]
+  - name: Medallion Architecture
+    level: Advanced
+    keywords: [Data Engineering & Analytics]
+  - name: Vector Search & Indexing
+    level: Advanced
     keywords: [Data Engineering & Analytics]
   - name: AirFlow
     level: Advanced
@@ -415,6 +436,9 @@ skills:
     level: Advanced
     keywords: [Production Infrastructure & MLOps]
   - name: FastAPI
+    level: Advanced
+    keywords: [Production Infrastructure & MLOps]
+  - name: GitHub Actions (CI/CD)
     level: Advanced
     keywords: [Production Infrastructure & MLOps]
   - name: Microsoft Azure
