@@ -39,11 +39,4 @@ describe("Home Component", () => {
     expect(scrollLink).toBeInTheDocument();
     expect(scrollLink).toHaveAttribute("href", "#experience");
   });
-
-  it("renders trust markers", () => {
-    render(<Home basics={mockBasics} />);
-    expect(screen.getByText(/pioneer/i)).toBeInTheDocument();
-    expect(screen.getByText(/optum/i)).toBeInTheDocument();
-    expect(screen.getByText(/georgia tech/i)).toBeInTheDocument();
-  });
 });

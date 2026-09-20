@@ -109,27 +109,6 @@ export function Home({ basics, recommendedQuestions }: Props) {
               </Button>
             </div>
 
-            {/* Trust Markers Bar */}
-            <div className="border-t border-border/40 pt-5 mt-2 mb-6">
-              <p className="text-[11px] uppercase tracking-wider text-muted-foreground/70 font-mono mb-2">
-                Production AI & Systems Experience
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground font-sans font-medium">
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent-cyan"></span>
-                  Pioneer Management Consulting
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent-indigo"></span>
-                  Optum (400K+ Users)
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-accent-cyan"></span>
-                  Georgia Tech (M.S. CS, ML)
-                </span>
-              </div>
-            </div>
-
             {/* Command Prompt Hero */}
             <HeroPrompt recommendedQuestions={recommendedQuestions} />
           </div>
