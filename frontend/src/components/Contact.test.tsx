@@ -69,16 +69,10 @@ describe("Contact Component", () => {
     expect(screen.queryByRole("link", { name: /call/i })).not.toBeInTheDocument();
   });
 
-  it("renders focus area badges without wordy marketing copy", () => {
+  it("renders direct coordinates cleanly without redundant focus areas badge block", () => {
     render(<Contact basics={mockBasics} config={mockConfig} />);
-    expect(screen.getByText("Focus Areas")).toBeInTheDocument();
-    expect(screen.getAllByText("AI Architecture").length).toBeGreaterThanOrEqual(1);
-    expect(
-      screen.getAllByText("Voice & Agentic Systems").length,
-    ).toBeGreaterThanOrEqual(1);
-    expect(
-      screen.getAllByText("Data & ML Infrastructure").length,
-    ).toBeGreaterThanOrEqual(1);
+    expect(screen.queryByText("Focus Areas")).not.toBeInTheDocument();
+    expect(screen.getByText("Direct Inquiries & Coordinates")).toBeInTheDocument();
   });
 
   it("renders topic buttons in Send a Message and clicking one updates the subject", () => {

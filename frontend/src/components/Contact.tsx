@@ -8,12 +8,6 @@ import { Linkedin } from "./ui/icons";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 
-const DEFAULT_AVAILABLE_FOR = [
-  "AI Architecture",
-  "Voice & Agentic Systems",
-  "Data & ML Infrastructure",
-];
-
 const INQUIRY_TOPICS = [
   {
     label: "AI Architecture",
@@ -47,12 +41,6 @@ export function Contact({
   const bookingUrl =
     (contactConfig?.["booking-url"] as string | undefined) ??
     (contactConfig?.bookingUrl as string | undefined);
-
-  const rawAvailableFor =
-    contactConfig?.["available-for"] ?? contactConfig?.availableFor;
-  const availableFor: string[] = Array.isArray(rawAvailableFor)
-    ? (rawAvailableFor as unknown[]).map((s) => String(s).trim()).filter(Boolean)
-    : DEFAULT_AVAILABLE_FOR;
 
   const [copied, setCopied] = useState(false);
 
@@ -259,25 +247,6 @@ export function Contact({
                     </a>
                   )}
                 </div>
-
-                {/* Available for Focus Areas */}
-                {availableFor.length > 0 && (
-                  <div className="pt-3 border-t border-border/40">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2.5">
-                      Focus Areas
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {availableFor.map((item) => (
-                        <span
-                          key={item}
-                          className="text-xs px-3 py-1.5 rounded-lg bg-muted/60 border border-border/60 text-foreground font-medium"
-                        >
-                          {item}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </CardContent>
             </Card>
           </motion.div>
