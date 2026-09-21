@@ -36,15 +36,23 @@ function EducationItem({
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
+      transition={{
+        duration: 0.6,
+        delay: index * 0.1,
+        ease: [0.25, 0.46, 0.45, 0.94],
+      }}
       viewport={{ once: true, margin: "100px 0px" }}
-      className="group"
+      className="relative py-3 mb-8 last:mb-0 group pointer-events-none pl-9 sm:pl-16 md:pl-24"
     >
-      <div className="relative pl-6 sm:pl-8 border-l-2 border-border/80 hover:border-primary/50 transition-colors duration-300 py-2">
-        {/* Timeline anchor dot */}
-        <div className="absolute -left-[5px] top-3.5 w-2 h-2 rounded-full bg-primary/70" />
+      {/* Connector Line (Dashed) */}
+      <div className="absolute top-[2.5625rem] h-0.5 border-t-2 border-dashed border-primary/20 group-hover:border-primary/50 transition-colors duration-300 left-4 w-5 sm:left-6 sm:w-10 md:left-8 md:w-16" />
 
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-baseline gap-2 mb-2">
+      {/* Timeline dot */}
+      <div className="absolute left-4 sm:left-6 md:left-8 w-4 h-4 sm:w-5 sm:h-5 bg-primary border-4 border-background rounded-full z-10 shadow-[0_0_10px_var(--color-primary)] transform -translate-x-1/2 top-8 group-hover:scale-125 group-hover:shadow-[0_0_18px_var(--color-primary)] transition-all duration-300 pointer-events-auto" />
+
+      {/* Card Content */}
+      <div className="pointer-events-auto p-5 sm:p-6 rounded-xl border border-border/70 bg-card/70 hover:border-primary/30 hover:shadow-lg transition-all duration-300">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
           <div>
             <h3 className="text-lg sm:text-xl font-semibold text-foreground tracking-tight">
               {edu.studyType} in {edu.area}
@@ -53,7 +61,7 @@ function EducationItem({
               {edu.institution}
             </p>
           </div>
-          <div className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+          <div className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground whitespace-nowrap sm:mt-1">
             <Calendar className="w-3.5 h-3.5" />
             <span>{period}</span>
           </div>
@@ -141,7 +149,7 @@ export function Education({
           viewport={{ once: true, margin: "100px 0px" }}
           className="text-center mb-12 group max-w-3xl mx-auto"
         >
-          <h2 className="mb-3 inline-flex items-center gap-2">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3 inline-flex items-center gap-2.5">
             {config.sections?.education?.title || "Education"}
             <SectionAnchor sectionId="education" />
           </h2>
@@ -152,16 +160,22 @@ export function Education({
           )}
         </motion.div>
 
-        <div className="flex flex-col gap-8 max-w-4xl mx-auto mb-16">
-          {eduItems.map((edu, index) => (
-            <EducationItem
-              key={`${edu.institution || ""}-${edu.studyType || ""}-${edu.area || ""}`}
-              edu={edu}
-              index={index}
-              loading={loadingEducation}
-              config={config}
-            />
-          ))}
+        {/* Vertical Single-Column Timeline Layout identical to Professional Experience */}
+        <div className="relative mx-auto max-w-4xl mb-16">
+          <div className="relative">
+            {/* Left timeline line */}
+            <div className="absolute left-4 sm:left-6 md:left-8 w-0.5 bg-border h-full" />
+
+            {eduItems.map((edu, index) => (
+              <EducationItem
+                key={`${edu.institution || ""}-${edu.studyType || ""}-${edu.area || ""}`}
+                edu={edu}
+                index={index}
+                loading={loadingEducation}
+                config={config}
+              />
+            ))}
+          </div>
         </div>
 
         {certs.length > 0 && (

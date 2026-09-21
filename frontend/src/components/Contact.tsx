@@ -119,7 +119,7 @@ export function Contact({
           viewport={{ once: true, margin: "100px 0px" }}
           className="text-center mb-12 group max-w-3xl mx-auto"
         >
-          <h2 className="mb-3">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3">
             {config.sections?.contact?.title || "Let's Work Together"}
           </h2>
           {config.sections?.contact?.description && (

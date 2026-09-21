@@ -154,7 +154,7 @@ export function Work({ work, config }: Props) {
           className="flex flex-col md:flex-row md:items-center md:justify-between mb-10 sm:mb-14 pb-6 border-b border-border/40 gap-4 text-left max-w-4xl mx-auto"
         >
           <div>
-            <h2 className="mb-2 inline-flex items-center gap-2">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-2 inline-flex items-center gap-2.5">
               {config.sections?.work?.title || "Work Experience"}
               <SectionAnchor sectionId="experience" />
             </h2>

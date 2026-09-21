@@ -66,12 +66,14 @@ describe("Skills Component (Bento Grid)", () => {
     expect(screen.getByText("Autonomous multi-agent workflows")).toBeInTheDocument();
   });
 
-  it("renders filter buttons allowing category selection", () => {
+  it("renders all categories directly without redundant filter pills", () => {
     render(<Skills skills={mockSkills} config={mockConfig} />);
-    expect(screen.getByRole("button", { name: /all systems/i })).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /agentic & generative ai/i }),
-    ).toBeInTheDocument();
+      screen.queryByRole("button", { name: /all systems/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getAllByText("Agentic & Generative AI").length,
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it("renders skill items as chips without 5-bar battery rating slots", () => {

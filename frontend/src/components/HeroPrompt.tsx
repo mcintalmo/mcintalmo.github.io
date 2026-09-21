@@ -48,12 +48,6 @@ export const HeroPrompt = ({ recommendedQuestions }: HeroPromptProps) => {
 
   return (
     <div className="flex flex-col items-center justify-center w-full max-w-xl mx-auto z-10 mt-6 sm:mt-8">
-      {/* Interactive Agent Badge */}
-      <div className="flex items-center gap-2 mb-2.5 text-xs font-medium text-muted-foreground tracking-wide">
-        <span className="w-2 h-2 rounded-full bg-emerald-500" />
-        <span>Portfolio Agent • Real-Time Voice & RAG</span>
-      </div>
-
       <div className="flex flex-row items-center gap-2 sm:gap-3 w-full">
         {/* Chat input form */}
         <form

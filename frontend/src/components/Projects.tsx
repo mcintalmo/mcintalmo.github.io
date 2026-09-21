@@ -34,7 +34,7 @@ export function Projects({
           viewport={{ once: true, margin: "100px 0px" }}
           className="text-center mb-12 group max-w-3xl mx-auto"
         >
-          <h2 className="mb-3 inline-flex items-center gap-2">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3 inline-flex items-center gap-2.5">
             {config.sections?.projects?.title || "Projects"}
             <SectionAnchor sectionId="projects" />
           </h2>
