@@ -30,46 +30,28 @@ export function Home({ basics, recommendedQuestions }: Props) {
         >
           {/* Professional Headshot */}
           <div className="mb-6 sm:mb-8">
-            <div className="relative mx-auto w-32 h-32 sm:w-48 sm:h-48 group">
-              {/* Vibrant ambient backlight glow */}
-              <div
-                aria-hidden="true"
-                className="absolute -inset-4 sm:-inset-6 rounded-full bg-gradient-to-tr from-accent-indigo/70 via-accent-cyan/60 to-blue-500/50 blur-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-              />
-
-              {/* Outer decorative pulse ring */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 rounded-full border-2 border-accent-cyan/50 shadow-[0_0_25px_rgba(6,182,212,0.35)] pulse-ring"
-                style={{ animation: "pulseRing 4s ease-out infinite" }}
-              />
-
-              {/* Profile image with accent border */}
-              <div className="absolute inset-2 sm:inset-2.5 rounded-full overflow-hidden border-2 border-accent-cyan/40 shadow-2xl bg-background">
-                <div className="w-full h-full image-hover transition-transform duration-500 hover:scale-105">
-                  <img
-                    src={useYamlDirect ? yamlImage : profileImg.src}
-                    width={192}
-                    height={192}
-                    loading="eager"
-                    decoding="async"
-                    alt={name || "Profile photo"}
-                    className="w-full h-full object-cover"
-                    sizes="(max-width: 640px) 128px, 192px"
-                  />
-                </div>
+            <div className="relative mx-auto w-32 h-32 sm:w-44 sm:h-44 group">
+              {/* Profile image with subtle, crisp border and clean elevation shadow */}
+              <div className="w-full h-full rounded-full overflow-hidden border-2 border-border/80 dark:border-border/60 shadow-xl dark:shadow-2xl bg-background transition-transform duration-500 group-hover:scale-[1.02]">
+                <img
+                  src={useYamlDirect ? yamlImage : profileImg.src}
+                  width={192}
+                  height={192}
+                  loading="eager"
+                  decoding="async"
+                  alt={name || "Profile photo"}
+                  className="w-full h-full object-cover"
+                  sizes="(max-width: 640px) 128px, 176px"
+                />
               </div>
             </div>
           </div>
 
-          {/* Name & Label */}
-          <div className="glass-panel rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 relative z-10 mx-0 sm:mx-4">
+          {/* Name, Label, CTAs, and Interactive Agent */}
+          <div className="relative z-10 max-w-3xl mx-auto">
             {name && (
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-medium mb-3 sm:mb-4 tracking-tight font-sans">
-                Hi, I'm{" "}
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-accent-indigo to-accent-cyan font-bold">
-                  {name}
-                </span>
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-medium mb-3 sm:mb-4 tracking-tight font-sans text-foreground">
+                Hi, I'm <span className="font-bold text-foreground">{name}</span>
               </h1>
             )}
             {label && (
@@ -125,7 +107,7 @@ export function Home({ basics, recommendedQuestions }: Props) {
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 scroll-indicator">
         <a href="#experience" aria-label="Scroll to see more">
           <ChevronDown
-            className="w-6 h-6 text-muted-foreground animate-bounce"
+            className="w-6 h-6 text-muted-foreground transition-transform duration-300 hover:translate-y-0.5"
             strokeWidth={2}
           />
         </a>

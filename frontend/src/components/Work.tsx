@@ -145,13 +145,13 @@ export function Work({ work, config }: Props) {
   return (
     <section id="experience" className="py-20">
       <div className="container mx-auto px-4 sm:px-6">
-        {/* Banner layout for Header + Download Resume Button */}
+        {/* Header + Download Resume Action */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true, margin: "100px 0px" }}
-          className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 sm:mb-12 glass-panel rounded-xl py-5 px-5 sm:py-6 sm:px-8 gap-4 text-left"
+          className="flex flex-col md:flex-row md:items-center md:justify-between mb-10 sm:mb-14 pb-6 border-b border-border/40 gap-4 text-left max-w-4xl mx-auto"
         >
           <div>
             <h2 className="mb-2 inline-flex items-center gap-2">

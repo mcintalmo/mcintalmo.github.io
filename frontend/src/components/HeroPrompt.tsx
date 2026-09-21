@@ -48,13 +48,18 @@ export const HeroPrompt = ({ recommendedQuestions }: HeroPromptProps) => {
 
   return (
     <div className="flex flex-col items-center justify-center w-full max-w-xl mx-auto z-10 mt-6 sm:mt-8">
+      {/* Interactive Agent Badge */}
+      <div className="flex items-center gap-2 mb-2.5 text-xs font-medium text-muted-foreground tracking-wide">
+        <span className="w-2 h-2 rounded-full bg-emerald-500" />
+        <span>Portfolio Agent • Real-Time Voice & RAG</span>
+      </div>
+
       <div className="flex flex-row items-center gap-2 sm:gap-3 w-full">
         {/* Chat input form */}
         <form
           onSubmit={handleSendText}
           className="relative flex-1 flex items-center gap-1.5 sm:gap-2 group"
         >
-          <div className="absolute -inset-1 bg-gradient-to-r from-accent-indigo to-accent-cyan rounded-xl blur opacity-30 group-hover:opacity-50 transition duration-1000" />
           <div className="relative flex-grow flex items-center min-w-0">
             <input
               id="hero-ai-prompt"
@@ -62,7 +67,7 @@ export const HeroPrompt = ({ recommendedQuestions }: HeroPromptProps) => {
               ref={inputRef}
               type="text"
               placeholder="Ask Alex's AI Agent..."
-              className="w-full h-12 pr-12 rounded-xl border border-input bg-background/80 backdrop-blur-md px-4 py-3 text-base sm:text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 shadow-md outline-none"
+              className="w-full h-12 pr-12 rounded-xl border border-border bg-background/90 px-4 py-3 text-base sm:text-sm text-foreground ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 shadow-xs outline-none transition-colors"
               onInput={(ev) => ev.stopPropagation()}
               onKeyDown={(ev) => ev.stopPropagation()}
               onKeyUp={(ev) => ev.stopPropagation()}
@@ -85,21 +90,20 @@ export const HeroPrompt = ({ recommendedQuestions }: HeroPromptProps) => {
           </div>
           <button
             type="submit"
-            className="relative bg-primary hover:bg-primary/90 text-primary-foreground h-12 px-5 rounded-xl text-sm font-medium transition-colors shadow-md active:scale-95 cursor-pointer shrink-0 flex items-center justify-center"
+            className="relative bg-primary hover:bg-primary/90 text-primary-foreground h-12 px-5 rounded-xl text-sm font-medium transition-colors shadow-xs active:scale-95 cursor-pointer shrink-0 flex items-center justify-center"
           >
             Send
           </button>
         </form>
 
         {/* Circular voice button */}
-        <div className="relative group shrink-0">
-          <div className="absolute -inset-1 bg-gradient-to-r from-accent-indigo to-accent-cyan rounded-full blur opacity-50 group-hover:opacity-80 transition duration-1000" />
+        <div className="relative shrink-0">
           <button
             type="button"
             onClick={handleStartVoiceChat}
             title="Start Live Voice Chat with AI Agent"
             aria-label="Start Live Voice Chat"
-            className="relative w-12 h-12 flex items-center justify-center bg-background border border-border rounded-full shadow-lg hover:bg-secondary/20 transition-colors cursor-pointer text-accent-cyan hover:text-accent-indigo"
+            className="relative w-12 h-12 flex items-center justify-center bg-background border border-border rounded-full shadow-xs hover:bg-muted hover:border-primary/40 transition-colors cursor-pointer text-foreground hover:text-primary"
           >
             <AudioLines className="h-5 w-5" />
           </button>

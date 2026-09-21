@@ -217,14 +217,7 @@ function CategoryCard({
           : ""
       }`}
     >
-      <Card
-        className={`h-full flex flex-col glass-panel transition-all duration-300 relative overflow-hidden group ${style.border}`}
-      >
-        {/* Subtle Ambient Radial Glow */}
-        <div
-          className={`absolute inset-0 bg-radial-gradient ${style.glow} opacity-60 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`}
-        />
-
+      <Card className="h-full flex flex-col bg-card/70 border border-border/70 hover:border-primary/40 transition-all duration-300 relative overflow-hidden group shadow-2xs hover:shadow-md">
         <CardHeader className="pb-3 border-b border-border/40 relative z-10">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-2.5 min-w-0">
@@ -300,9 +293,9 @@ export function Skills({
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true, margin: "100px 0px" }}
-          className="text-center mb-8 group glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6 max-w-4xl mx-auto"
+          className="text-center mb-10 group max-w-3xl mx-auto"
         >
-          <h2 className="mb-4 inline-flex items-center gap-2">
+          <h2 className="mb-3 inline-flex items-center gap-2">
             {config.sections?.skills?.title || "Skills & Technologies"}
             <SectionAnchor sectionId="skills" />
           </h2>

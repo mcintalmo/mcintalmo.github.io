@@ -117,9 +117,9 @@ export function Contact({
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true, margin: "100px 0px" }}
-          className="text-center mb-16 glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6 max-w-4xl mx-auto"
+          className="text-center mb-12 group max-w-3xl mx-auto"
         >
-          <h2 className="mb-4">
+          <h2 className="mb-3">
             {config.sections?.contact?.title || "Let's Work Together"}
           </h2>
           {config.sections?.contact?.description && (

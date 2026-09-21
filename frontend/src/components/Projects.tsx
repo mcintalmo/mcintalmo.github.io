@@ -32,9 +32,9 @@ export function Projects({
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true, margin: "100px 0px" }}
-          className="text-center mb-16 group glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6"
+          className="text-center mb-12 group max-w-3xl mx-auto"
         >
-          <h2 className="mb-4 inline-flex items-center gap-2">
+          <h2 className="mb-3 inline-flex items-center gap-2">
             {config.sections?.projects?.title || "Projects"}
             <SectionAnchor sectionId="projects" />
           </h2>
