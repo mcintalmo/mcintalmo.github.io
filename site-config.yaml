@@ -33,7 +33,7 @@ sections:
     description: null
     navigation-label: Work
     enabled: true
-  history-visible-years: 10
+    history-visible-years: 4
   education:
     title: Education & Certifications
     description: null

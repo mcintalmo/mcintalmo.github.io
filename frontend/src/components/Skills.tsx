@@ -13,7 +13,6 @@ import {
   Wrench,
 } from "lucide-react";
 import * as React from "react";
-import { useScrollAnimation } from "../hooks/useScrollAnimation";
 import type { ResumeSkill, SiteConfigRoot } from "../lib/types";
 import { SectionAnchor } from "./SectionAnchor";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
@@ -179,29 +178,21 @@ function buildCategories(
 }
 
 function CategoryCard({ category, index }: { category: SkillCategory; index: number }) {
-  const { ref, controls } = useScrollAnimation();
   const style = CATEGORY_STYLES[category.key] || DEFAULT_STYLE;
 
   return (
     <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 24 }}
-      animate={controls}
-      variants={{
-        hidden: { opacity: 0, y: 24 },
-        visible: {
-          opacity: 1,
-          y: 0,
-          transition: {
-            duration: 0.5,
-            delay: index * 0.08,
-            ease: [0.25, 0.46, 0.45, 0.94],
-          },
-        },
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "100px 0px" }}
+      transition={{
+        duration: 0.5,
+        delay: index * 0.08,
+        ease: [0.25, 0.46, 0.45, 0.94],
       }}
-      className="h-full transition-all duration-300"
+      className="h-full"
     >
-      <Card className="h-full flex flex-col bg-card/70 border border-border/70 hover:border-primary/40 transition-all duration-300 relative overflow-hidden group shadow-2xs hover:shadow-md">
+      <Card className="h-full flex flex-col bg-card/70 border border-border/70 hover:border-primary/40 transition-colors duration-200 relative overflow-hidden group shadow-2xs hover:shadow-md">
         <CardHeader className="pb-3 border-b border-border/40 relative z-10">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-2.5 min-w-0">
@@ -226,20 +217,16 @@ function CategoryCard({ category, index }: { category: SkillCategory; index: num
         <CardContent className="pt-4 flex-1 relative z-10">
           <div className="flex flex-wrap gap-2">
             {category.skills.map((skill, skillIndex) => (
-              <motion.span
+              <span
                 // biome-ignore lint/suspicious/noArrayIndexKey: fallback to index is required if skill name is missing
                 key={(skill.name || "skill") + skillIndex}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: skillIndex * 0.02 }}
-                className="group/chip inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 bg-background/60 hover:bg-background/90 hover:border-primary/40 transition-all duration-200 text-xs sm:text-sm font-medium text-foreground/90 shadow-2xs cursor-default"
+                className="group/chip inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 bg-background/60 hover:bg-background/90 hover:border-primary/40 transition-colors duration-200 text-xs sm:text-sm font-medium text-foreground/90 shadow-2xs cursor-default"
               >
                 <span
                   className={`w-1.5 h-1.5 rounded-full ${style.dotColor} opacity-75 group-hover/chip:opacity-100 transition-opacity`}
                 />
                 <span>{skill.name}</span>
-              </motion.span>
+              </span>
             ))}
           </div>
         </CardContent>
