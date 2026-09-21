@@ -59,7 +59,7 @@
     "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@astrojs/sitemap": "^3.7.3",
+    "@astrojs/sitemap": "^3.7.4",
     "@biomejs/biome": "2.4.13",
     "@testing-library/jest-dom": "^6.10.0",
     "@testing-library/react": "^16.3.2",
