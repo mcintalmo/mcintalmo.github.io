@@ -48,7 +48,7 @@ def test_resume_download(page, app_url):
 
     # Trigger download of resume
     with page.expect_download() as download_info:
-        page.locator("a[download]").click()
+        page.locator("a[download]").first.click()
 
     download = download_info.value
     assert download.suggested_filename == "McIntosh_Alexander_Resume.pdf"

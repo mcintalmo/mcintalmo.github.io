@@ -1,4 +1,5 @@
 import random
+import re
 
 from playwright.sync_api import Page, expect
 
@@ -123,12 +124,12 @@ def test_business_card_navigation_and_qr_toggle(page: Page, app_url: str) -> Non
     expect(qr_heading).to_be_visible(timeout=10000)
     expect(qr_image).to_be_visible(timeout=10000)
     expect(show_card_btn).to_be_visible(timeout=10000)
-    expect(page).to_have_url(f"{app_url}/card?view=qr")
+    expect(page).to_have_url(re.compile(rf"^{app_url}/card/?\?view=qr$"))
 
     # 3. Toggle back to Contact Card
     show_card_btn.click()
     expect(name_heading).to_be_visible(timeout=10000)
-    expect(page).to_have_url(f"{app_url}/card")
+    expect(page).to_have_url(re.compile(rf"^{app_url}/card/?$"))
 
     # 4. Direct deep link with ?view=qr opens directly in QR view
     page.goto(f"{app_url}/card?view=qr")

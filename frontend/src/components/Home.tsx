@@ -88,7 +88,7 @@ export function Home({ basics, recommendedQuestions }: Props) {
               >
                 <a
                   href="/resume.pdf"
-                  download
+                  download="McIntosh_Alexander_Resume.pdf"
                   className="inline-flex items-center gap-2"
                 >
                   <Download className="h-4 w-4" />
