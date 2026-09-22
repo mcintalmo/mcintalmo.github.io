@@ -1,19 +1,15 @@
-import { LiveKitRoom, RoomAudioRenderer } from "@livekit/components-react";
 import * as React from "react";
-import { CustomChatWidget } from "./CustomChatWidget";
-import { TelemetryPopoffs, useTelemetry } from "./TelemetryPopoffs";
-import "@livekit/components-styles";
-
 import { useLiveKitSession } from "../hooks/useLiveKitSession";
 import type { SiteConfigRoot } from "../lib/types";
-import { AgentController } from "./AgentController";
+
+// biome-ignore lint/security/noSecrets: component import path
+const LiveKitChatIsland = React.lazy(() => import("./LiveKitChatIsland"));
 
 type Props = {
   config?: SiteConfigRoot;
 };
 
 export function InteractiveChat({ config }: Props) {
-  const { events } = useTelemetry();
   const { tokenInfo, shouldConnect, connect, handleDisconnected, handleError } =
     useLiveKitSession({ autoConnect: false });
 
@@ -26,23 +22,15 @@ export function InteractiveChat({ config }: Props) {
   }, [connect]);
 
   return (
-    <LiveKitRoom
-      serverUrl={tokenInfo?.ws_url}
-      token={tokenInfo?.token}
-      connect={shouldConnect && !!tokenInfo?.token && !!tokenInfo?.ws_url}
-      audio={false}
-      video={false}
-      onDisconnected={handleDisconnected}
-      onError={handleError}
-      style={{ display: "contents" }}
-    >
-      <AgentController />
-      <CustomChatWidget
+    <React.Suspense fallback={null}>
+      <LiveKitChatIsland
+        tokenInfo={tokenInfo}
+        shouldConnect={shouldConnect}
+        onDisconnected={handleDisconnected}
+        onError={handleError}
         onStartInteraction={connect}
-        recommendedQuestions={config?.agent?.["recommended-questions"]}
+        config={config}
       />
-      <RoomAudioRenderer />
-      <TelemetryPopoffs events={events} />
-    </LiveKitRoom>
+    </React.Suspense>
   );
 }
