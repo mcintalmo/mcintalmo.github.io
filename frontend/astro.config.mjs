@@ -13,5 +13,38 @@ export default defineConfig({
   integrations: [react(), sitemap(), sentry()],
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      chunkSizeWarningLimit: 600,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes("node_modules")) {
+              if (id.includes("@livekit/protocol")) {
+                return "vendor-livekit-protocol";
+              }
+              if (id.includes("livekit-client")) {
+                return "vendor-livekit-client";
+              }
+              if (
+                id.includes("@livekit/components-react") ||
+                id.includes("@livekit/components-core")
+              ) {
+                return "vendor-livekit-components";
+              }
+              if (
+                id.includes("framer-motion") ||
+                id.includes("motion-dom") ||
+                id.includes("motion-utils")
+              ) {
+                return "vendor-motion";
+              }
+              if (id.includes("lucide-react")) {
+                return "vendor-lucide";
+              }
+            }
+          },
+        },
+      },
+    },
   },
 });

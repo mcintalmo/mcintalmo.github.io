@@ -22,7 +22,8 @@ const DOT_OPACITY_LIGHT = 0.35;
 const DOT_OPACITY_DARK = 0.55;
 const REPULSE_MAX_DIST = 180;
 const REPULSE_STRENGTH = 600;
-const PARALLAX_FACTOR = 0.8;
+const PARALLAX_FACTOR = 0.12;
+const MAX_SCROLL_IMPULSE = 14;
 
 const COLORS_LIGHT = ["#6366F1", "#818CF8", "#38BDF8", "#0EA5E9"];
 const COLORS_DARK = ["#818CF8", "#A5B4FC", "#22D3EE", "#67E8F9"];
@@ -45,19 +46,18 @@ export const VectorBackground = () => {
     );
   }, []);
 
-  // Initialize particles across initial viewport region
+  // Initialize particles across viewport region
   const initParticles = React.useCallback(
-    (w: number, viewportH: number, scrollY: number) => {
+    (w: number, viewportH: number) => {
       const colors = theme === "dark" ? COLORS_DARK : COLORS_LIGHT;
       const particles: Particle[] = [];
-      const offset = scrollY * PARALLAX_FACTOR;
       for (let i = 0; i < PARTICLE_COUNT; i++) {
         // Slow upward motion: vy is always negative
         const vx = (Math.random() - 0.5) * 0.3; // -0.15 to +0.15 side drift
         const vy = -(0.08 + Math.random() * 0.14); // -0.08 to -0.22 upward flow
         particles.push({
           x: Math.random() * w,
-          y: offset - 80 + Math.random() * (viewportH + 160),
+          y: Math.random() * viewportH,
           vx,
           vy,
           baseVx: vx,
@@ -89,17 +89,12 @@ export const VectorBackground = () => {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
-    // Initial size — delay slightly so DOM is laid out
+    // Initial size and particle setup
     const initialResize = () => {
       resize();
-      particlesRef.current = initParticles(
-        window.innerWidth,
-        window.innerHeight,
-        window.scrollY,
-      );
+      particlesRef.current = initParticles(window.innerWidth, window.innerHeight);
     };
     initialResize();
-    // Re-measure after content loads (fonts, images)
     const resizeTimer = setTimeout(resize, 1000);
 
     // Mouse tracking (viewport coordinates)
@@ -111,6 +106,9 @@ export const VectorBackground = () => {
     };
 
     // Scroll tracking
+    scrollYRef.current = window.scrollY;
+    let lastScrollY = window.scrollY;
+
     const handleScroll = () => {
       scrollYRef.current = window.scrollY;
     };
@@ -131,8 +129,15 @@ export const VectorBackground = () => {
 
       const w = window.innerWidth;
       const viewportH = window.innerHeight;
-      const scrollY = scrollYRef.current;
-      const offset = scrollY * PARALLAX_FACTOR;
+      const currentScrollY = scrollYRef.current;
+      const rawScrollDelta = currentScrollY - lastScrollY;
+      lastScrollY = currentScrollY;
+
+      // Gentle parallax shift on scroll, clamped so anchor jumps never teleport or clump particles
+      const scrollShift = Math.max(
+        -MAX_SCROLL_IMPULSE,
+        Math.min(MAX_SCROLL_IMPULSE, rawScrollDelta * PARALLAX_FACTOR),
+      );
 
       try {
         // Draw background color
@@ -149,13 +154,13 @@ export const VectorBackground = () => {
 
         const particles = particlesRef.current;
         const mx = mouseRef.current.x;
-        const myVirtual = mouseRef.current.y + offset;
+        const my = mouseRef.current.y;
 
         for (const p of particles) {
           if (!prefersReducedMotion) {
-            // 1. Mouse Repulsion Force
+            // 1. Mouse Repulsion Force in viewport space
             const dx = p.x - mx;
-            const dy = p.y - myVirtual;
+            const dy = p.y - my;
             const distSq = dx * dx + dy * dy;
             const dist = Math.sqrt(distSq);
 
@@ -171,64 +176,50 @@ export const VectorBackground = () => {
             p.vx += (p.baseVx - p.vx) * 0.04;
             p.vy += (p.baseVy - p.vy) * 0.04;
 
-            // 3. Move particle
+            // 3. Move particle with gentle scroll parallax
             p.x += p.vx;
-            p.y += p.vy;
+            p.y += p.vy - scrollShift;
 
-            // 4. Viewport Wrapping (Infinite Nodes)
-            const buffer = 80;
-            const topBound = offset - buffer;
-            const bottomBound = offset + viewportH + buffer;
-            const leftBound = -buffer;
-            const rightBound = w + buffer;
+            // 4. Viewport Wrapping (continuous, even distribution)
+            const buffer = 40;
 
-            if (p.x < leftBound) {
-              p.x = rightBound;
-              p.y = topBound + Math.random() * (viewportH + 2 * buffer);
-            } else if (p.x > rightBound) {
-              p.x = leftBound;
-              p.y = topBound + Math.random() * (viewportH + 2 * buffer);
+            if (p.x < -buffer) {
+              p.x = w + buffer;
+            } else if (p.x > w + buffer) {
+              p.x = -buffer;
             }
 
-            if (p.y < topBound) {
-              p.y = bottomBound + Math.random() * buffer;
+            if (p.y < -buffer) {
+              p.y = viewportH + buffer;
               p.x = Math.random() * w;
-            } else if (p.y > bottomBound) {
-              p.y = topBound - Math.random() * buffer;
+            } else if (p.y > viewportH + buffer) {
+              p.y = -buffer;
               p.x = Math.random() * w;
             }
           }
 
-          const drawY = p.y - offset;
-          if (drawY > -20 && drawY < viewportH + 20) {
-            ctx.beginPath();
-            ctx.arc(p.x, drawY, p.radius, 0, Math.PI * 2);
-            ctx.fillStyle = p.color;
-            ctx.globalAlpha = dotOp;
-            ctx.fill();
-          }
+          // Draw particle
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = dotOp;
+          ctx.fill();
         }
 
-        // Draw links
+        // Draw links between nearby particles
         ctx.globalAlpha = 1;
         for (let i = 0; i < particles.length; i++) {
           const p1 = particles[i];
-          const drawY1 = p1.y - offset;
-          if (drawY1 < -LINK_DISTANCE || drawY1 > viewportH + LINK_DISTANCE) continue;
-
           for (let j = i + 1; j < particles.length; j++) {
             const p2 = particles[j];
-            const drawY2 = p2.y - offset;
-            if (drawY2 < -LINK_DISTANCE || drawY2 > viewportH + LINK_DISTANCE) continue;
-
             const dx = p1.x - p2.x;
             const dy = p1.y - p2.y;
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist < LINK_DISTANCE) {
               const alpha = linkOp * (1 - dist / LINK_DISTANCE);
               ctx.beginPath();
-              ctx.moveTo(p1.x, drawY1);
-              ctx.lineTo(p2.x, drawY2);
+              ctx.moveTo(p1.x, p1.y);
+              ctx.lineTo(p2.x, p2.y);
               ctx.strokeStyle = linkColor;
               ctx.globalAlpha = alpha;
               ctx.lineWidth = 0.8;

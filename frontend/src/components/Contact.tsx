@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Mail, MapPin, Phone, Send } from "lucide-react";
+import { Calendar, Check, Copy, ExternalLink, Mail, MapPin, Send } from "lucide-react";
 import { useState } from "react";
 import type { ResumeBasics, SiteConfigRoot } from "../lib/types";
 import { Button } from "./ui/button";
@@ -8,6 +8,25 @@ import { Linkedin } from "./ui/icons";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 
+const INQUIRY_TOPICS = [
+  {
+    label: "AI Architecture",
+    subject: "Project Inquiry: AI Architecture",
+  },
+  {
+    label: "Voice & Agentic Systems",
+    subject: "Project Inquiry: Voice & Agentic Systems",
+  },
+  {
+    label: "Data & ML Infrastructure",
+    subject: "Project Inquiry: Data & ML Infrastructure",
+  },
+  {
+    label: "General Inquiry",
+    subject: "General Inquiry",
+  },
+];
+
 export function Contact({
   basics,
   config,
@@ -15,15 +34,15 @@ export function Contact({
   basics?: ResumeBasics;
   config: SiteConfigRoot;
 }) {
-  // Extract available-for data strictly from config (no fallback defaults)
   const contactConfig = config.sections?.contact as Record<string, unknown> | undefined;
-  const availableForRaw =
-    contactConfig?.["available-for"] ?? contactConfig?.availableFor;
-  const availableFor: string[] | undefined = Array.isArray(availableForRaw)
-    ? (availableForRaw as unknown[]).map((s) => String(s).trim()).filter(Boolean)
-    : undefined;
 
-  const targetEmail = basics?.email; // could be extended to pull from config
+  const targetEmail = basics?.email;
+
+  const bookingUrl =
+    (contactConfig?.["booking-url"] as string | undefined) ??
+    (contactConfig?.bookingUrl as string | undefined);
+
+  const [copied, setCopied] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -34,6 +53,38 @@ export function Contact({
 
   function update<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  function handleSelectTopic(topic: { label: string; subject: string }) {
+    setForm((prev) => ({
+      ...prev,
+      subject: topic.subject,
+      message:
+        prev.message.trim() === "" ||
+        prev.message.startsWith("Hi Alex, I would like to discuss")
+          ? `Hi Alex, I would like to discuss ${topic.label.toLowerCase()}.\n`
+          : prev.message,
+    }));
+  }
+
+  async function handleCopyEmail() {
+    if (!targetEmail) return;
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(targetEmail);
+      } else if (typeof document !== "undefined") {
+        const textArea = document.createElement("textarea");
+        textArea.value = targetEmail;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      // Fallback: noop
+    }
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -53,197 +104,195 @@ export function Contact({
     window.location.href = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
   }
 
+  const linkedinProfile = basics?.profiles?.find((p) =>
+    /linkedin/i.test(p.network || ""),
+  );
+
   return (
     <section id="contact" className="py-20">
       <div className="container mx-auto px-4 sm:px-6">
+        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true, margin: "100px 0px" }}
-          className="text-center mb-16 glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6"
+          className="text-center mb-12 group max-w-3xl mx-auto"
         >
-          <h2 className="mb-4">{config.sections?.contact?.title || "Contact"}</h2>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3">
+            {config.sections?.contact?.title || "Let's Work Together"}
+          </h2>
           {config.sections?.contact?.description && (
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-muted-foreground max-w-2xl mx-auto text-base sm:text-lg">
               {config.sections.contact.description}
             </p>
           )}
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
-          {/* Left Column: Contact details + Available For */}
+        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 max-w-5xl mx-auto items-start">
+          {/* Left Column: Coordinates & Focus Areas (5 cols) */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true, margin: "100px 0px" }}
-            className="space-y-6"
+            className="lg:col-span-5 space-y-6"
           >
-            <Card>
-              <CardHeader>
-                <CardTitle>Get in Touch</CardTitle>
+            {/* Direct Connect Card */}
+            <Card className="border-border/60 bg-card/60 backdrop-blur-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg font-semibold tracking-tight">
+                  Direct Inquiries & Coordinates
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {basics?.email && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: 0.1 }}
-                      viewport={{ once: true }}
+              <CardContent className="space-y-4">
+                <div className="flex flex-col gap-3">
+                  {/* Primary Mail Action */}
+                  {targetEmail && (
+                    <a
+                      href={`mailto:${targetEmail}`}
+                      className="flex items-center gap-3 p-3 rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-all group min-h-[52px]"
+                      aria-label={`Send email to ${targetEmail}`}
                     >
-                      <a
-                        href={`mailto:${basics.email}`}
-                        className="flex items-center gap-4 group p-2 -m-2 rounded-lg hover:bg-muted/50 transition-colors min-h-[48px]"
-                        aria-label={`Send email to ${basics.email}`}
-                      >
-                        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                          <Mail className="w-6 h-6 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Email</p>
-                          <span className="underline group-hover:text-primary transition-colors break-all">
-                            {basics.email}
-                          </span>
-                        </div>
-                      </a>
-                    </motion.div>
-                  )}
-
-                  {basics?.phone && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: 0.2 }}
-                      viewport={{ once: true }}
-                    >
-                      <a
-                        href={`tel:${basics.phone}`}
-                        className="flex items-center gap-4 group p-2 -m-2 rounded-lg hover:bg-muted/50 transition-colors min-h-[48px]"
-                        aria-label={`Call ${basics.phone}`}
-                      >
-                        <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                          <Phone className="w-6 h-6 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Phone</p>
-                          <span className="underline group-hover:text-primary transition-colors">
-                            {basics.phone}
-                          </span>
-                        </div>
-                      </a>
-                    </motion.div>
-                  )}
-
-                  {(basics?.location?.city || basics?.location?.region) && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: 0.3 }}
-                      viewport={{ once: true }}
-                      className="flex items-center gap-4 p-2 -m-2 min-h-[48px]"
-                    >
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <MapPin className="w-6 h-6 text-primary" />
+                      <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0 text-primary">
+                        <Mail className="w-5 h-5" />
                       </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Location</p>
-                        <p>
-                          {[basics?.location?.city, basics?.location?.region]
-                            .filter(Boolean)
-                            .join(", ")}
+                      <div className="min-w-0">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+                          Email
+                        </p>
+                        <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">
+                          {targetEmail}
                         </p>
                       </div>
-                    </motion.div>
+                    </a>
                   )}
 
-                  {basics?.profiles?.find((p) => /linkedin/i.test(p.network || "")) && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: 0.35 }}
-                      viewport={{ once: true }}
+                  {/* Copy Email Button */}
+                  {targetEmail && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleCopyEmail}
+                      className="h-11 rounded-xl border-border/80 hover:bg-muted/80 flex items-center justify-center gap-2 cursor-pointer w-full"
+                      aria-label="Copy Email"
                     >
-                      {(() => {
-                        const profile = basics.profiles?.find((p) =>
-                          /linkedin/i.test(p.network || ""),
-                        );
-                        if (!profile) return null;
-                        const label =
-                          profile.username || profile.url?.replace(/^https?:\/\//, "");
-                        return (
-                          <a
-                            href={
-                              profile.url ||
-                              `https://www.linkedin.com/in/${profile.username}`
-                            }
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-4 group p-2 -m-2 rounded-lg hover:bg-muted/50 transition-colors min-h-[48px]"
-                            aria-label="LinkedIn profile"
-                          >
-                            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
-                              <Linkedin className="w-6 h-6 text-primary" />
-                            </div>
-                            <div className="flex flex-col">
-                              <p className="text-sm text-muted-foreground">LinkedIn</p>
-                              <span className="underline break-all group-hover:text-primary transition-colors">
-                                {label}
-                              </span>
-                            </div>
-                          </a>
-                        );
-                      })()}
-                    </motion.div>
+                      {copied ? (
+                        <>
+                          <Check className="w-4 h-4 text-emerald-400" />
+                          <span className="text-sm font-medium text-emerald-400">
+                            Copied!
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-sm font-medium">Copy Email</span>
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+
+                {/* Optional Calendar Booking Link */}
+                {bookingUrl && (
+                  <Button
+                    variant="outline"
+                    asChild
+                    className="w-full h-11 rounded-xl border-accent-cyan/30 hover:border-accent-cyan hover:bg-accent-cyan/10 font-medium transition-all"
+                  >
+                    <a
+                      href={bookingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 text-foreground"
+                      aria-label="Schedule an Intro Call"
+                    >
+                      <Calendar className="w-4 h-4 text-accent-cyan" />
+                      <span>Schedule an Intro Call</span>
+                      <ExternalLink className="w-3.5 h-3.5 text-muted-foreground ml-1" />
+                    </a>
+                  </Button>
+                )}
+
+                {/* Location & LinkedIn Row */}
+                <div className="pt-3 border-t border-border/40 space-y-2.5 text-sm">
+                  {(basics?.location?.city || basics?.location?.region) && (
+                    <div className="flex items-center gap-3 text-muted-foreground py-1">
+                      <MapPin className="w-4 h-4 text-primary shrink-0" />
+                      <span>
+                        {[basics?.location?.city, basics?.location?.region]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </span>
+                    </div>
+                  )}
+
+                  {linkedinProfile && (
+                    <a
+                      href={
+                        linkedinProfile.url ||
+                        `https://www.linkedin.com/in/${linkedinProfile.username}`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2.5 text-muted-foreground hover:text-primary transition-colors py-1 group"
+                      aria-label="LinkedIn profile"
+                    >
+                      <Linkedin className="w-4 h-4 text-primary shrink-0" />
+                      <span className="font-medium group-hover:underline">
+                        LinkedIn Profile
+                      </span>
+                      <ExternalLink className="w-3.5 h-3.5 opacity-60 group-hover:opacity-100 transition-opacity ml-auto" />
+                    </a>
                   )}
                 </div>
               </CardContent>
             </Card>
-
-            {availableFor && availableFor.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.4 }}
-                viewport={{ once: true }}
-              >
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Available for:</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2 text-sm text-muted-foreground">
-                      {availableFor.map((item) => (
-                        <li key={item}>• {item}</li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
           </motion.div>
 
-          {/* Right Column: Contact Form */}
+          {/* Right Column: Send a Message Form (7 cols) */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true, margin: "100px 0px" }}
+            className="lg:col-span-7"
           >
-            <Card>
-              <CardHeader>
-                <CardTitle>Send Message</CardTitle>
+            <Card className="border-border/80 bg-card/70 backdrop-blur-md">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg font-semibold tracking-tight">
+                  Send a Message
+                </CardTitle>
+                <p className="text-xs text-muted-foreground">
+                  Select a topic below or customize your message directly.
+                </p>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                {/* Topic Selection Buttons */}
+                <div className="flex flex-wrap gap-2 pb-1">
+                  {INQUIRY_TOPICS.map((topic) => {
+                    const isSelected = form.subject === topic.subject;
+                    return (
+                      <button
+                        key={topic.label}
+                        type="button"
+                        onClick={() => handleSelectTopic(topic)}
+                        className={`text-xs px-3 py-1.5 rounded-lg border transition-all cursor-pointer font-medium ${
+                          isSelected
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground border-border/60"
+                        }`}
+                      >
+                        {topic.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
                 <form className="space-y-4" onSubmit={handleSubmit}>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.1 }}
-                    viewport={{ once: true }}
-                    className="relative"
-                  >
+                  {/* Name Input */}
+                  <div className="relative">
                     <Input
                       id="contact-name"
                       name="name"
@@ -258,14 +307,10 @@ export function Contact({
                     >
                       Your Name
                     </label>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    viewport={{ once: true }}
-                    className="relative"
-                  >
+                  </div>
+
+                  {/* Email Input */}
+                  <div className="relative">
                     <Input
                       id="contact-email"
                       name="email"
@@ -282,14 +327,10 @@ export function Contact({
                     >
                       Your Email *
                     </label>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                    viewport={{ once: true }}
-                    className="relative"
-                  >
+                  </div>
+
+                  {/* Subject Input */}
+                  <div className="relative">
                     <Input
                       id="contact-subject"
                       name="subject"
@@ -304,19 +345,15 @@ export function Contact({
                     >
                       Subject
                     </label>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    viewport={{ once: true }}
-                    className="relative"
-                  >
+                  </div>
+
+                  {/* Message Textarea */}
+                  <div className="relative">
                     <Textarea
                       id="contact-message"
                       name="message"
                       placeholder="Your message..."
-                      className="peer pt-6 pb-2 placeholder:text-transparent min-h-[120px]"
+                      className="peer pt-6 pb-2 placeholder:text-transparent min-h-[140px]"
                       value={form.message}
                       onChange={(e) => update("message", e.target.value)}
                       required
@@ -327,22 +364,17 @@ export function Contact({
                     >
                       Your message *
                     </label>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.5 }}
-                    viewport={{ once: true }}
+                  </div>
+
+                  {/* Submit Button */}
+                  <Button
+                    className="w-full h-12 rounded-xl text-sm sm:text-base font-medium shadow-md transition-all cursor-pointer"
+                    type="submit"
+                    disabled={!targetEmail || !form.email || !form.message}
                   >
-                    <Button
-                      className="w-full h-12 sm:h-10 min-h-[48px] sm:min-h-0 text-base sm:text-sm"
-                      type="submit"
-                      disabled={!targetEmail || !form.email || !form.message}
-                    >
-                      <Send className="w-4 h-4 mr-2" />
-                      {targetEmail ? "Send Message" : "Email Unavailable"}
-                    </Button>
-                  </motion.div>
+                    <Send className="w-4 h-4 mr-2" />
+                    {targetEmail ? "Send Message" : "Email Unavailable"}
+                  </Button>
                 </form>
               </CardContent>
             </Card>

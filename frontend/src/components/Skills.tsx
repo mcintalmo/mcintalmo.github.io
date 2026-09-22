@@ -13,7 +13,6 @@ import {
   Wrench,
 } from "lucide-react";
 import * as React from "react";
-import { useScrollAnimation } from "../hooks/useScrollAnimation";
 import type { ResumeSkill, SiteConfigRoot } from "../lib/types";
 import { SectionAnchor } from "./SectionAnchor";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
@@ -178,53 +177,22 @@ function buildCategories(
   return order.map((k) => map[k]);
 }
 
-function CategoryCard({
-  category,
-  index,
-  isDimmed,
-  isHighlighted,
-}: {
-  category: SkillCategory;
-  index: number;
-  isDimmed: boolean;
-  isHighlighted: boolean;
-}) {
-  const { ref, controls } = useScrollAnimation();
+function CategoryCard({ category, index }: { category: SkillCategory; index: number }) {
   const style = CATEGORY_STYLES[category.key] || DEFAULT_STYLE;
 
   return (
     <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 24 }}
-      animate={controls}
-      variants={{
-        hidden: { opacity: 0, y: 24 },
-        visible: {
-          opacity: 1,
-          y: 0,
-          transition: {
-            duration: 0.5,
-            delay: index * 0.08,
-            ease: [0.25, 0.46, 0.45, 0.94],
-          },
-        },
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "100px 0px" }}
+      transition={{
+        duration: 0.5,
+        delay: index * 0.08,
+        ease: [0.25, 0.46, 0.45, 0.94],
       }}
-      className={`h-full transition-all duration-300 ${
-        isDimmed ? "opacity-35 scale-[0.98]" : "opacity-100"
-      } ${
-        isHighlighted
-          ? "ring-2 ring-primary shadow-xl shadow-primary/10 scale-[1.01]"
-          : ""
-      }`}
+      className="h-full"
     >
-      <Card
-        className={`h-full flex flex-col glass-panel transition-all duration-300 relative overflow-hidden group ${style.border}`}
-      >
-        {/* Subtle Ambient Radial Glow */}
-        <div
-          className={`absolute inset-0 bg-radial-gradient ${style.glow} opacity-60 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`}
-        />
-
+      <Card className="h-full flex flex-col bg-card/70 border border-border/70 hover:border-primary/40 transition-colors duration-200 relative overflow-hidden group shadow-2xs hover:shadow-md">
         <CardHeader className="pb-3 border-b border-border/40 relative z-10">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-2.5 min-w-0">
@@ -249,20 +217,16 @@ function CategoryCard({
         <CardContent className="pt-4 flex-1 relative z-10">
           <div className="flex flex-wrap gap-2">
             {category.skills.map((skill, skillIndex) => (
-              <motion.span
+              <span
                 // biome-ignore lint/suspicious/noArrayIndexKey: fallback to index is required if skill name is missing
                 key={(skill.name || "skill") + skillIndex}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.3, delay: skillIndex * 0.02 }}
-                className="group/chip inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 bg-background/60 hover:bg-background/90 hover:border-primary/40 transition-all duration-200 text-xs sm:text-sm font-medium text-foreground/90 shadow-2xs cursor-default"
+                className="group/chip inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/50 bg-background/60 hover:bg-background/90 hover:border-primary/40 transition-colors duration-200 text-xs sm:text-sm font-medium text-foreground/90 shadow-2xs cursor-default"
               >
                 <span
                   className={`w-1.5 h-1.5 rounded-full ${style.dotColor} opacity-75 group-hover/chip:opacity-100 transition-opacity`}
                 />
                 <span>{skill.name}</span>
-              </motion.span>
+              </span>
             ))}
           </div>
         </CardContent>
@@ -282,14 +246,6 @@ export function Skills({
     () => buildCategories(skills, config),
     [skills, config],
   );
-  const [activeFilter, setActiveFilter] = React.useState<string>("all");
-
-  const filterOptions = React.useMemo(() => {
-    return [
-      { key: "all", label: "All Systems" },
-      ...categories.map((c) => ({ key: c.key, label: c.title })),
-    ];
-  }, [categories]);
 
   return (
     <section id="skills" className="py-20">
@@ -300,9 +256,9 @@ export function Skills({
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true, margin: "100px 0px" }}
-          className="text-center mb-8 group glass-panel rounded-xl py-6 sm:py-8 px-4 sm:px-6 max-w-4xl mx-auto"
+          className="text-center mb-12 group max-w-3xl mx-auto"
         >
-          <h2 className="mb-4 inline-flex items-center gap-2">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-3 inline-flex items-center gap-2.5">
             {config.sections?.skills?.title || "Skills & Technologies"}
             <SectionAnchor sectionId="skills" />
           </h2>
@@ -313,47 +269,14 @@ export function Skills({
           )}
         </motion.div>
 
-        {/* Quick Filter Pills */}
-        {categories.length > 1 && (
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-10 max-w-4xl mx-auto">
-            {filterOptions.map((opt) => {
-              const isActive = activeFilter === opt.key;
-              return (
-                <button
-                  key={opt.key}
-                  type="button"
-                  onClick={() =>
-                    setActiveFilter(isActive && opt.key !== "all" ? "all" : opt.key)
-                  }
-                  className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-all duration-200 cursor-pointer ${
-                    isActive
-                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20 scale-[1.02]"
-                      : "bg-muted/60 text-muted-foreground hover:text-foreground hover:bg-muted border border-border/40"
-                  }`}
-                  aria-pressed={isActive}
-                >
-                  {opt.label}
-                </button>
-              );
-            })}
-          </div>
-        )}
-
         {/* Asymmetric Architectural Bento Grid */}
         <div className="mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-12 gap-6">
           {categories.map((cat, i) => {
             const style = CATEGORY_STYLES[cat.key] || DEFAULT_STYLE;
-            const isDimmed = activeFilter !== "all" && activeFilter !== cat.key;
-            const isHighlighted = activeFilter === cat.key;
 
             return (
               <div key={cat.key} className={style.spanClass}>
-                <CategoryCard
-                  category={cat}
-                  index={i}
-                  isDimmed={isDimmed}
-                  isHighlighted={isHighlighted}
-                />
+                <CategoryCard category={cat} index={i} />
               </div>
             );
           })}
