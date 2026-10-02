@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Calendar, Check, Copy, ExternalLink, Mail, MapPin, Send } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import type { ResumeBasics, SiteConfigRoot } from "../lib/types";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
@@ -61,8 +62,8 @@ export function Contact({
       subject: topic.subject,
       message:
         prev.message.trim() === "" ||
-        prev.message.startsWith("Hi Alex, I would like to discuss")
-          ? `Hi Alex, I would like to discuss ${topic.label.toLowerCase()}.\n`
+        prev.message.startsWith("Hi Alexander, I would like to discuss")
+          ? `Hi Alexander, I would like to discuss ${topic.label.toLowerCase()}.\n`
           : prev.message,
     }));
   }
@@ -81,16 +82,23 @@ export function Contact({
         document.body.removeChild(textArea);
       }
       setCopied(true);
+      toast.success("Email address copied to clipboard!", {
+        description: targetEmail,
+      });
       setTimeout(() => setCopied(false), 2500);
     } catch {
-      // Fallback: noop
+      toast.error("Failed to copy email automatically", {
+        description: `Direct address: ${targetEmail}`,
+      });
     }
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!targetEmail) return;
-    const subject = encodeURIComponent(form.subject || "Website Inquiry");
+    const subject = encodeURIComponent(
+      form.subject || "Consulting & Architecture Inquiry",
+    );
     const bodyLines = [
       form.message,
       "",
@@ -101,6 +109,11 @@ export function Contact({
       .filter(Boolean)
       .join("\n");
     const body = encodeURIComponent(bodyLines);
+
+    toast.success("Opening email client...", {
+      description: `Drafting message for ${targetEmail}`,
+    });
+
     window.location.href = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
   }
 
@@ -192,6 +205,17 @@ export function Contact({
                       )}
                     </Button>
                   )}
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/10 text-xs text-muted-foreground space-y-1">
+                  <p className="font-semibold text-foreground">
+                    AI Consulting & Advisory
+                  </p>
+                  <p className="leading-relaxed">
+                    Available for custom enterprise AI architectures, conversational
+                    analytics, and model explainability roadmaps via Pioneer Management
+                    Consulting.
+                  </p>
                 </div>
 
                 {/* Optional Calendar Booking Link */}

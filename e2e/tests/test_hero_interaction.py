@@ -14,11 +14,11 @@ def test_hero_text_chat_flow(page: Page, app_url):
     page.goto(url)
 
     # Find the hero prompt text input
-    hero_input = page.locator('input[placeholder="Ask Alex\'s AI Agent..."]')
+    hero_input = page.locator("#hero-ai-prompt")
     expect(hero_input).to_be_visible(timeout=30000)
 
     # Type a message
-    prompt = "Can you show me Alex's skills?"
+    prompt = "Can you show me Alexander's skills?"
     hero_input.fill(prompt)
 
     # Click the send button next to it

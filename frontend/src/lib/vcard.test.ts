@@ -4,7 +4,7 @@ import { generateVCard } from "./vcard";
 
 describe("generateVCard", () => {
   const sampleBasics: ResumeBasics = {
-    name: "Alex McIntosh",
+    name: "Alexander McIntosh",
     label: "Data Scientist & AI/ML Engineer",
     email: "mcintalmo@gmail.com",
     phone: "612-555-0199",
@@ -33,8 +33,8 @@ describe("generateVCard", () => {
 
     expect(vcard).toContain("BEGIN:VCARD\r\n");
     expect(vcard).toContain("VERSION:3.0\r\n");
-    expect(vcard).toContain("FN:Alex McIntosh\r\n");
-    expect(vcard).toContain("N:McIntosh;Alex;;;\r\n");
+    expect(vcard).toContain("FN:Alexander McIntosh\r\n");
+    expect(vcard).toContain("N:McIntosh;Alexander;;;\r\n");
     expect(vcard).toContain("TITLE:Data Scientist & AI/ML Engineer\r\n");
     expect(vcard).toContain("ORG:Pioneer Management Consulting\r\n");
     expect(vcard).toContain("EMAIL;TYPE=INTERNET,PREF:mcintalmo@gmail.com\r\n");
@@ -69,7 +69,7 @@ describe("generateVCard", () => {
     const vcard = generateVCard(minimalBasics);
 
     expect(vcard).toContain("BEGIN:VCARD\r\n");
-    expect(vcard).toContain("FN:Alex McIntosh\r\n");
+    expect(vcard).toContain("FN:Alexander McIntosh\r\n");
     expect(vcard).toContain("END:VCARD");
   });
 });

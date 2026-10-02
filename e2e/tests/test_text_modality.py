@@ -45,8 +45,8 @@ def test_text_modality_end_to_end(page: Page, app_url, browser_name):
         agent_status = page.locator("#agent-status")
         expect(agent_status).to_have_text("(Online)", timeout=30000)
 
-        # 5. Type message asking about Alex's skills
-        chat_input.fill("What can you tell me about Alex's skills?")
+        # 5. Type message asking about Alexander's skills
+        chat_input.fill("What can you tell me about Alexander's skills?")
         chat_input.press("Enter")
 
         # 6. Verify our sent message appears in the chat transcript
@@ -54,7 +54,7 @@ def test_text_modality_end_to_end(page: Page, app_url, browser_name):
             '.lk-chat-entry[data-lk-message-origin="local"] .lk-message-body'
         )
         expect(user_msg.first).to_have_text(
-            "What can you tell me about Alex's skills?", timeout=5000
+            "What can you tell me about Alexander's skills?", timeout=5000
         )
 
         # 7. Wait for the agent's response to appear

@@ -566,7 +566,7 @@ export function CustomChatWidget({
         const assistantMsg: UnifiedMessage = {
           id: `assistant-${now + 1}`,
           sender: "assistant",
-          text: "The real-time conversational agent daemon is currently on standby. Alex specializes in multi-agent architectures, streaming voice pipelines, and MLOps platforms. You can reach out directly via the [Contact Form](#contact) or email [mcintalmo@gmail.com](mailto:mcintalmo@gmail.com) to discuss your project.",
+          text: "The real-time conversational agent daemon is currently on standby. Alexander specializes in multi-agent architectures, streaming voice pipelines, and MLOps platforms. You can reach out directly via the [Contact Form](#contact) or email [mcintalmo@gmail.com](mailto:mcintalmo@gmail.com) to discuss your project.",
           timestamp: now + 1,
         };
         setUnifiedMessages((prev) => [...prev, userMsg, assistantMsg]);
@@ -597,7 +597,7 @@ export function CustomChatWidget({
         const assistantMsg: UnifiedMessage = {
           id: `assistant-${now + 1}`,
           sender: "assistant",
-          text: "The real-time conversational agent daemon is currently on standby. Alex is available for AI engineering and consulting contracts. Reach out directly at [mcintalmo@gmail.com](mailto:mcintalmo@gmail.com) or submit a message below.",
+          text: "The real-time conversational agent daemon is currently on standby. Alexander is available for AI engineering and consulting contracts. Reach out directly at [mcintalmo@gmail.com](mailto:mcintalmo@gmail.com) or submit a message below.",
           timestamp: now + 1,
         };
         setUnifiedMessages((prev) => [...prev, userMsg, assistantMsg]);
@@ -622,7 +622,7 @@ export function CustomChatWidget({
         const assistantMsg: UnifiedMessage = {
           id: `assistant-${now + 1}`,
           sender: "assistant",
-          text: "The real-time conversational agent daemon is currently on standby. Alex specializes in multi-agent architectures, streaming voice AI, and MLOps. To discuss your project or request a proposal, reach out at [mcintalmo@gmail.com](mailto:mcintalmo@gmail.com) or scroll to the [Contact Section](#contact).",
+          text: "The real-time conversational agent daemon is currently on standby. Alexander specializes in multi-agent architectures, streaming voice AI, and MLOps. To discuss your project or request a proposal, reach out at [mcintalmo@gmail.com](mailto:mcintalmo@gmail.com) or scroll to the [Contact Section](#contact).",
           timestamp: now + 1,
         };
         setUnifiedMessages((prev) => [...prev, userMsg, assistantMsg]);
@@ -692,7 +692,7 @@ export function CustomChatWidget({
           <div className="p-3 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] sm:p-4 md:pt-[4.5rem] border-b flex justify-between items-center z-10 bg-background/95 backdrop-blur">
             <h2 className="font-semibold flex items-center gap-2 font-sans text-base sm:text-lg min-w-0">
               <Bot className="h-5 w-5 sm:h-6 sm:w-6 text-accent-cyan animate-pulse shrink-0" />
-              <span className="truncate">Alex's AI Agent</span>
+              <span className="truncate">Alexander's AI Agent</span>
               <span
                 id="agent-status"
                 className={`text-xs ml-1 sm:ml-2 shrink-0 ${
@@ -749,17 +749,17 @@ export function CustomChatWidget({
               <div className="flex flex-col justify-end min-h-full space-y-4">
                 {unifiedMessages.length === 0 && (
                   <div className="flex flex-col items-center justify-center text-center p-4 space-y-6 my-auto">
-                    <div className="p-4 rounded-full bg-accent-indigo/10 border border-accent-indigo/20 text-accent-indigo animate-bounce duration-3000">
+                    <div className="p-4 rounded-full bg-accent-indigo/10 border border-accent-indigo/20 text-accent-indigo">
                       <Bot className="h-8 w-8 text-accent-cyan" />
                     </div>
                     <div className="space-y-2 max-w-sm">
                       <h3 className="text-base font-semibold font-sans text-foreground">
-                        Ask Alex's AI Assistant
+                        Ask Alexander's AI Assistant
                       </h3>
                       <p className="text-xs text-muted-foreground leading-relaxed font-sans">
-                        I can tell you about Alex's professional experience, educational
-                        background, or skills. Try selecting one of the questions below
-                        or typing your own.
+                        I can tell you about Alexander's professional experience,
+                        educational background, or skills. Try selecting one of the
+                        questions below or typing your own.
                       </p>
                     </div>
                   </div>
@@ -862,9 +862,9 @@ export function CustomChatWidget({
                 {state === "thinking" && (
                   <div className="flex justify-start">
                     <div className="bg-card text-muted-foreground rounded-2xl px-4 py-2.5 max-w-[85%] text-sm rounded-bl-none flex items-center gap-1.5 shadow-sm border border-border/30">
-                      <span className="w-1.5 h-1.5 bg-accent-cyan rounded-full animate-bounce duration-1000"></span>
-                      <span className="w-1.5 h-1.5 bg-accent-cyan rounded-full animate-bounce duration-1000 delay-150"></span>
-                      <span className="w-1.5 h-1.5 bg-accent-cyan rounded-full animate-bounce duration-1000 delay-300"></span>
+                      <span className="w-1.5 h-1.5 bg-accent-cyan rounded-full animate-pulse duration-1000"></span>
+                      <span className="w-1.5 h-1.5 bg-accent-cyan rounded-full animate-pulse duration-1000 delay-150"></span>
+                      <span className="w-1.5 h-1.5 bg-accent-cyan rounded-full animate-pulse duration-1000 delay-300"></span>
                     </div>
                   </div>
                 )}

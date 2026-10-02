@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 def generate_dataset() -> None:
-    # High-fidelity realistic job descriptions matching Alex's skills
+    # High-fidelity realistic job descriptions matching Alexander's skills
     optum_jd = (
         "Optum is looking for a Senior AI/ML Engineer. You will design, "
         "develop, and deploy AI-driven solutions to improve healthcare "

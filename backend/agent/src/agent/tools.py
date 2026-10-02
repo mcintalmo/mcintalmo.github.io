@@ -252,9 +252,11 @@ def make_portfolio_tools() -> list[llm.Tool | llm.Toolset]:
         return json.dumps(certs, indent=2)
 
     @llm.function_tool(
-        description="Get details about Alex's key projects, including descriptions, "
-        "tech stack, and URLs. Use this when the user asks about specific "
-        "portfolio projects."
+        description=(
+            "Get details about Alexander's key projects, including "
+            "descriptions, tech stack, and URLs. Use this when the user "
+            "asks about specific portfolio projects."
+        )
     )
     @track_tool_call
     async def get_project_details(

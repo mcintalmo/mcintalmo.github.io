@@ -78,7 +78,7 @@ export function Home({ basics, recommendedQuestions }: Props) {
               >
                 <a href="#contact" className="inline-flex items-center gap-2">
                   <MessageSquare className="h-4 w-4" />
-                  Discuss a Project
+                  Discuss an Engagement
                 </a>
               </Button>
               <Button
@@ -87,12 +87,12 @@ export function Home({ basics, recommendedQuestions }: Props) {
                 className="border-border hover:bg-muted font-medium px-5 py-2.5 h-11 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               >
                 <a
-                  href="/resume.pdf"
-                  download="McIntosh_Alexander_Resume.pdf"
+                  href="/downloads/McIntosh_Alexander_Resume.pdf"
+                  download
                   className="inline-flex items-center gap-2"
                 >
                   <Download className="h-4 w-4" />
-                  Download Resume (PDF)
+                  Download Resume
                 </a>
               </Button>
             </div>

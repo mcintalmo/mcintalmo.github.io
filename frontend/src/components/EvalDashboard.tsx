@@ -168,7 +168,7 @@ export const EvalDashboard = ({ baseResumeYaml }: EvalDashboardProps) => {
     <div className="eval-portal max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8 border-b border-slate-800 pb-6">
-        <h1 className="text-3xl font-bold flex items-center gap-3 bg-clip-text text-transparent bg-gradient-to-r from-accent-indigo to-accent-cyan">
+        <h1 className="text-3xl font-bold flex items-center gap-3 text-white">
           <Sparkles className="h-8 w-8 text-accent-cyan" />
           Interactive Resume Tailoring Portal
         </h1>

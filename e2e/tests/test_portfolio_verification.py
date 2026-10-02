@@ -106,7 +106,7 @@ def test_business_card_navigation_and_qr_toggle(page: Page, app_url: str) -> Non
     page.goto(f"{app_url}/card")
 
     # 1. Contact Card View is default
-    name_heading = page.locator('h1:has-text("Alex McIntosh")')
+    name_heading = page.locator('h1:has-text("Alexander McIntosh")')
     save_contact_btn = page.locator('button:has-text("Save to Contacts")')
     show_qr_btn = page.locator('button:has-text("Show QR Code")')
 

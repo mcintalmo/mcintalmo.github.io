@@ -186,7 +186,7 @@ export const VoiceSandbox = () => {
       {/* Header */}
       <div className="mb-8 border-b border-slate-800 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3 bg-clip-text text-transparent bg-gradient-to-r from-accent-indigo to-accent-cyan">
+          <h1 className="text-3xl font-bold flex items-center gap-3 text-white">
             <Mic className="h-8 w-8 text-accent-cyan" />
             Voice Agent Playground & Sandbox
           </h1>

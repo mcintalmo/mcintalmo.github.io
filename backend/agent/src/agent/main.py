@@ -287,20 +287,20 @@ async def portfolio_agent(ctx: JobContext) -> None:
                             "conversation history below, generate exactly "
                             "three follow-up questions that the user might "
                             "want to ask next. The questions should be "
-                            "natural, brief, and highly relevant to Alex "
+                            "natural, brief, and highly relevant to Alexander "
                             "McIntosh's professional background. Respond "
                             "ONLY with a JSON object containing a "
                             "'questions' key with a list of objects, each "
                             "containing 'title' (a short 2-4 word "
                             "abbreviation/label for a button, e.g., "
                             "'ML Experience') and 'prompt' (the full "
-                            "question to send, e.g., 'What is Alex's "
+                            "question to send, e.g., 'What is Alexander's "
                             "ML experience?'), for example:\n"
                             '{"questions": [{"title": "ML Experience", '
-                            '"prompt": "What is Alex\'s ML experience?"}, '
+                            '"prompt": "What is Alexander\'s ML experience?"}, '
                             '{"title": "Contact info", "prompt": '
-                            '"How can I contact Alex?"}, {"title": '
-                            '"Education", "prompt": "Where did Alex study?"}]}'
+                            '"How can I contact Alexander?"}, {"title": '
+                            '"Education", "prompt": "Where did Alexander study?"}]}'
                             "\nDo not include any other markdown formatting, "
                             "code block ticks, or commentary."
                         )

@@ -10,7 +10,7 @@ export const GET: APIRoute = async () => {
     status: 200,
     headers: {
       "Content-Type": "text/vcard; charset=utf-8",
-      "Content-Disposition": 'inline; filename="Alex_McIntosh.vcf"',
+      "Content-Disposition": 'inline; filename="Alexander_McIntosh.vcf"',
       "Cache-Control": "public, max-age=86400",
     },
   });
