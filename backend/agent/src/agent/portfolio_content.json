@@ -1,7 +1,7 @@
 {
-  "name": "Alex McIntosh",
-  "label": "Data Scientist & AI/ML Engineer",
-  "summary": "Operationalizing **interpretable machine learning**, **explainable AI**, and **observable agentic networks** reliably at scale.\n",
+  "name": "Alexander McIntosh",
+  "label": "AI Consultant & Machine Learning Architect",
+  "summary": "AI Consultant & Systems Architect delivering **enterprise conversational analytics**, **production voice & agentic workflows**, and **interpretable machine learning** at scale.\n",
   "contact": {
     "email": "mcintalmo@gmail.com",
     "url": "https://www.alexandermcintosh.com",
@@ -26,11 +26,11 @@
       "location": "Minneapolis, MN",
       "start_date": "2026-06",
       "end_date": null,
-      "summary": "Designing custom AI architectures and developing conversational analytics to drive sustainable enterprise AI adoption.\n",
+      "summary": "Advising enterprise leadership and delivering custom AI architectures, conversational analytics, and agentic automation to drive sustainable business adoption.\n",
       "highlights": [
-        "Design AI architectures delivering scalable predictive analytics and anomaly detection for enterprise clients.",
-        "Develop AI-powered conversational analytics and generative domain bots.",
-        "Implement model explainability into technical designs to ensure client trust and mitigate risk."
+        "Architect custom AI systems delivering scalable predictive analytics and real-time anomaly detection for enterprise clients.",
+        "Engineer production conversational analytics pipelines and generative domain agents.",
+        "Embed model explainability and telemetry into system designs to ensure stakeholder trust and risk governance."
       ],
       "keywords": [
         "Conversational Analytics",
@@ -427,8 +427,8 @@
     }
   ],
   "site": {
-    "title": "Alex McIntosh — Data Scientist & AI/ML Engineer",
-    "description": "Portfolio and interactive AI demo",
+    "title": "Alexander McIntosh — AI Consultant & Machine Learning Architect",
+    "description": "AI architecture, conversational analytics, and enterprise ML systems consulting",
     "url": "https://mcintalmo.github.io",
     "analytics": null
   }

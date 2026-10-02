@@ -16,7 +16,7 @@ def test_convert_resume_yaml() -> None:
     assert "cv" in result
     cv = result["cv"]
 
-    assert cv.get("name") == "Alex McIntosh"
+    assert cv.get("name") == "Alexander McIntosh"
     assert cv.get("email") == "mcintalmo@gmail.com"
     assert "sections" in cv
     sections = cv["sections"]

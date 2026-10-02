@@ -5,7 +5,7 @@ import { Contact } from "./Contact";
 
 describe("Contact Component", () => {
   const mockBasics: ResumeBasics = {
-    name: "Alex McIntosh",
+    name: "Alexander McIntosh",
     email: "mcintalmo@gmail.com",
     phone: "555-123-4567",
     location: {

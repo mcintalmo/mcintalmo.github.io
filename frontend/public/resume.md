@@ -1,4 +1,4 @@
-# Alex McIntosh's CV
+# Alexander McIntosh's CV
 
 - Email: [mcintalmo@gmail.com](mailto:mcintalmo@gmail.com)
 - Location: Minneapolis, MN, US
@@ -8,7 +8,7 @@
 
 
 # Summary
-Operationalizing **interpretable machine learning**, **explainable AI**, and **observable agentic networks** reliably at scale.
+AI Consultant & Systems Architect delivering **enterprise conversational analytics**, **production voice & agentic workflows**, and **interpretable machine learning** at scale.
 
 
 # Experience
@@ -20,17 +20,17 @@ June 2026 – present
 
 
 
-4 months
+5 months
 
-Designing custom AI architectures and developing conversational analytics to drive sustainable enterprise AI adoption.
+Advising enterprise leadership and delivering custom AI architectures, conversational analytics, and agentic automation to drive sustainable business adoption.
 
 
 
-- Design AI architectures delivering scalable predictive analytics and anomaly detection for enterprise clients.
+- Architect custom AI systems delivering scalable predictive analytics and real-time anomaly detection for enterprise clients.
 
-- Develop AI-powered conversational analytics and generative domain bots.
+- Engineer production conversational analytics pipelines and generative domain agents.
 
-- Implement model explainability into technical designs to ensure client trust and mitigate risk.
+- Embed model explainability and telemetry into system designs to ensure stakeholder trust and risk governance.
 
 
 

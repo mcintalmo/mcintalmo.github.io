@@ -1,6 +1,6 @@
 site:
-  title: "Alex McIntosh — Data Scientist & AI/ML Engineer"
-  description: "Portfolio and interactive AI demo"
+  title: "Alexander McIntosh — AI Consultant & Machine Learning Architect"
+  description: "AI architecture, conversational analytics, and enterprise ML systems consulting"
   url: "https://mcintalmo.github.io"
   analytics: null
 
@@ -13,19 +13,19 @@ agent:
     url: "https://livekit.server.alexander-mcintosh.com"
     room-prefix: "portfolio-"
   recommended-questions:
-    - title: "Recent Projects"
-      prompt: "What has Alex been working on lately?"
-    - title: "AI/ML Experience"
-      prompt: "Tell me about Alex's AI/ML experience."
-    - title: "Education"
-      prompt: "What is Alex's educational background?"
+    - title: "Consulting Capabilities"
+      prompt: "What AI consulting and architecture services does Alexander provide?"
+    - title: "Agentic & Voice Systems"
+      prompt: "Tell me about Alexander's experience building production voice and multi-agent systems."
+    - title: "Enterprise Impact"
+      prompt: "What enterprise-scale AI systems has Alexander architected and deployed?"
 
 sections:
   basics:
     title: Home
     enabled: true
     call-to-action:
-      text: Discuss a Project
+      text: Discuss an Engagement
       url: "#contact"
   work:
     title: Professional Experience
@@ -117,8 +117,7 @@ sections:
   contact:
     title: Let's Work Together
     description:
-      Have a project or engineering inquiry in mind? Send a message or schedule
-      a discussion.
+      Have an enterprise project or AI architecture inquiry in mind? Connect directly or schedule an exploratory discussion.
     navigation-label: Contact
     enabled: true
     booking-url: null
@@ -127,9 +126,9 @@ sections:
       - Voice & Agentic Systems
       - Data & ML Infrastructure
 seo:
-  title: Alex McIntosh • Data Science, AI/ML Portfolio
+  title: Alexander McIntosh • AI Consultant & Machine Learning Architect
   description:
-    Data scientist specializing in interpretable ML and observable agents
+    AI Consultant and Systems Architect specializing in enterprise conversational analytics, agentic networks, and interpretable ML.
 analytics:
   provider:
   tracking-id:

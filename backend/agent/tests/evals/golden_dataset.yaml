@@ -1,5 +1,5 @@
 version: "2.0"
-description: "Benchmark evaluation golden dataset for Alex McIntosh's LiveKit Conversational AI Agent."
+description: "Benchmark evaluation golden dataset for Alexander McIntosh's LiveKit Conversational AI Agent."
 
 test_cases:
   # =========================================================================

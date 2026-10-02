@@ -20,7 +20,7 @@ export function generateVCard(
     notes,
   } = options;
 
-  const name = basics.name || "Alex McIntosh";
+  const name = basics.name || "Alexander McIntosh";
   const nameParts = name.trim().split(/\s+/);
   const firstName = nameParts[0] || "";
   const lastName = nameParts.slice(1).join(" ") || "";
@@ -83,7 +83,7 @@ export function generateVCard(
  */
 export function downloadVCard(
   vcardContent: string,
-  filename = "Alex_McIntosh.vcf",
+  filename = "Alexander_McIntosh.vcf",
 ): void {
   if (typeof window === "undefined" || typeof document === "undefined") {
     return;

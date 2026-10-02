@@ -1,11 +1,11 @@
 {
   "basics": {
-    "name": "Alex McIntosh",
-    "label": "Data Scientist & AI/ML Engineer",
+    "name": "Alexander McIntosh",
+    "label": "AI Consultant & Machine Learning Architect",
     "image": "/assets/profile.png",
     "email": "mcintalmo@gmail.com",
     "url": "https://www.alexandermcintosh.com",
-    "summary": "Operationalizing **interpretable machine learning**, **explainable AI**, and **observable agentic networks** reliably at scale.\n",
+    "summary": "AI Consultant & Systems Architect delivering **enterprise conversational analytics**, **production voice & agentic workflows**, and **interpretable machine learning** at scale.\n",
     "location": {
       "city": "Minneapolis",
       "countryCode": "US",
@@ -31,11 +31,11 @@
       "position": "Consultant, Artificial Intelligence",
       "startDate": "2026-06",
       "url": "https://www.pioneermanagementconsulting.com/ai-consulting-services",
-      "description": "Designing custom AI architectures and developing conversational analytics to drive sustainable enterprise AI adoption.\n",
+      "description": "Advising enterprise leadership and delivering custom AI architectures, conversational analytics, and agentic automation to drive sustainable business adoption.\n",
       "highlights": [
-        "Design AI architectures delivering scalable predictive analytics and anomaly detection for enterprise clients.",
-        "Develop AI-powered conversational analytics and generative domain bots.",
-        "Implement model explainability into technical designs to ensure client trust and mitigate risk."
+        "Architect custom AI systems delivering scalable predictive analytics and real-time anomaly detection for enterprise clients.",
+        "Engineer production conversational analytics pipelines and generative domain agents.",
+        "Embed model explainability and telemetry into system designs to ensure stakeholder trust and risk governance."
       ],
       "keywords": [
         "Conversational Analytics",

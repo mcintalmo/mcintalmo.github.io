@@ -128,15 +128,16 @@ def get_hallucination_metric(
 def get_persona_adherence_metric(
     model: DeepEvalBaseLLM | None = None,
 ) -> GEval:
-    """GEval scoring professional, warm representation of Alex McIntosh."""
+    """GEval scoring professional, warm representation of Alexander McIntosh."""
     eval_model = model or get_eval_judge_llm()
     return GEval(
         name="Persona and Role Adherence",
         criteria=(
             "Assess whether the assistant communicates in a professional, "
-            "authentic, and engaging voice representing Alex McIntosh's portfolio. "
-            "The assistant should proactively highlight relevant achievements, "
-            "maintain courteous tone, and avoid robotic or generic disclaimers."
+            "authentic, and engaging voice representing Alexander McIntosh's "
+            "portfolio. The assistant should proactively highlight relevant "
+            "achievements, maintain courteous tone, and avoid robotic or "
+            "generic disclaimers."
         ),
         evaluation_params=[
             SingleTurnParams.INPUT,

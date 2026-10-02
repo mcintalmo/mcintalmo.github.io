@@ -61,7 +61,7 @@ export function BusinessCard({ basics = {}, work = [] }: BusinessCardProps) {
     }
   };
 
-  const name = basics.name || "Alex McIntosh";
+  const name = basics.name || "Alexander McIntosh";
   const title = basics.label || "Data Scientist & AI/ML Engineer";
   const currentRole = work[0];
   const company = currentRole?.name || "Pioneer Management Consulting";
@@ -248,8 +248,8 @@ export function BusinessCard({ basics = {}, work = [] }: BusinessCardProps) {
                 <a
                   href="/?open-chat=true"
                   className="flex flex-col items-center justify-center p-2 rounded-xl bg-accent-indigo/10 border border-accent-indigo/20 hover:bg-accent-indigo/20 transition-colors group min-h-[56px]"
-                  title="Talk to Alex's AI Agent"
-                  aria-label="Talk to Alex's AI Assistant"
+                  title="Talk to Alexander's AI Agent"
+                  aria-label="Talk to Alexander's AI Assistant"
                 >
                   <Bot className="w-5 h-5 text-accent-cyan group-hover:scale-110 transition-transform" />
                   <span className="text-[10px] font-medium text-accent-cyan mt-1">

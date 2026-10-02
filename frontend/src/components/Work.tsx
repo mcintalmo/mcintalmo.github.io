@@ -444,7 +444,9 @@ function ExperienceCard({
                     </div>
                   )}
                   <CardTitle>
-                    {exp.position && <h3>{exp.position}</h3>}
+                    <div className="flex flex-wrap items-center gap-2">
+                      {exp.position && <h3>{exp.position}</h3>}
+                    </div>
                     {exp.name && <p className="text-primary mt-1">{exp.name}</p>}
                   </CardTitle>
                 </div>

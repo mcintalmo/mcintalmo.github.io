@@ -8,29 +8,33 @@ vi.mock("../assets/profile.png", () => ({
 
 describe("Home Component", () => {
   const mockBasics = {
-    name: "Alex McIntosh",
+    name: "Alexander McIntosh",
     label: "Data Scientist & AI/ML Engineer",
     summary: "Operationalizing interpretable machine learning at scale.",
   };
 
   it("renders name and label correctly", () => {
     render(<Home basics={mockBasics} />);
-    expect(screen.getByText("Alex McIntosh")).toBeInTheDocument();
+    expect(screen.getByText("Alexander McIntosh")).toBeInTheDocument();
     expect(screen.getByText("Data Scientist & AI/ML Engineer")).toBeInTheDocument();
   });
 
-  it("renders primary 'Discuss a Project' CTA button linking to #contact", () => {
+  it("renders primary 'Discuss an Engagement' CTA button linking to #contact", () => {
     render(<Home basics={mockBasics} />);
-    const discussLink = screen.getByRole("link", { name: /discuss a project/i });
+    const discussLink = screen.getByRole("link", { name: /discuss an engagement/i });
     expect(discussLink).toBeInTheDocument();
     expect(discussLink).toHaveAttribute("href", "#contact");
   });
 
-  it("renders secondary 'Download Resume (PDF)' CTA button linking to /resume.pdf", () => {
+  it("renders secondary 'Download Resume' CTA button linking to resume download", () => {
     render(<Home basics={mockBasics} />);
-    const resumeLink = screen.getByRole("link", { name: /download resume/i });
-    expect(resumeLink).toBeInTheDocument();
-    expect(resumeLink).toHaveAttribute("href", "/resume.pdf");
+    const downloadLink = screen.getByRole("link", { name: /download resume/i });
+    expect(downloadLink).toBeInTheDocument();
+    expect(downloadLink).toHaveAttribute(
+      "href",
+      "/downloads/McIntosh_Alexander_Resume.pdf",
+    );
+    expect(downloadLink).toHaveAttribute("download");
   });
 
   it("renders scroll indicator linking to #experience", () => {
