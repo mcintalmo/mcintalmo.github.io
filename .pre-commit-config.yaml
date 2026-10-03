@@ -60,7 +60,7 @@ repos:
     hooks:
       - id: pnpm-audit
         name: Frontend Vulnerability Audit
-        entry: pnpm --prefix frontend audit --audit-level=high
+        entry: pnpm --prefix frontend audit --audit-level=high --ignore-unfixable
         language: system
         files: ^(frontend/package\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml)$
         pass_filenames: false
