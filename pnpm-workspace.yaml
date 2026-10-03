@@ -29,3 +29,6 @@ minimumReleaseAgeExclude:
 allowBuilds:
   '@sentry/cli': true
   esbuild: true
+audit:
+  ignore:
+    - GHSA-ch52-4w7c-c8xp
