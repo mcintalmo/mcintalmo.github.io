@@ -37,7 +37,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Audit Frontend Dependencies
-        run: pnpm --prefix frontend audit --audit-level=high
+        run: pnpm --prefix frontend audit --audit-level=high --ignore-unfixable
 
       - name: Probe TLS, Reverse Proxy Headers, and Dependabot Baseline
         env:

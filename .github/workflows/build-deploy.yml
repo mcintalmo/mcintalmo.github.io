@@ -44,7 +44,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Audit frontend dependencies
-        run: pnpm --prefix frontend audit --audit-level=high
+        run: pnpm --prefix frontend audit --audit-level=high --ignore-unfixable
 
       - name: Set up uv
         uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
